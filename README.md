@@ -1,6 +1,6 @@
 # health-trend
 
-Health Trend is a small self-hosted health dashboard for two users (Mads + Tea):
+Health Trend is a small self-hosted health dashboard:
 - Garmin snapshots multiple times per day (morning/midday/evening)
 - Manual inputs (symptoms, caffeine cups, alcohol units, notes, trained/meds)
 - AI illness/overload trend brief + deterministic flags
