@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,59 +9,65 @@ datasource db {
 }
 
 // Core users (2 hardcoded users bootstrap)
+
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
   name         String?
-  passwordHash String
   role         String   @default("user") // user|admin
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  profile      UserProfile?
-  garmin       GarminAccount?
+  profile UserProfile?
+  garmin  GarminAccount?
 
-  manualDays   ManualDaily[]
-  snapshots    GarminSnapshot[]
-  briefs       AiBrief[]
+  manualDays    ManualDaily[]
+  snapshots     GarminSnapshot[]
+  briefs        AiBrief[]
+  emailVerified Boolean          @default(false)
+  image         String?
+  sessions      Session[]
+  accounts      Account[]
+
+  @@map("user")
 }
 
 model UserProfile {
-  userId     String  @id
-  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @id
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  sex        String  @default("male") // male|female
+  sex String @default("male") // male|female
 
   // Optional female-specific context
-  pregnant   Boolean @default(false)
-  cycleDay   Int?
+  pregnant Boolean @default(false)
+  cycleDay Int?
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model GarminAccount {
-  userId          String @id
-  user            User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @id
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Tokens encrypted server-side with ENCRYPTION_KEY
   tokensEncrypted String
   tokensUpdatedAt DateTime @default(now())
 
-  status          String  @default("ok") // ok|reauth_required|error
-  lastError       String?
+  status    String  @default("ok") // ok|reauth_required|error
+  lastError String?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model GarminSnapshot {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  day       String   // YYYY-MM-DD
-  takenAt   DateTime // snapshot timestamp
+  day     String // YYYY-MM-DD
+  takenAt DateTime // snapshot timestamp
 
   // Key metrics
   steps           Int?
@@ -75,13 +82,13 @@ model GarminSnapshot {
   respAvgWaking   Float?
   respAvgSleep    Float?
 
-  activityCount       Int?
-  activityMinutes     Int?
-  activityDistanceKm  Float?
-  activityCalories    Int?
+  activityCount      Int?
+  activityMinutes    Int?
+  activityDistanceKm Float?
+  activityCalories   Int?
 
   // Raw JSON (optional). Keep as Json for now; can move to object storage later.
-  rawJson   Json?
+  rawJson Json?
 
   createdAt DateTime @default(now())
 
@@ -91,18 +98,18 @@ model GarminSnapshot {
 }
 
 model ManualDaily {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  day       String   // YYYY-MM-DD
+  day String // YYYY-MM-DD
 
-  symptomScore  Int? // 0-3
-  caffeineCups  Int?
-  alcoholUnits  Int?
-  notes         String?
-  trained       Boolean?
-  meds          Boolean?
+  symptomScore Int? // 0-3
+  caffeineCups Int?
+  alcoholUnits Int?
+  notes        String?
+  trained      Boolean?
+  meds         Boolean?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -112,20 +119,68 @@ model ManualDaily {
 }
 
 model AiBrief {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  day       String
-  risk      String   // OK|LOW|MED|HIGH
-  short     String
-  signals   Json
+  day         String
+  risk        String // OK|LOW|MED|HIGH
+  short       String
+  signals     Json
   suggestions Json
 
-  model     String?
+  model String?
 
   createdAt DateTime @default(now())
 
   @@unique([userId, day])
   @@index([userId, day])
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }
