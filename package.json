@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "bootstrap-users": "tsx scripts/bootstrap-users.ts"
+    "bootstrap-users": "tsx scripts/bootstrap-users.ts",
+    "import-garmin": "tsx scripts/import-garmin-json.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.19.2",
