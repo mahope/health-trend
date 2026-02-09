@@ -8,6 +8,16 @@ function avg(nums: Array<number | null | undefined>): number | null {
   return xs.reduce((a, b) => a + b, 0) / xs.length;
 }
 
+function cyclePhaseFromDay(cycleDay: number | null | undefined): string | null {
+  if (!cycleDay || !Number.isFinite(cycleDay)) return null;
+  // Very rough heuristic (assume ~28d cycle)
+  if (cycleDay <= 5) return "menstruation";
+  if (cycleDay <= 13) return "follicular";
+  if (cycleDay <= 16) return "ovulation";
+  if (cycleDay <= 28) return "luteal";
+  return "luteal";
+}
+
 export async function generateAiBriefForUser(userId: string, day: string) {
   const profile = await prisma.userProfile.findUnique({
     where: { userId },
@@ -53,6 +63,7 @@ export async function generateAiBriefForUser(userId: string, day: string) {
           sex: profile.sex,
           pregnant: profile.pregnant,
           cycleDay: profile.cycleDay,
+          cyclePhase: cyclePhaseFromDay(profile.cycleDay),
         }
       : null,
     manual,
@@ -82,7 +93,8 @@ export async function generateAiBriefForUser(userId: string, day: string) {
 
   const ai = await openaiJson(
     `Opgave: Lav et sygdom/overbelastnings-brief for i dag (${day}).\n` +
-      `Tag højde for profil-kontekst (sex, evt graviditet, cycleDay) når du vurderer signaler og forslag.\n\n` +
+      `Tag højde for profil-kontekst (sex, evt graviditet, cycleDay/cyclePhase) når du vurderer signaler og forslag.\n` +
+      `Hvis profile.sex=female og cyclePhase findes: nævn kort om variation i fx RHR/stress/søvn kan hænge sammen med cyklus (uden at overforklare).\n\n` +
       `Returnér JSON med præcis denne struktur:\n` +
       `{\n  "risk": "OK"|"LOW"|"MED"|"HIGH",\n  "short": string,\n  "signals": [{"name": string, "value": string, "why": string}],\n  "suggestions": [{"title": string, "detail": string}]\n}\n\n` +
       `Data (JSON):\n` +
