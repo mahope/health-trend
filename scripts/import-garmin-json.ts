@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { pickMetrics } from "@/lib/garminLocal";
 import fs from "node:fs";
 import path from "node:path";
@@ -72,14 +73,14 @@ async function main() {
           day,
           ...metrics,
           // Prisma accepts JSON values; payload comes from JSON.parse.
-          rawJson: payload as unknown,
+          rawJson: payload as Prisma.InputJsonValue,
         },
         create: {
           userId: user.id,
           day,
           takenAt,
           ...metrics,
-          rawJson: payload as unknown,
+          rawJson: payload as Prisma.InputJsonValue,
         },
       });
 
