@@ -91,19 +91,27 @@ export function AiBriefCard({ day }: { day: string }) {
           </div>
 
           {item.signals?.length ? (
-            <div>
-              <div className="text-sm font-semibold">Signaler</div>
-              <ul className="mt-3 grid gap-3 md:grid-cols-2">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold">Signaler</div>
+                <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                  {item.signals.length} stk.
+                </div>
+              </div>
+
+              <ul className="grid gap-2 md:grid-cols-2">
                 {item.signals.map((s, idx) => (
                   <li
                     key={idx}
                     className="rounded-xl border border-black/10 bg-white/60 p-3 dark:border-white/10 dark:bg-black/20"
                   >
-                    <div className="text-sm font-medium">{s.name}</div>
-                    <div className="mt-1 text-sm text-neutral-700 dark:text-neutral-200">
-                      {s.value}
+                    <div className="flex items-baseline justify-between gap-3">
+                      <div className="text-sm font-medium">{s.name}</div>
+                      <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                        {s.value}
+                      </div>
                     </div>
-                    <div className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                    <div className="mt-1 text-xs text-neutral-600 dark:text-neutral-300">
                       {s.why}
                     </div>
                   </li>
@@ -113,9 +121,15 @@ export function AiBriefCard({ day }: { day: string }) {
           ) : null}
 
           {item.suggestions?.length ? (
-            <div>
-              <div className="text-sm font-semibold">Forslag</div>
-              <ul className="mt-3 grid gap-3 md:grid-cols-2">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold">Forslag</div>
+                <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                  {item.suggestions.length} stk.
+                </div>
+              </div>
+
+              <ul className="grid gap-2 md:grid-cols-2">
                 {item.suggestions.map((s, idx) => (
                   <li
                     key={idx}

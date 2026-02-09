@@ -34,6 +34,7 @@ export default async function DashboardPage() {
       />
 
       <section className="grid gap-4 lg:grid-cols-12">
+        {/* Mid row */}
         <Card className="lg:col-span-5">
           <CardHeader
             title="Snapshots"
@@ -54,6 +55,7 @@ export default async function DashboardPage() {
           </CardBody>
         </Card>
 
+        {/* Bottom row */}
         <Card className="lg:col-span-12">
           <CardHeader
             title="AI brief"
