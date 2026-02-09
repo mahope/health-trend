@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import QRCode from "qrcode";
+import { QrImage } from "@/components/QrImage";
 import { authClient } from "@/lib/auth-client";
 
 export default function SettingsPage() {
@@ -10,9 +12,35 @@ export default function SettingsPage() {
   const [backupCodes, setBackupCodes] = useState<string[] | null>(null);
   const [verifyCode, setVerifyCode] = useState("");
 
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [verifying, setVerifying] = useState(false);
+
+  const safeTotpURI = useMemo(() => totpURI?.trim() ?? null, [totpURI]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (!safeTotpURI) {
+        setQrDataUrl(null);
+        return;
+      }
+      try {
+        const url = await QRCode.toDataURL(safeTotpURI, {
+          margin: 1,
+          scale: 7,
+        });
+        if (!cancelled) setQrDataUrl(url);
+      } catch {
+        if (!cancelled) setQrDataUrl(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [safeTotpURI]);
 
   return (
     <div className="space-y-8">
@@ -72,14 +100,24 @@ export default function SettingsPage() {
           </button>
         </div>
 
-        {totpURI && (
-          <div className="mt-4 space-y-3">
+        {safeTotpURI && (
+          <div className="mt-4 space-y-4">
             <div className="text-sm">
-              1) Scan QR / brug TOTP URI (midlertidigt viser vi bare URI’en):
+              1) Scan QR-koden med din authenticator-app:
             </div>
-            <pre className="text-xs whitespace-pre-wrap rounded-md bg-neutral-50 border p-3 overflow-auto">
-              {totpURI}
-            </pre>
+
+            {qrDataUrl ? (
+              <QrImage dataUrl={qrDataUrl} />
+            ) : (
+              <div className="text-sm text-neutral-500">Kunne ikke generere QR.</div>
+            )}
+
+            <details className="rounded-md border p-3 bg-neutral-50">
+              <summary className="text-sm cursor-pointer">Vis TOTP URI</summary>
+              <pre className="text-xs whitespace-pre-wrap mt-2 overflow-auto">
+                {safeTotpURI}
+              </pre>
+            </details>
 
             {backupCodes && (
               <div className="space-y-2">
@@ -113,7 +151,6 @@ export default function SettingsPage() {
                     if (res.error) {
                       setError(res.error.message);
                     } else {
-                      // refresh
                       window.location.reload();
                     }
                   } catch (e: unknown) {
@@ -126,10 +163,6 @@ export default function SettingsPage() {
                 {verifying ? "Verificerer…" : "Verificér og slå til"}
               </button>
             </div>
-
-            <p className="text-xs text-neutral-500">
-              Note: QR rendering kommer senere (vi kan generere QR på client eller via et lille endpoint).
-            </p>
           </div>
         )}
       </section>

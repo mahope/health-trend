@@ -21,6 +21,8 @@ export default async function ProtectedLayout({
             </Link>
             <nav className="text-sm text-neutral-600 flex items-center gap-3">
               <Link href="/">Dashboard</Link>
+              <Link href="/snapshots">Snapshots</Link>
+              <Link href="/garmin">Garmin</Link>
               <Link href="/settings">Settings</Link>
             </nav>
           </div>
