@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
+import { twoFactor } from "better-auth/plugins";
 import { prisma } from "./src/lib/prisma";
 
 export const auth = betterAuth({
@@ -17,14 +18,12 @@ export const auth = betterAuth({
     enabled: true,
   },
 
-  twoFactor: {
-    enabled: true,
-  },
+  // 2FA routes are provided via the twoFactor() plugin below.
 
   experimental: {
     joins: true,
   },
 
   // Automatically set cookies in Next.js Server Actions when Better Auth returns Set-Cookie headers
-  plugins: [nextCookies()],
+  plugins: [twoFactor(), nextCookies()],
 });

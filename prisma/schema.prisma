@@ -24,10 +24,13 @@ model User {
   manualDays    ManualDaily[]
   snapshots     GarminSnapshot[]
   briefs        AiBrief[]
-  emailVerified Boolean          @default(false)
-  image         String?
-  sessions      Session[]
-  accounts      Account[]
+  emailVerified    Boolean @default(false)
+  twoFactorEnabled Boolean @default(false)
+  image            String?
+  sessions         Session[]
+  accounts         Account[]
+
+  twoFactor TwoFactor?
 
   @@map("user")
 }
@@ -135,6 +138,18 @@ model AiBrief {
 
   @@unique([userId, day])
   @@index([userId, day])
+}
+
+model TwoFactor {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  secret      String
+  backupCodes String
+
+  @@index([userId])
+  @@map("twoFactor")
 }
 
 model Session {

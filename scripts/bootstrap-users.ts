@@ -25,11 +25,13 @@ async function ensureUser({
   name,
   password,
   role,
+  resetPassword,
 }: {
   email: string;
   name: string;
   password: string;
   role: "admin" | "user";
+  resetPassword: boolean;
 }) {
   const normalizedEmail = email.toLowerCase();
 
@@ -45,8 +47,9 @@ async function ensureUser({
       where: { userId: existing.id, providerId: "credential" },
     });
 
+    const passwordHash = await hashPassword(password);
+
     if (!existingAccount) {
-      const passwordHash = await hashPassword(password);
       await prisma.account.create({
         data: {
           id: crypto.randomUUID(),
@@ -56,9 +59,19 @@ async function ensureUser({
           password: passwordHash,
         },
       });
+
+      return { created: false, passwordReset: true };
     }
 
-    return { created: false };
+    if (resetPassword) {
+      await prisma.account.update({
+        where: { id: existingAccount.id },
+        data: { password: passwordHash },
+      });
+      return { created: false, passwordReset: true };
+    }
+
+    return { created: false, passwordReset: false };
   }
 
   const user = await prisma.user.create({
@@ -82,7 +95,7 @@ async function ensureUser({
     },
   });
 
-  return { created: true };
+  return { created: true, passwordReset: true };
 }
 
 async function main() {
@@ -97,34 +110,44 @@ async function main() {
   requireEnv("BETTER_AUTH_SECRET");
   requireEnv("BETTER_AUTH_BASE_URL");
 
-  const out: Array<{ email: string; password: string; created: boolean }> = [];
+  const resetPasswords = (maybeEnv("BOOTSTRAP_RESET_PASSWORDS") || "").toLowerCase() === "1";
+
+  const out: Array<{ email: string; password: string; created: boolean; passwordReset: boolean }> = [];
+
+  const madsRes = await ensureUser({
+    email: madsEmail,
+    name: "Mads",
+    password: madsPassword,
+    role: "admin",
+    resetPassword: resetPasswords,
+  });
 
   out.push({
     email: madsEmail,
     password: madsPassword,
-    created: (await ensureUser({
-      email: madsEmail,
-      name: "Mads",
-      password: madsPassword,
-      role: "admin",
-    })).created,
+    created: madsRes.created,
+    passwordReset: madsRes.passwordReset,
+  });
+
+  const teaRes = await ensureUser({
+    email: teaEmail,
+    name: "Tea",
+    password: teaPassword,
+    role: "user",
+    resetPassword: resetPasswords,
   });
 
   out.push({
     email: teaEmail,
     password: teaPassword,
-    created: (await ensureUser({
-      email: teaEmail,
-      name: "Tea",
-      password: teaPassword,
-      role: "user",
-    })).created,
+    created: teaRes.created,
+    passwordReset: teaRes.passwordReset,
   });
 
   // Write local (gitignored) file so we don't lose generated passwords.
   const lines = [
     `# Generated ${new Date().toISOString()}`,
-    ...out.map((x) => `${x.email}\t${x.password}\tcreated=${x.created}`),
+    ...out.map((x) => `${x.email}\t${x.password}\tcreated=${x.created}\tpasswordReset=${x.passwordReset}`),
     "",
   ].join("\n");
 
@@ -133,7 +156,9 @@ async function main() {
   // Also print (but keep short):
   console.log("Bootstrapped users:");
   for (const x of out) {
-    console.log(`- ${x.email} (created=${x.created}) password=${x.password}`);
+    console.log(
+      `- ${x.email} (created=${x.created}, passwordReset=${x.passwordReset}) password=${x.password}`,
+    );
   }
 }
 
