@@ -36,3 +36,8 @@ Autopilot writes short entries here.
 - Changed: Added basic cycle tracking to Settings (last period start, cycle length estimate, symptoms). Extended profile context API + Prisma schema/migration.
 - Commit: e6d8866
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-09 23:13 (Europe/Copenhagen)
+- Changed: Added 30s undo for snapshot delete on /snapshots (optimistic remove, delayed delete) using a toast action button. Extended toast provider to support actions + custom duration + sticky toasts.
+- Commit: e8f68c3
+- Tests: `npm run lint` ✅, `npm run build` ✅
