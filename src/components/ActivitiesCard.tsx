@@ -44,7 +44,18 @@ export function ActivitiesCard({ limit = 10 }: { limit?: number }) {
 
   return (
     <Card>
-      <CardHeader title="Aktiviteter" description={`Seneste ${limit} (fra snapshots).`} />
+      <CardHeader
+        title="Aktiviteter"
+        description={`Seneste ${limit} (fra snapshots).`}
+        right={
+          <a
+            className="text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white"
+            href="/activities"
+          >
+            Se alle
+          </a>
+        }
+      />
       <CardBody>
         {error && <div className="text-sm text-red-600">{error}</div>}
         {items.length === 0 ? (

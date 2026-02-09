@@ -11,6 +11,7 @@ const nav = [
   { href: "/", label: "Dashboard" },
   { href: "/snapshots", label: "Snapshots" },
   { href: "/alerts", label: "Alerts" },
+  { href: "/activities", label: "Aktiviteter" },
   { href: "/garmin", label: "Garmin" },
   { href: "/settings", label: "Settings" },
 ] as const;
