@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { addDays } from "@/lib/date";
+import { addDaysYmd } from "@/lib/date";
 import { Button } from "@/components/ui/Button";
 import { MetricGrid, MetricTile } from "@/components/MetricGrid";
 import { fmtDelta, fmtDeltaFloat, fmtFloat, fmtNumber } from "@/lib/format";
@@ -49,7 +49,7 @@ export function LatestSnapshotCard({ day }: { day: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const yday = useMemo(() => addDays(day, -1), [day]);
+  const yday = useMemo(() => addDaysYmd(day, -1), [day]);
 
   useEffect(() => {
     let cancelled = false;
