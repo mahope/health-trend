@@ -1,11 +1,22 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import QRCode from "qrcode";
 import { QrImage } from "@/components/QrImage";
 import { authClient } from "@/lib/auth-client";
+import { useToast } from "@/components/ToastProvider";
 
 export default function SettingsPage() {
+  const { toast } = useToast();
+  const lastToastAt = useRef(0);
+
+  function rateLimitedToast(next: Parameters<typeof toast>[0]) {
+    const now = Date.now();
+    if (now - lastToastAt.current < 1200) return;
+    lastToastAt.current = now;
+    toast(next);
+  }
+
   const [password, setPassword] = useState("");
   const [issuer, setIssuer] = useState("Health Trend");
   const [totpURI, setTotpURI] = useState<string | null>(null);
@@ -175,8 +186,14 @@ export default function SettingsPage() {
                 });
                 const json = await res.json();
                 if (!res.ok) throw new Error(json.error || "Kunne ikke gemme mål");
+                rateLimitedToast({ title: "Mål gemt ✓", kind: "success", vibrateMs: 10 });
               } catch (e: unknown) {
                 setError(e instanceof Error ? e.message : "Kunne ikke gemme mål");
+                rateLimitedToast({
+                  title: e instanceof Error ? e.message : "Kunne ikke gemme mål",
+                  kind: "error",
+                  vibrateMs: 35,
+                });
               } finally {
                 setGoalsSaving(false);
               }
@@ -319,8 +336,14 @@ export default function SettingsPage() {
                 });
                 const json = await res.json();
                 if (!res.ok) throw new Error(json.error || "Kunne ikke gemme");
+                rateLimitedToast({ title: "Kontekst gemt ✓", kind: "success", vibrateMs: 10 });
               } catch (e: unknown) {
                 setError(e instanceof Error ? e.message : "Kunne ikke gemme");
+                rateLimitedToast({
+                  title: e instanceof Error ? e.message : "Kunne ikke gemme",
+                  kind: "error",
+                  vibrateMs: 35,
+                });
               } finally {
                 setContextSaving(false);
               }
@@ -368,6 +391,11 @@ export default function SettingsPage() {
                 } else {
                   setTotpURI(res.data.totpURI);
                   setBackupCodes(res.data.backupCodes);
+                  rateLimitedToast({
+                    title: "2FA klargjort - scan QR",
+                    kind: "success",
+                    vibrateMs: 12,
+                  });
                 }
               } catch (e: unknown) {
                 setError(e instanceof Error ? e.message : "Kunne ikke aktivere 2FA");
@@ -431,6 +459,7 @@ export default function SettingsPage() {
                     if (res.error) {
                       setError(res.error.message || "Verificering fejlede");
                     } else {
+                      rateLimitedToast({ title: "2FA aktiveret ✓", kind: "success", vibrateMs: 15 });
                       window.location.reload();
                     }
                   } catch (e: unknown) {
