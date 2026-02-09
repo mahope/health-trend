@@ -3,9 +3,9 @@
 **Mode:** mobile-first (mest brugt på telefon)
 
 ## Now (Mads’ 3 requests)
-- [ ] **Light design** as default + optional dark mode toggle
-- [ ] **Better header** (avatar + settings + sign out)
-- [ ] **Full PWA** (install-only)
+- [x] **Light design** as default + optional dark mode toggle
+- [x] **Better header** (avatar + settings + sign out)
+- [x] **Full PWA** (install-only)
 
 ## Next (20 ideas)
 ### Mobile UX
