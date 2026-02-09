@@ -8,6 +8,7 @@ import { LatestSnapshotCard } from "@/components/LatestSnapshotCard";
 import { TrendsCharts } from "@/components/TrendsCharts";
 import { ActivitiesCard } from "@/components/ActivitiesCard";
 import { DayPlanCard } from "@/components/DayPlanCard";
+import { MobileActionBar } from "@/components/MobileActionBar";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { PageHeader } from "@/components/PageHeader";
 import { DashboardActions } from "@/components/DashboardActions";
@@ -26,10 +27,11 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-4">
+      <MobileActionBar manualAnchorId="manual" />
       <PageHeader
         title="Dashboard"
         subtitle={`${day} — logget ind som ${session.user.email}`}
-        right={<DashboardActions day={day} />}
+        right={<div className="hidden md:block"><DashboardActions day={day} /></div>}
       />
 
       <RiskHero
@@ -70,6 +72,8 @@ export default async function DashboardPage() {
           </CardBody>
         </Card>
       </section>
+
+      <div id="manual" />
 
       <div className="grid gap-4 lg:grid-cols-12">
         <div className="lg:col-span-8">
