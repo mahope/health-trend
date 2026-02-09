@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { addDays } from "@/lib/date";
 import { Button } from "@/components/ui/Button";
+import { MetricGrid, MetricTile } from "@/components/MetricGrid";
+import { fmtDelta, fmtDeltaFloat, fmtFloat, fmtNumber } from "@/lib/format";
 
 type Snapshot = {
   id: string;
@@ -18,12 +20,6 @@ type Snapshot = {
   spo2Avg?: number | null;
   respAvgSleep?: number | null;
 };
-
-function fmtDelta(n: number | null | undefined): string {
-  if (n === null || n === undefined) return "";
-  if (n === 0) return "±0";
-  return n > 0 ? `+${n}` : `${n}`;
-}
 
 function delta(a: number | null | undefined, b: number | null | undefined): number | null {
   if (a === null || a === undefined) return null;
@@ -151,43 +147,52 @@ export function LatestSnapshotCard({ day }: { day: string }) {
       )}
 
       {latest && (
-        <div className="grid gap-2 text-sm">
-          <Row label="Steps" value={latest.steps} delta={fmtDelta(delta(latest.steps, prev?.steps))} />
-          <Row label="Resting HR" value={latest.restingHr} delta={fmtDelta(delta(latest.restingHr, prev?.restingHr))} />
-          <Row label="Stress (avg)" value={latest.stressAvg} delta={fmtDelta(delta(latest.stressAvg, prev?.stressAvg))} />
-          <Row label="Sleep (timer)" value={latest.sleepHours ?? (latest.sleepMinutes ? latest.sleepMinutes / 60 : null)} delta={fmtDelta(delta(latest.sleepHours ?? null, prev?.sleepHours ?? null))} />
-          <Row label="Body Battery (H/L)" value={formatBB(latest.bodyBatteryHigh, latest.bodyBatteryLow)} delta={formatBBDelta(prev, latest)} />
-          <Row label="SpO2 (avg)" value={latest.spo2Avg} delta={fmtDelta(delta(latest.spo2Avg, prev?.spo2Avg))} />
-          <Row label="Resp (sleep)" value={latest.respAvgSleep} delta={fmtDelta(delta(latest.respAvgSleep, prev?.respAvgSleep))} />
+        <div className="space-y-3">
+          <MetricGrid className="sm:grid-cols-3">
+            <MetricTile
+              label="Steps"
+              value={fmtNumber(latest.steps)}
+              delta={fmtDelta(delta(latest.steps, prev?.steps))}
+            />
+            <MetricTile
+              label="Resting HR"
+              value={fmtNumber(latest.restingHr, " bpm")}
+              delta={fmtDelta(delta(latest.restingHr, prev?.restingHr), " bpm")}
+            />
+            <MetricTile
+              label="Stress (avg)"
+              value={fmtNumber(latest.stressAvg)}
+              delta={fmtDelta(delta(latest.stressAvg, prev?.stressAvg))}
+            />
+            <MetricTile
+              label="Sleep"
+              value={fmtFloat(latest.sleepHours ?? (latest.sleepMinutes ? latest.sleepMinutes / 60 : null), 1, " h")}
+              delta={fmtDeltaFloat(delta(latest.sleepHours ?? null, prev?.sleepHours ?? null), 1, " h")}
+            />
+            <MetricTile
+              label="Body Battery (H/L)"
+              value={formatBB(latest.bodyBatteryHigh, latest.bodyBatteryLow)}
+              delta={formatBBDelta(prev, latest)}
+            />
+            <MetricTile
+              label="SpO2 (avg)"
+              value={fmtFloat(latest.spo2Avg, 1, " %")}
+              delta={fmtDeltaFloat(delta(latest.spo2Avg, prev?.spo2Avg), 1, " %")}
+            />
+            <MetricTile
+              label="Resp (sleep)"
+              value={fmtFloat(latest.respAvgSleep, 1)}
+              delta={fmtDeltaFloat(delta(latest.respAvgSleep, prev?.respAvgSleep), 1)}
+            />
+          </MetricGrid>
 
           {prev && (
-            <div className="pt-2 text-xs text-neutral-500">
+            <div className="text-xs text-neutral-500 dark:text-neutral-400">
               Delta er ift. forrige snapshot ({new Date(prev.takenAt).toLocaleString("da-DK", { hour12: false })}).
             </div>
           )}
         </div>
       )}
-    </div>
-  );
-}
-
-function Row({
-  label,
-  value,
-  delta,
-}: {
-  label: string;
-  value: number | string | null | undefined;
-  delta?: string;
-}) {
-  const hasValue = !(value === null || value === undefined || value === "");
-  return (
-    <div className="flex items-center justify-between gap-3 border-b last:border-b-0 pb-2 last:pb-0">
-      <div className="text-neutral-600">{label}</div>
-      <div className="flex items-center gap-2">
-        <div className={hasValue ? "font-medium" : "text-neutral-400"}>{hasValue ? value : "—"}</div>
-        {delta && hasValue && <div className="text-xs text-neutral-500">({delta})</div>}
-      </div>
     </div>
   );
 }
@@ -208,5 +213,5 @@ function formatBBDelta(prev: Snapshot | null, latest: Snapshot): string {
   const parts: string[] = [];
   if (dH !== null) parts.push(`H ${fmtDelta(dH)}`);
   if (dL !== null) parts.push(`L ${fmtDelta(dL)}`);
-  return parts.length ? `(${parts.join(", ")})` : "";
+  return parts.length ? parts.join(" · ") : "";
 }
