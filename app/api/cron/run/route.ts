@@ -26,13 +26,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
+  const url = new URL(req.url);
+
   const body = (await req.json().catch(() => ({}))) as {
     day?: string;
     mode?: "snapshot_only" | "snapshot_and_brief";
   };
 
-  const day = body.day || todayCph();
-  const mode = body.mode || "snapshot_and_brief";
+  const day = body.day || url.searchParams.get("day") || todayCph();
+  const mode =
+    body.mode ||
+    (url.searchParams.get("mode") as "snapshot_only" | "snapshot_and_brief" | null) ||
+    "snapshot_and_brief";
 
   const store = await getStore();
 

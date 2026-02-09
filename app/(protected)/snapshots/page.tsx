@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { Card, CardBody, CardHeader } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 type Snapshot = {
   id: string;
@@ -42,10 +45,12 @@ export default function SnapshotsPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/snapshots/list?day=${encodeURIComponent(day)}`);
-      const json = await res.json();
+      const res = await fetch(`/api/snapshots/list?day=${encodeURIComponent(day)}`, {
+        cache: "no-store",
+      });
+      const json = (await res.json()) as { items?: Snapshot[]; error?: string };
       if (!res.ok) throw new Error(json?.error || "Kunne ikke hente snapshots");
-      setItems(json.items);
+      setItems(json.items ?? []);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Fejl");
     } finally {
@@ -75,100 +80,111 @@ export default function SnapshotsPage() {
   }, [items]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Snapshots</h1>
-        <p className="text-sm text-neutral-500 mt-1">
-          Tag snapshots (morgen/middag/aften) og se udvikling.
-        </p>
-      </div>
-
-      <div className="rounded-xl border p-4 space-y-3">
-        <div className="flex flex-wrap gap-3 items-end">
-          <div>
-            <label className="block text-xs text-neutral-500">Dag</label>
-            <input
-              className="rounded-md border px-3 py-2"
-              value={day}
-              onChange={(e) => setDay(e.target.value)}
-              placeholder="YYYY-MM-DD"
-            />
+    <div className="space-y-4">
+      <Card>
+        <CardHeader
+          title="Snapshots"
+          description="Tag snapshots (morgen/middag/aften) og se udvikling."
+          right={
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                disabled={loading}
+                onClick={async () => {
+                  setLoading(true);
+                  setError(null);
+                  try {
+                    const res = await fetch("/api/snapshots/take", {
+                      method: "POST",
+                      headers: { "content-type": "application/json" },
+                      body: JSON.stringify({ day }),
+                    });
+                    const json = await res.json();
+                    if (!res.ok) throw new Error(json?.error || "Kunne ikke tage snapshot");
+                    await refresh();
+                  } catch (e: unknown) {
+                    setError(e instanceof Error ? e.message : "Fejl");
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+              >
+                {loading ? "Arbejder…" : "Tag snapshot"}
+              </Button>
+              <Button size="sm" disabled={loading} onClick={refresh}>
+                Refresh
+              </Button>
+            </div>
+          }
+        />
+        <CardBody>
+          <div className="grid gap-3 md:grid-cols-2">
+            <div>
+              <label className="block text-xs text-neutral-500 dark:text-neutral-400">Dag</label>
+              <Input
+                value={day}
+                onChange={(e) => setDay(e.target.value)}
+                placeholder="YYYY-MM-DD"
+              />
+            </div>
+            <div className="text-xs text-neutral-500 dark:text-neutral-400 md:pt-6">
+              Snapshot læses lokalt fra{" "}
+              <code>C:/Users/mads_/Garmin/data/garmin-YYYY-MM-DD.json</code> og gemmes.
+            </div>
           </div>
 
-          <button
-            className="rounded-md bg-black text-white px-3 py-2 disabled:opacity-50"
-            disabled={loading}
-            onClick={async () => {
-              setLoading(true);
-              setError(null);
-              try {
-                const res = await fetch("/api/snapshots/take", {
-                  method: "POST",
-                  headers: { "content-type": "application/json" },
-                  body: JSON.stringify({ day }),
-                });
-                const json = await res.json();
-                if (!res.ok) throw new Error(json?.error || "Kunne ikke tage snapshot");
-                await refresh();
-              } catch (e: unknown) {
-                setError(e instanceof Error ? e.message : "Fejl");
-              } finally {
-                setLoading(false);
-              }
-            }}
-          >
-            {loading ? "Arbejder…" : "Tag snapshot"}
-          </button>
+          {error && <div className="mt-3 text-sm text-red-600">{error}</div>}
+        </CardBody>
+      </Card>
 
-          <button className="rounded-md border px-3 py-2" onClick={refresh}>
-            Refresh
-          </button>
-        </div>
-
-        <p className="text-xs text-neutral-500">
-          Snapshot læses lokalt fra <code>C:/Users/mads_/Garmin/data/garmin-YYYY-MM-DD.json</code>
-          (via server route) og gemmes i DB hvis tilgængelig, ellers i <code>.local-data</code>.
-        </p>
-
-        {error && <div className="text-sm text-red-600">{error}</div>}
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="rounded-xl border p-4">
-          <h2 className="font-semibold">Liste</h2>
-          <div className="mt-3 space-y-2">
-            {items.length === 0 ? (
-              <div className="text-sm text-neutral-500">Ingen snapshots endnu.</div>
-            ) : (
-              items.map((x) => (
-                <div key={x.id} className="text-sm flex items-center justify-between">
-                  <div>{fmtTime(x.takenAt)}</div>
-                  <div className="text-neutral-600">Steps: {x.steps ?? "-"}</div>
+      <div className="grid gap-4 lg:grid-cols-12">
+        <Card className="lg:col-span-6">
+          <CardHeader title="Liste" description="Tidsstempler (lokal tid)." />
+          <CardBody>
+            <div className="space-y-2">
+              {items.length === 0 ? (
+                <div className="text-sm text-neutral-600 dark:text-neutral-300">
+                  Ingen snapshots endnu.
                 </div>
-              ))
-            )}
-          </div>
-        </div>
+              ) : (
+                items.map((x) => (
+                  <div key={x.id} className="flex items-center justify-between text-sm">
+                    <div className="text-neutral-800 dark:text-neutral-100">
+                      {fmtTime(x.takenAt)}
+                    </div>
+                    <div className="text-neutral-600 dark:text-neutral-300">
+                      Steps: {x.steps ?? "—"}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </CardBody>
+        </Card>
 
-        <div className="rounded-xl border p-4">
-          <h2 className="font-semibold">Delta</h2>
-          <div className="mt-3 space-y-2">
-            {deltas.length === 0 ? (
-              <div className="text-sm text-neutral-500">Tag mindst 2 snapshots.</div>
-            ) : (
-              deltas.map((d) => (
-                <div key={d.b.id} className="text-sm flex items-center justify-between">
-                  <div>
-                    {fmtTime(d.a.takenAt)} → {fmtTime(d.b.takenAt)}
-                  </div>
-                  <div className="text-neutral-600">
-                    Δ steps: {d.dSteps ?? "-"}
-                  </div>
+        <Card className="lg:col-span-6">
+          <CardHeader title="Delta" description="Udvikling mellem snapshots." />
+          <CardBody>
+            <div className="space-y-2">
+              {deltas.length === 0 ? (
+                <div className="text-sm text-neutral-600 dark:text-neutral-300">
+                  Tag mindst 2 snapshots.
                 </div>
-              ))
-            )}
-          </div>
-        </div>
+              ) : (
+                deltas.map((d) => (
+                  <div key={d.b.id} className="flex items-center justify-between text-sm">
+                    <div className="text-neutral-800 dark:text-neutral-100">
+                      {fmtTime(d.a.takenAt)} → {fmtTime(d.b.takenAt)}
+                    </div>
+                    <div className="text-neutral-600 dark:text-neutral-300">
+                      Δ steps: {d.dSteps ?? "—"}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </CardBody>
+        </Card>
       </div>
     </div>
   );

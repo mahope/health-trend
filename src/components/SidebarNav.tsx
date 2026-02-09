@@ -7,6 +7,7 @@ import { cn } from "@/lib/cn";
 const nav = [
   { href: "/", label: "Dashboard" },
   { href: "/snapshots", label: "Snapshots" },
+  { href: "/alerts", label: "Alerts" },
   { href: "/garmin", label: "Garmin" },
   { href: "/settings", label: "Settings" },
 ] as const;
