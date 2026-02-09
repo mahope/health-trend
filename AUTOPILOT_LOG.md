@@ -81,3 +81,8 @@ Autopilot writes short entries here.
 - Changed: Added empty state + CTA in Trends charts when there’s no data yet (links to “Snapshots” section). Added `id="snapshots"` anchor on dashboard.
 - Commit: e01f307
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 00:40 (Europe/Copenhagen)
+- Changed: Improved first-run empty states: AI brief card now guides snapshot/manual first with CTAs; Activities card now has a clearer “Tag snapshot” CTA. Also deferred heavy Recharts trends charts into a lazy-loaded client boundary (`DashboardBelowFold`) for faster initial render. Marked backlog perf item as done.
+- Commit: c4b50ac
+- Tests: `npm run lint` ✅, `npm run build` ✅
