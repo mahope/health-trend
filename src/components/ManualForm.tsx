@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { TogglePill } from "@/components/ui/TogglePill";
 import { cn } from "@/lib/cn";
+import { useToast } from "@/components/ToastProvider";
 
 type Manual = {
   day: string;
@@ -19,6 +20,8 @@ export function ManualForm({ day }: { day: string }) {
   const [item, setItem] = useState<Manual | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
+  const lastOkToastAt = useRef(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -61,8 +64,17 @@ export function ManualForm({ day }: { day: string }) {
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error || "Kunne ikke gemme");
       setItem(json.item);
+
+      // Success feedback (rate-limited, because we autosave a lot)
+      const now = Date.now();
+      if (now - lastOkToastAt.current > 15000) {
+        lastOkToastAt.current = now;
+        toast({ title: "Gemt ✓", kind: "success", vibrateMs: 8 });
+      }
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Fejl");
+      const msg = e instanceof Error ? e.message : "Fejl";
+      setError(msg);
+      toast({ title: msg, kind: "error", vibrateMs: 35 });
     } finally {
       setSaving(false);
     }
