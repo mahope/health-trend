@@ -43,11 +43,18 @@ function pickPrev(snaps: Snapshot[], latest: Snapshot): Snapshot | null {
   return sorted[idx + 1] ?? null;
 }
 
+type TakeSnapshotError = {
+  code?: string;
+  message: string;
+  file?: string;
+  hint?: string;
+};
+
 export function LatestSnapshotCard({ day }: { day: string }) {
   const [snapsToday, setSnapsToday] = useState<Snapshot[] | null>(null);
   const [snapsYesterday, setSnapsYesterday] = useState<Snapshot[] | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<TakeSnapshotError | null>(null);
 
   const yday = useMemo(() => addDaysYmd(day, -1), [day]);
 
@@ -73,7 +80,8 @@ export function LatestSnapshotCard({ day }: { day: string }) {
           setSnapsYesterday(bJson.snapshots ?? []);
         }
       } catch (e: unknown) {
-        if (!cancelled) setError(e instanceof Error ? e.message : "Ukendt fejl");
+        if (!cancelled)
+          setError({ message: e instanceof Error ? e.message : "Ukendt fejl" });
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -91,6 +99,52 @@ export function LatestSnapshotCard({ day }: { day: string }) {
     return { latest, prev };
   }, [snapsToday, snapsYesterday]);
 
+  const takeSnapshot = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/snapshots/take", { method: "POST" });
+      const json = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        error?: string;
+        file?: string;
+        hint?: string;
+      };
+
+      if (!res.ok) {
+        if (json?.error === "missing_garmin_file") {
+          setError({
+            code: json.error,
+            message: "Mangler Garmin-fil til i dag.",
+            file: json.file,
+            hint: json.hint,
+          });
+          return;
+        }
+        setError({ message: json?.error || "Kunne ikke tage snapshot" });
+        return;
+      }
+
+      // Re-fetch
+      const [a, b] = await Promise.all([
+        fetch(`/api/snapshots/list?day=${encodeURIComponent(day)}`, {
+          cache: "no-store",
+        }),
+        fetch(`/api/snapshots/list?day=${encodeURIComponent(yday)}`, {
+          cache: "no-store",
+        }),
+      ]);
+      const aJson = (await a.json()) as { snapshots?: Snapshot[] };
+      const bJson = (await b.json()) as { snapshots?: Snapshot[] };
+      setSnapsToday(aJson.snapshots ?? []);
+      setSnapsYesterday(bJson.snapshots ?? []);
+    } catch (e: unknown) {
+      setError({ message: e instanceof Error ? e.message : "Kunne ikke tage snapshot" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-3">
@@ -103,48 +157,41 @@ export function LatestSnapshotCard({ day }: { day: string }) {
           </div>
         </div>
 
-        <Button
-          size="sm"
-          disabled={loading}
-          onClick={async () => {
-            setLoading(true);
-            setError(null);
-            try {
-              const res = await fetch("/api/snapshots/take", { method: "POST" });
-              const json = (await res.json()) as { ok?: boolean; error?: string };
-              if (!res.ok) throw new Error(json.error || "Kunne ikke tage snapshot");
-
-              // Re-fetch
-              const [a, b] = await Promise.all([
-                fetch(`/api/snapshots/list?day=${encodeURIComponent(day)}`, {
-                  cache: "no-store",
-                }),
-                fetch(`/api/snapshots/list?day=${encodeURIComponent(yday)}`, {
-                  cache: "no-store",
-                }),
-              ]);
-              const aJson = (await a.json()) as { snapshots?: Snapshot[] };
-              const bJson = (await b.json()) as { snapshots?: Snapshot[] };
-              setSnapsToday(aJson.snapshots ?? []);
-              setSnapsYesterday(bJson.snapshots ?? []);
-            } catch (e: unknown) {
-              setError(e instanceof Error ? e.message : "Kunne ikke tage snapshot");
-            } finally {
-              setLoading(false);
-            }
-          }}
-        >
+        <Button size="sm" disabled={loading} onClick={takeSnapshot}>
           {loading ? "Arbejder…" : "Tag snapshot"}
         </Button>
       </div>
 
-      {error && <div className="text-sm text-red-600">{error}</div>}
+      {error && (
+        <div className="rounded-2xl border border-red-500/20 bg-red-50/60 p-4 text-sm text-red-800 dark:border-red-400/20 dark:bg-red-950/30 dark:text-red-200">
+          <div className="font-medium">{error.message}</div>
+          {(error.hint || error.file) && (
+            <div className="mt-1 text-xs text-red-700/90 dark:text-red-200/80">
+              {error.hint ? <div>{error.hint}</div> : null}
+              {error.file ? (
+                <div>
+                  Fil: <code className="break-all">{error.file}</code>
+                </div>
+              ) : null}
+            </div>
+          )}
+        </div>
+      )}
 
       {!latest && !loading && (
         <div className="rounded-2xl border border-dashed border-black/15 bg-white/40 p-5 text-sm text-neutral-700 dark:border-white/15 dark:bg-black/15 dark:text-neutral-200">
           <div className="font-medium">Ingen snapshots endnu</div>
           <div className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
-            Klik “Tag snapshot” — den læser din lokale <code>garmin-YYYY-MM-DD.json</code>.
+            For at komme i gang skal der ligge en Garmin eksport for i dag (fx <code>garmin-YYYY-MM-DD.json</code>).
+          </div>
+
+          <div className="mt-4 grid gap-2">
+            <Button variant="primary" disabled={loading} onClick={takeSnapshot}>
+              {loading ? "Arbejder…" : "Tag første snapshot"}
+            </Button>
+            <div className="text-xs text-neutral-500 dark:text-neutral-400">
+              Tip: Hvis den fejler, får du en sti/hint herover (manglende fil).
+            </div>
           </div>
         </div>
       )}
