@@ -26,3 +26,8 @@ Autopilot writes short entries here.
 - Changed: Included profile context (sex/pregnant/cycleDay + derived cyclePhase) in the AI day plan prompt payload + instruction tweak to mention cycle variation only when relevant. Marked backlog item as done.
 - Commit: 621c1a4
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-09 22:52 (Europe/Copenhagen)
+- Changed: Included profile context (sex/pregnant/cycleDay + derived cyclePhase) in the AI weekly report prompt payload + instruction tweak to mention cycle variation only when relevant. Marked backlog item as done.
+- Commit: ad6d91b
+- Tests: `npm run lint` ✅, `npm run build` ✅
