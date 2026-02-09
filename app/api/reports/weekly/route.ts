@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/serverAuth";
 import { prisma } from "@/lib/prisma";
 import { addDaysYmd, ymd } from "@/lib/date";
 import { openaiJson } from "@/lib/openai";
+import { cyclePhaseFromDay } from "@/lib/aiBrief";
 
 function avg(nums: Array<number | null | undefined>) {
   const xs = nums.filter((n): n is number => typeof n === "number" && Number.isFinite(n));
@@ -40,6 +41,11 @@ export async function GET(req: Request) {
     select: { day: true, symptomScore: true, caffeineCups: true, alcoholUnits: true, trained: true },
   });
 
+  const profile = await prisma.userProfile.findUnique({
+    where: { userId: user.id },
+    select: { sex: true, pregnant: true, cycleDay: true },
+  });
+
   const summary = {
     window: { startDay, endDay, days: 7 },
     averages: {
@@ -63,8 +69,18 @@ export async function GET(req: Request) {
     ai = await openaiJson(
       JSON.stringify({
         instruction:
-          "Lav en kort ugereview på dansk baseret på data. Vær konkret og jordnær. Output som JSON med felter: headline, wins (array), risks (array), focusNextWeek (array), oneSmallHabit (string).",
-        data: summary,
+          "Lav en kort ugereview på dansk baseret på data. Vær konkret og jordnær. Brug profil-kontekst (sex, evt graviditet, cycleDay/cyclePhase) når du vurderer signaler og forslag. Nævn cyklus-variation kun hvis relevant. Output som JSON med felter: headline, wins (array), risks (array), focusNextWeek (array), oneSmallHabit (string).",
+        data: {
+          ...summary,
+          profile: profile
+            ? {
+                sex: profile.sex,
+                pregnant: profile.pregnant,
+                cycleDay: profile.cycleDay,
+                cyclePhase: cyclePhaseFromDay(profile.cycleDay),
+              }
+            : null,
+        },
       }),
     );
   }
