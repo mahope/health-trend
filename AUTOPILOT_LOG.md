@@ -61,3 +61,8 @@ Autopilot writes short entries here.
 - Changed: Added toasts + haptics feedback for snapshot/brief actions on `/snapshots`, `AiBriefCard`, and the mobile action bar (replaces `alert()` with toasts). Marked backlog item as done.
 - Commit: 7b092a5
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 00:01 (Europe/Copenhagen)
+- Changed: Manual form now shows inline autosave status: "Gemmer…" while saving and "Gemt ✓" briefly after successful autosave (in addition to rate-limited toast). Marked backlog item as done.
+- Commit: 98af5d3
+- Tests: `npm run lint` ✅, `npm run build` ✅
