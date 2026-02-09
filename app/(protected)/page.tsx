@@ -5,9 +5,7 @@ import { ymd } from "@/lib/date";
 import { ManualForm } from "@/components/ManualForm";
 import { AiBriefCard } from "@/components/AiBriefCard";
 import { LatestSnapshotCard } from "@/components/LatestSnapshotCard";
-import { TrendsCharts } from "@/components/TrendsCharts";
-import { ActivitiesCard } from "@/components/ActivitiesCard";
-import { DayPlanCard } from "@/components/DayPlanCard";
+import { DashboardBelowFold } from "@/components/DashboardBelowFold";
 import { MobileActionBar } from "@/components/MobileActionBar";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { PageHeader } from "@/components/PageHeader";
@@ -79,15 +77,7 @@ export default async function DashboardPage() {
 
       <div id="manual" />
 
-      <div className="grid gap-4 lg:grid-cols-12">
-        <div className="lg:col-span-8">
-          <TrendsCharts days={14} />
-        </div>
-        <div className="lg:col-span-4 space-y-4">
-          <DayPlanCard />
-          <ActivitiesCard limit={10} />
-        </div>
-      </div>
+      <DashboardBelowFold days={14} />
     </div>
   );
 }

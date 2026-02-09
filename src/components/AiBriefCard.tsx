@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { useToast } from "@/components/ToastProvider";
@@ -202,8 +203,26 @@ export function AiBriefCard({ day }: { day: string }) {
           ) : null}
         </div>
       ) : (
-        <div className="rounded-2xl border border-dashed border-black/15 bg-white/40 p-5 text-sm text-neutral-600 dark:border-white/15 dark:bg-black/15 dark:text-neutral-300">
-          Ingen brief endnu. Klik “Generér brief” (kræver <code>OPENAI_API_KEY</code>).
+        <div className="rounded-2xl border border-dashed border-black/15 bg-white/40 p-5 text-sm text-neutral-700 dark:border-white/15 dark:bg-black/15 dark:text-neutral-200">
+          <div className="font-medium">Ingen brief endnu</div>
+          <div className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
+            Start med et snapshot + evt. lidt manual-kontekst — og generér så en brief. (Kræver <code>OPENAI_API_KEY</code>.)
+          </div>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Link
+              href="#snapshots"
+              className="inline-flex h-9 items-center justify-center rounded-lg bg-black px-3 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:bg-white dark:text-black dark:hover:bg-white/90 dark:focus-visible:ring-white/20"
+            >
+              Tag snapshot
+            </Link>
+            <Link
+              href="#manual"
+              className="inline-flex h-9 items-center justify-center rounded-lg border border-black/10 bg-white px-3 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:border-white/10 dark:bg-black/30 dark:text-neutral-100 dark:hover:bg-black/45 dark:focus-visible:ring-white/20"
+            >
+              Udfyld manual
+            </Link>
+          </div>
         </div>
       )}
 

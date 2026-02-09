@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 
 type Activity = {
@@ -48,18 +49,31 @@ export function ActivitiesCard({ limit = 10 }: { limit?: number }) {
         title="Aktiviteter"
         description={`Seneste ${limit} (fra snapshots).`}
         right={
-          <a
+          <Link
             className="text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white"
             href="/activities"
           >
             Se alle
-          </a>
+          </Link>
         }
       />
       <CardBody>
         {error && <div className="text-sm text-red-600">{error}</div>}
         {items.length === 0 ? (
-          <div className="text-sm text-neutral-600 dark:text-neutral-300">Ingen aktiviteter fundet endnu.</div>
+          <div className="rounded-2xl border border-dashed border-black/15 bg-white/40 p-5 text-sm text-neutral-700 dark:border-white/15 dark:bg-black/15 dark:text-neutral-200">
+            <div className="font-medium">Ingen aktiviteter endnu</div>
+            <div className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
+              Aktiviteter kommer fra dine snapshots (Garmin eksport). Tag dit første snapshot for at begynde at se dem.
+            </div>
+            <div className="mt-4">
+              <Link
+                href="#snapshots"
+                className="inline-flex h-9 items-center justify-center rounded-lg bg-black px-3 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:bg-white dark:text-black dark:hover:bg-white/90 dark:focus-visible:ring-white/20"
+              >
+                Tag snapshot
+              </Link>
+            </div>
+          </div>
         ) : (
           <>
             {/* Mobile: show only first 3 */}
@@ -77,9 +91,9 @@ export function ActivitiesCard({ limit = 10 }: { limit?: number }) {
               ))}
               {items.length > 3 ? (
                 <div className="py-3">
-                  <a className="text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white" href="/activities">
+                  <Link className="text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white" href="/activities">
                     Se alle aktiviteter →
-                  </a>
+                  </Link>
                 </div>
               ) : null}
             </div>
