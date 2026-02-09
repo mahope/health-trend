@@ -24,8 +24,13 @@ Copy `.env.example` to `.env` and fill:
 - `DATABASE_URL`
 - `BETTER_AUTH_SECRET`
 - `BETTER_AUTH_BASE_URL`
+- `NEXT_PUBLIC_APP_URL`
 - `ENCRYPTION_KEY`
 - `OPENAI_API_KEY`
+- `CRON_SECRET` (required in prod)
+
+## Deployment
+See `README_DEPLOY.md` (Dokploy checklist + cron setup).
 
 ## Notes
 - Garmin tokens will be stored encrypted at rest using `ENCRYPTION_KEY`.

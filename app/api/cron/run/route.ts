@@ -3,27 +3,38 @@ import { prisma } from "@/lib/prisma";
 import { getStore } from "@/lib/store";
 import { pickMetrics, readGarminJsonForDay, todayCph } from "@/lib/garminLocal";
 import { generateAiBriefForUser } from "@/lib/aiBrief";
+import { getClientIp, rateLimit } from "@/lib/rateLimit";
 
-function isAuthorized(req: Request): boolean {
+function isAuthorized(req: Request): { ok: true } | { ok: false; reason: string } {
   const secret = process.env.CRON_SECRET;
+  if (!secret) return { ok: false, reason: "missing_cron_secret" };
 
-  // Dev convenience: allow calling without secret locally.
-  if (!secret && process.env.NODE_ENV !== "production") return true;
-  if (!secret) return false;
-
+  // Preferred: header
   const header = req.headers.get("x-cron-secret") || "";
-  if (header && header === secret) return true;
+  if (header && header === secret) return { ok: true };
 
+  // Fallback: query param
   const url = new URL(req.url);
   const q = url.searchParams.get("secret") || "";
-  if (q && q === secret) return true;
+  if (q && q === secret) return { ok: true };
 
-  return false;
+  return { ok: false, reason: "bad_secret" };
 }
 
 export async function POST(req: Request) {
-  if (!isAuthorized(req)) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  // Basic abuse guard. Note: in-memory per runtime, but good enough as a first line of defense.
+  const ip = getClientIp(req);
+  const rl = rateLimit({ key: `cron:${ip}`, windowMs: 60_000, max: 10 });
+  if (!rl.ok) {
+    return NextResponse.json(
+      { error: "rate_limited", retryAfterSeconds: rl.retryAfterSeconds },
+      { status: 429, headers: { "retry-after": String(rl.retryAfterSeconds) } },
+    );
+  }
+
+  const auth = isAuthorized(req);
+  if (!auth.ok) {
+    return NextResponse.json({ error: "unauthorized", reason: auth.reason }, { status: 401 });
   }
 
   const url = new URL(req.url);
