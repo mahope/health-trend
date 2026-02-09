@@ -9,6 +9,10 @@ function avg(nums: Array<number | null | undefined>): number | null {
 }
 
 export async function generateAiBriefForUser(userId: string, day: string) {
+  const profile = await prisma.userProfile.findUnique({
+    where: { userId },
+  });
+
   const manual = await prisma.manualDaily.findUnique({
     where: { userId_day: { userId, day } },
   });
@@ -44,6 +48,13 @@ export async function generateAiBriefForUser(userId: string, day: string) {
 
   const prompt = {
     day,
+    profile: profile
+      ? {
+          sex: profile.sex,
+          pregnant: profile.pregnant,
+          cycleDay: profile.cycleDay,
+        }
+      : null,
     manual,
     snapshots: snapshotsToday.map((s) => ({
       takenAt: s.takenAt.toISOString(),
@@ -70,7 +81,8 @@ export async function generateAiBriefForUser(userId: string, day: string) {
   };
 
   const ai = await openaiJson(
-    `Opgave: Lav et sygdom/overbelastnings-brief for i dag (${day}).\n\n` +
+    `Opgave: Lav et sygdom/overbelastnings-brief for i dag (${day}).\n` +
+      `Tag højde for profil-kontekst (sex, evt graviditet, cycleDay) når du vurderer signaler og forslag.\n\n` +
       `Returnér JSON med præcis denne struktur:\n` +
       `{\n  "risk": "OK"|"LOW"|"MED"|"HIGH",\n  "short": string,\n  "signals": [{"name": string, "value": string, "why": string}],\n  "suggestions": [{"title": string, "detail": string}]\n}\n\n` +
       `Data (JSON):\n` +
