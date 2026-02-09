@@ -12,3 +12,12 @@ Autopilot writes short entries here.
 - Commit: 774800b
 - Tests: `npm run lint` ✅, `npm run build` ✅
 
+## 2026-02-09 22:20 (Europe/Copenhagen)
+- Changed: Included profile context (sex/pregnant/cycleDay) in the AI daily brief prompt payload + instruction so the model can adjust interpretation/suggestions.
+- Commit: 2c5a764
+- Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-09 22:30 (Europe/Copenhagen)
+- Changed: Added a simple `cyclePhase` (rough heuristic) to the AI brief prompt payload + tweaked prompt instruction to consider cycle phase for interpretation.
+- Commit: ad42127
+- Tests: `npm run lint` ✅, `npm run build` ✅
