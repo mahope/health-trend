@@ -5,6 +5,7 @@ import { useState } from "react";
 import { SidebarNav } from "@/components/SidebarNav";
 import { MobileNav } from "@/components/MobileNav";
 import { MobileUiProvider } from "@/components/MobileUiContext";
+import { UserMenu } from "@/components/UserMenu";
 
 function titleForPath(path: string): { title: string; subtitle: string } {
   if (path === "/") return { title: "Dashboard", subtitle: "Din sundheds-stream, destilleret." };
@@ -41,8 +42,8 @@ export function AppShell({
       <div className="min-h-screen">
         <MobileNav open={menuOpen} onClose={() => setMenuOpen(false)} userEmail={userEmail} />
       <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-b from-neutral-50 via-white to-white dark:from-neutral-950 dark:via-black dark:to-black" />
-        <div className="absolute -top-24 left-1/2 h-72 w-[46rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-emerald-500/15 via-sky-500/10 to-fuchsia-500/10 blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white via-white to-white dark:from-neutral-950 dark:via-black dark:to-black" />
+        <div className="absolute -top-24 left-1/2 h-72 w-[46rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-emerald-500/10 via-sky-500/8 to-fuchsia-500/8 blur-3xl" />
       </div>
 
       <div className="mx-auto flex max-w-6xl gap-6 px-4 py-5 pb-24 md:px-6 md:pb-5">
@@ -65,7 +66,7 @@ export function AppShell({
         {/* Main */}
         <div className="min-w-0 flex-1">
           {/* Topbar */}
-          <div className="mb-6 flex items-center justify-between gap-4">
+          <div className="mb-4 flex items-center justify-between gap-4">
             <div className="flex items-start gap-3">
               <button
                 className="md:hidden mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-black/10 bg-white/60 text-neutral-900 shadow-sm dark:border-white/10 dark:bg-black/20 dark:text-neutral-100"
@@ -83,7 +84,9 @@ export function AppShell({
               </div>
             </div>
 
-            <div className="md:hidden text-xs text-neutral-500 dark:text-neutral-400">{userEmail}</div>
+            <div className="flex items-center gap-2">
+              <UserMenu userEmail={userEmail} />
+            </div>
           </div>
 
           {children}
