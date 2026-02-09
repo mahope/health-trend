@@ -48,7 +48,13 @@ model UserProfile {
 
   // Optional female-specific context
   pregnant Boolean @default(false)
+
+  // Simple cycle tracking (optional)
+  // - cycleDay can be set manually OR computed client-side from lastPeriodStart + cycleLengthDays
   cycleDay Int?
+  lastPeriodStart DateTime?
+  cycleLengthDays Int?
+  cycleSymptoms Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

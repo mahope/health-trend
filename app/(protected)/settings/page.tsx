@@ -20,6 +20,9 @@ export default function SettingsPage() {
   const [sex, setSex] = useState<"male" | "female">("male");
   const [pregnant, setPregnant] = useState(false);
   const [cycleDay, setCycleDay] = useState<string>("");
+  const [lastPeriodStart, setLastPeriodStart] = useState<string>(""); // YYYY-MM-DD
+  const [cycleLengthDays, setCycleLengthDays] = useState<string>("28");
+  const [cycleSymptoms, setCycleSymptoms] = useState<string[]>([]);
   const [contextLoading, setContextLoading] = useState(false);
   const [contextSaving, setContextSaving] = useState(false);
 
@@ -30,6 +33,19 @@ export default function SettingsPage() {
   const [verifying, setVerifying] = useState(false);
 
   const safeTotpURI = useMemo(() => totpURI?.trim() ?? null, [totpURI]);
+
+  const computedCycleDay = useMemo(() => {
+    if (sex !== "female") return null;
+    if (!lastPeriodStart) return null;
+    const start = new Date(`${lastPeriodStart}T00:00:00.000Z`).getTime();
+    if (Number.isNaN(start)) return null;
+    const now = Date.now();
+    const diffDays = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+    if (diffDays < 0) return null;
+    const len = Number(cycleLengthDays) || 28;
+    const safeLen = Math.max(20, Math.min(45, Math.round(len)));
+    return (diffDays % safeLen) + 1;
+  }, [sex, lastPeriodStart, cycleLengthDays]);
 
   useEffect(() => {
     let cancelled = false;
@@ -79,11 +95,25 @@ export default function SettingsPage() {
       setContextLoading(true);
       try {
         const res = await fetch("/api/profile/context", { cache: "no-store" });
-        const json = (await res.json()) as { profile?: { sex: "male" | "female"; pregnant: boolean; cycleDay: number | null } };
+        const json = (await res.json()) as {
+          profile?: {
+            sex: "male" | "female";
+            pregnant: boolean;
+            cycleDay: number | null;
+            lastPeriodStart: string | null;
+            cycleLengthDays: number | null;
+            cycleSymptoms: unknown;
+          };
+        };
         if (res.ok && json.profile && !cancelled) {
           setSex(json.profile.sex);
           setPregnant(Boolean(json.profile.pregnant));
           setCycleDay(json.profile.cycleDay ? String(json.profile.cycleDay) : "");
+          setLastPeriodStart(json.profile.lastPeriodStart ? json.profile.lastPeriodStart.slice(0, 10) : "");
+          setCycleLengthDays(
+            json.profile.cycleLengthDays ? String(json.profile.cycleLengthDays) : "28",
+          );
+          setCycleSymptoms(Array.isArray(json.profile.cycleSymptoms) ? (json.profile.cycleSymptoms as string[]) : []);
         }
       } finally {
         if (!cancelled) setContextLoading(false);
@@ -203,8 +233,67 @@ export default function SettingsPage() {
                   disabled={contextLoading || contextSaving}
                   onChange={(e) => setCycleDay(e.target.value.replace(/\D/g, ""))}
                 />
-                <div className="mt-1 text-xs text-neutral-500">1–40. Tom = ukendt.</div>
+                <div className="mt-1 text-xs text-neutral-500">
+                  1–40. Tom = ukendt.
+                  {computedCycleDay ? ` (beregnet: dag ${computedCycleDay})` : ""}
+                </div>
               </label>
+
+              <label className="text-sm">
+                <div className="text-xs text-neutral-500">Sidste menstruationsstart (valgfri)</div>
+                <input
+                  className="w-full rounded-md border px-3 py-2"
+                  type="date"
+                  value={lastPeriodStart}
+                  disabled={contextLoading || contextSaving}
+                  onChange={(e) => setLastPeriodStart(e.target.value)}
+                />
+              </label>
+
+              <label className="text-sm">
+                <div className="text-xs text-neutral-500">Cykellængde (dage, estimat)</div>
+                <input
+                  className="w-full rounded-md border px-3 py-2"
+                  inputMode="numeric"
+                  placeholder="fx 28"
+                  value={cycleLengthDays}
+                  disabled={contextLoading || contextSaving}
+                  onChange={(e) => setCycleLengthDays(e.target.value.replace(/\D/g, ""))}
+                />
+                <div className="mt-1 text-xs text-neutral-500">20–45. Bruges til beregning hvis cyklusdag er tom.</div>
+              </label>
+
+              <div className="space-y-2">
+                <div className="text-xs text-neutral-500">Typiske symptomer (valgfri)</div>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  {[
+                    ["cramps", "Kramper"],
+                    ["headache", "Hovedpine"],
+                    ["bloating", "Oppustet"],
+                    ["breastTenderness", "Ømme bryster"],
+                    ["acne", "Akne"],
+                    ["mood", "Humør"],
+                    ["fatigue", "Træthed"],
+                  ].map(([key, label]) => (
+                    <label key={key} className="inline-flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={cycleSymptoms.includes(key)}
+                        disabled={contextLoading || contextSaving}
+                        onChange={(e) => {
+                          setCycleSymptoms((prev) => {
+                            const next = new Set(prev);
+                            if (e.target.checked) next.add(key);
+                            else next.delete(key);
+                            return Array.from(next);
+                          });
+                        }}
+                      />
+                      {label}
+                    </label>
+                  ))}
+                </div>
+              </div>
             </>
           ) : null}
 
@@ -222,6 +311,10 @@ export default function SettingsPage() {
                     sex,
                     pregnant,
                     cycleDay: sex === "female" && cycleDay ? Number(cycleDay) : null,
+                    lastPeriodStart: sex === "female" && lastPeriodStart ? lastPeriodStart : null,
+                    cycleLengthDays:
+                      sex === "female" && cycleLengthDays ? Number(cycleLengthDays) : null,
+                    cycleSymptoms: sex === "female" ? cycleSymptoms : [],
                   }),
                 });
                 const json = await res.json();

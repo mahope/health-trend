@@ -13,7 +13,7 @@
 - [x] Sex + cycle context used in AI prompts (brief)
 - [x] Sex + cycle context used in AI prompts (day plan)
 - [x] Sex + cycle context used in AI prompts (weekly report)
-- [ ] Cycle tracking UI (period start, cycle length estimate, symptoms)
+- [x] Cycle tracking UI (period start, cycle length estimate, symptoms)
 
 ### Data hygiene
 - [ ] Delete snapshots (done ✅) + undo within 30s (optional)
