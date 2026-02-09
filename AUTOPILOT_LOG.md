@@ -46,3 +46,8 @@ Autopilot writes short entries here.
 - Changed: When a snapshot is deleted, the cached AI brief for that day is now best-effort recomputed (if AI is configured). If recompute fails, the brief cache is cleared to avoid showing stale data. Marked backlog item as done.
 - Commit: 21f709d
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-09 23:30 (Europe/Copenhagen)
+- Changed: Wired existing toast+haptics system into Settings save flows (goals + context) + 2FA enable/verify for quick mobile feedback.
+- Commit: ec107b5
+- Tests: npm run lint ✅, npm run build ✅
