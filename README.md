@@ -22,10 +22,12 @@ Health Trend is a small self-hosted health dashboard:
 ## Env
 Copy `.env.example` to `.env` and fill:
 - `DATABASE_URL`
-- `APP_SECRET`
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_BASE_URL`
 - `ENCRYPTION_KEY`
 - `OPENAI_API_KEY`
 
 ## Notes
 - Garmin tokens will be stored encrypted at rest using `ENCRYPTION_KEY`.
 - We avoid storing Garmin passwords long-term.
+- Login flow supports **2FA (TOTP)**.
