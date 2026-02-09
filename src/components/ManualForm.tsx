@@ -19,9 +19,11 @@ type Manual = {
 export function ManualForm({ day }: { day: string }) {
   const [item, setItem] = useState<Manual | null>(null);
   const [saving, setSaving] = useState(false);
+  const [justSaved, setJustSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const lastOkToastAt = useRef(0);
+  const justSavedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -54,6 +56,7 @@ export function ManualForm({ day }: { day: string }) {
     const next = { ...item, ...patch };
     setItem(next);
     setSaving(true);
+    setJustSaved(false);
     setError(null);
     try {
       const res = await fetch("/api/manual/upsert", {
@@ -65,7 +68,12 @@ export function ManualForm({ day }: { day: string }) {
       if (!res.ok) throw new Error(json?.error || "Kunne ikke gemme");
       setItem(json.item);
 
-      // Success feedback (rate-limited, because we autosave a lot)
+      // Inline autosave status
+      if (justSavedTimer.current) clearTimeout(justSavedTimer.current);
+      setJustSaved(true);
+      justSavedTimer.current = setTimeout(() => setJustSaved(false), 2500);
+
+      // Success toast (rate-limited, because we autosave a lot)
       const now = Date.now();
       if (now - lastOkToastAt.current > 15000) {
         lastOkToastAt.current = now;
@@ -79,6 +87,12 @@ export function ManualForm({ day }: { day: string }) {
       setSaving(false);
     }
   }
+
+  useEffect(() => {
+    return () => {
+      if (justSavedTimer.current) clearTimeout(justSavedTimer.current);
+    };
+  }, []);
 
   if (!item) {
     return <div className="text-sm text-neutral-500">Henter…</div>;
@@ -153,7 +167,7 @@ export function ManualForm({ day }: { day: string }) {
       </div>
 
       <div className="text-xs text-neutral-500 dark:text-neutral-400">
-        {saving ? "Gemmer…" : ""}
+        {saving ? "Gemmer…" : justSaved ? "Gemt ✓" : ""}
       </div>
     </div>
   );
