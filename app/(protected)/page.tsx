@@ -1,39 +1,52 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { ymd } from "@/lib/date";
+import { ManualForm } from "@/components/ManualForm";
+import { AiBriefCard } from "@/components/AiBriefCard";
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({ headers: await headers() });
+  const day = ymd(new Date());
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-semibold">Dashboard</h1>
         <p className="text-sm text-neutral-500 mt-1">
-          Logget ind som {session?.user.email}
+          {day} — logget ind som {session?.user.email}
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <section className="grid gap-4 md:grid-cols-2">
         <div className="rounded-xl border p-4">
-          <h2 className="font-semibold">Snapshots</h2>
+          <h2 className="font-semibold">Manual</h2>
           <p className="text-sm text-neutral-500 mt-1">
-            Kommer: morgen/middag/aften + delta-visning.
+            Hurtig kontekst til AI (symptomer/koffein/alkohol/noter).
           </p>
+          <div className="mt-4">
+            <ManualForm day={day} />
+          </div>
         </div>
+
         <div className="rounded-xl border p-4">
           <h2 className="font-semibold">AI brief</h2>
           <p className="text-sm text-neutral-500 mt-1">
-            Kommer: deterministiske flags + action card.
+            Generér “sygdom/overbelastning” baseret på snapshots + manual + baseline.
           </p>
+          <div className="mt-4">
+            <AiBriefCard day={day} />
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div className="rounded-xl border p-4">
-        <h2 className="font-semibold">Garmin</h2>
-        <p className="text-sm text-neutral-500 mt-1">
-          Kommer: Connect flow + token store (krypteret).
-        </p>
-      </div>
+      <section className="rounded-xl border p-4">
+        <h2 className="font-semibold">Næste MVP (UI)</h2>
+        <ul className="mt-2 text-sm text-neutral-600 list-disc pl-5 space-y-1">
+          <li>Vis snapshots på dashboard (seneste + delta)</li>
+          <li>Auto-generate AI brief morgen/aften</li>
+          <li>Notifikationer ved MED/HIGH</li>
+        </ul>
+      </section>
     </div>
   );
 }
