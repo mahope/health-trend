@@ -21,3 +21,8 @@ Autopilot writes short entries here.
 - Changed: Added a simple `cyclePhase` (rough heuristic) to the AI brief prompt payload + tweaked prompt instruction to consider cycle phase for interpretation.
 - Commit: ad42127
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-09 22:43 (Europe/Copenhagen)
+- Changed: Included profile context (sex/pregnant/cycleDay + derived cyclePhase) in the AI day plan prompt payload + instruction tweak to mention cycle variation only when relevant. Marked backlog item as done.
+- Commit: 621c1a4
+- Tests: `npm run lint` ✅, `npm run build` ✅
