@@ -71,3 +71,8 @@ Autopilot writes short entries here.
 - Changed: Added quick chips in Manual form for +1 koffein/+1 alkohol/+1 symptom (capped at 3) + a small “nulstil” action. Marked backlog item as done.
 - Commit: 02f73fc
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 00:22 (Europe/Copenhagen)
+- Changed: Improved first-run empty state for snapshots: added a clear “Tag første snapshot” CTA (mobile-friendly) + nicer error box that shows hint/file path when Garmin JSON is missing.
+- Commit: 5f6141f
+- Tests: `npm run lint` ✅, `npm run build` ✅
