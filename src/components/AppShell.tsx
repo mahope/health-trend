@@ -6,6 +6,7 @@ import { SidebarNav } from "@/components/SidebarNav";
 import { MobileNav } from "@/components/MobileNav";
 import { MobileUiProvider } from "@/components/MobileUiContext";
 import { UserMenu } from "@/components/UserMenu";
+import { PullToRefresh } from "@/components/PullToRefresh";
 
 function titleForPath(path: string): { title: string; subtitle: string } {
   if (path === "/") return { title: "Dashboard", subtitle: "Din sundheds-stream, destilleret." };
@@ -89,7 +90,7 @@ export function AppShell({
             </div>
           </div>
 
-          {children}
+          <PullToRefresh>{children}</PullToRefresh>
         </div>
       </div>
     </div>

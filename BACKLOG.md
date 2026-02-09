@@ -21,7 +21,7 @@
 ### Mobile UX
 1. Toasts/haptics for Snapshot/Brief/Save
 2. Manual autosave status (Gemmer… / Gemt ✓)
-3. Pull-to-refresh on mobile
+- [x] Pull-to-refresh on mobile
 4. “Quick chips” for manual (koffein +1, alkohol +1, symptom +1)
 5. Better empty states + CTA (first snapshot)
 6. Performance: defer heavy sections below fold
