@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { ymd } from "@/lib/date";
 import { ManualForm } from "@/components/ManualForm";
 import { AiBriefCard } from "@/components/AiBriefCard";
@@ -12,6 +13,8 @@ import { prisma } from "@/lib/prisma";
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) redirect("/login");
+
   const day = ymd(new Date());
 
   const brief = await prisma.aiBrief.findUnique({
