@@ -66,3 +66,8 @@ Autopilot writes short entries here.
 - Changed: Manual form now shows inline autosave status: "Gemmer…" while saving and "Gemt ✓" briefly after successful autosave (in addition to rate-limited toast). Marked backlog item as done.
 - Commit: 98af5d3
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 00:10 (Europe/Copenhagen)
+- Changed: Added quick chips in Manual form for +1 koffein/+1 alkohol/+1 symptom (capped at 3) + a small “nulstil” action. Marked backlog item as done.
+- Commit: 02f73fc
+- Tests: `npm run lint` ✅, `npm run build` ✅
