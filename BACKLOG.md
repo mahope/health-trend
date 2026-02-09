@@ -19,7 +19,7 @@
 - [x] Delete snapshots (done ✅) + undo within 30s (optional)
 - [x] “Recompute” day brief after deleting snapshots
 ### Mobile UX
-1. Toasts/haptics for Snapshot/Brief/Save
+1. [x] Toasts/haptics for Snapshot/Brief/Save
 2. Manual autosave status (Gemmer… / Gemt ✓)
 - [x] Pull-to-refresh on mobile
 4. “Quick chips” for manual (koffein +1, alkohol +1, symptom +1)

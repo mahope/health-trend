@@ -105,9 +105,12 @@ export default function SnapshotsPage() {
                     });
                     const json = await res.json();
                     if (!res.ok) throw new Error(json?.error || "Kunne ikke tage snapshot");
+                    toast({ title: "Snapshot taget ✓", kind: "success", vibrateMs: 12 });
                     await refresh();
                   } catch (e: unknown) {
-                    setError(e instanceof Error ? e.message : "Fejl");
+                    const msg = e instanceof Error ? e.message : "Fejl";
+                    setError(msg);
+                    toast({ title: msg, kind: "error", vibrateMs: 45 });
                   } finally {
                     setLoading(false);
                   }

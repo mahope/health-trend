@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { useMobileUi } from "@/components/MobileUiContext";
+import { useToast } from "@/components/ToastProvider";
 
 function cphYmd() {
   // Get YYYY-MM-DD in Europe/Copenhagen without pulling deps.
@@ -12,7 +13,16 @@ function cphYmd() {
 
 export function MobileActionBar({ manualAnchorId = "manual" }: { manualAnchorId?: string }) {
   const { openMenu } = useMobileUi();
+  const { toast } = useToast();
+  const lastToastAt = useRef(0);
   const [busy, setBusy] = useState<null | "snapshot" | "brief">(null);
+
+  function rateLimitedToast(next: Parameters<typeof toast>[0]) {
+    const now = Date.now();
+    if (now - lastToastAt.current < 1200) return;
+    lastToastAt.current = now;
+    toast(next);
+  }
 
   async function call(kind: "snapshot" | "brief") {
     const day = cphYmd();
@@ -24,12 +34,23 @@ export function MobileActionBar({ manualAnchorId = "manual" }: { manualAnchorId?
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ day }),
       });
-      const json = await res.json().catch(() => ({}));
+      const json = await res.json().catch(() => ({} as { error?: string }));
       if (!res.ok) throw new Error(json.error || "Fejl");
+
+      rateLimitedToast({
+        title: kind === "snapshot" ? "Snapshot taget ✓" : "Brief genereret ✓",
+        kind: "success",
+        vibrateMs: kind === "snapshot" ? 12 : 15,
+      });
+
       // Light refresh: reload current route.
       window.location.reload();
     } catch (e) {
-      alert(e instanceof Error ? e.message : "Fejl");
+      rateLimitedToast({
+        title: e instanceof Error ? e.message : "Fejl",
+        kind: "error",
+        vibrateMs: 45,
+      });
     } finally {
       setBusy(null);
     }

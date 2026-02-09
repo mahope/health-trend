@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { useToast } from "@/components/ToastProvider";
 import { cn } from "@/lib/cn";
 
 type Brief = {
@@ -22,6 +23,7 @@ function toneForRisk(risk: Brief["risk"]): "ok" | "low" | "med" | "high" {
 }
 
 export function AiBriefCard({ day }: { day: string }) {
+  const { toast } = useToast();
   const [item, setItem] = useState<Brief | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -64,8 +66,11 @@ export function AiBriefCard({ day }: { day: string }) {
               const json = await res.json();
               if (!res.ok) throw new Error(json?.error || "Kunne ikke lave brief");
               setItem(json.item);
+              toast({ title: "Brief genereret ✓", kind: "success", vibrateMs: 15 });
             } catch (e: unknown) {
-              setError(e instanceof Error ? e.message : "Fejl");
+              const msg = e instanceof Error ? e.message : "Fejl";
+              setError(msg);
+              toast({ title: msg, kind: "error", vibrateMs: 45 });
             } finally {
               setLoading(false);
             }
