@@ -37,6 +37,11 @@ function mapRisk(r: Item["risk"]) {
 export function TrendsCharts({ days = 14 }: { days?: number }) {
   const [items, setItems] = useState<Item[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -75,9 +80,10 @@ export function TrendsCharts({ days = 14 }: { days?: number }) {
         />
         <CardBody>
           {error ? <div className="text-sm text-red-600">{error}</div> : null}
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={data} margin={{ left: 8, right: 8, top: 10, bottom: 0 }}>
+          <div className="h-64 min-h-[256px]">
+            {mounted ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={data} margin={{ left: 8, right: 8, top: 10, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.25} />
                 <XAxis dataKey="dayShort" tick={{ fontSize: 12 }} />
                 <YAxis yAxisId="left" tick={{ fontSize: 12 }} />
@@ -112,6 +118,9 @@ export function TrendsCharts({ days = 14 }: { days?: number }) {
                 />
               </LineChart>
             </ResponsiveContainer>
+            ) : (
+              <div className="h-full w-full" />
+            )}
           </div>
         </CardBody>
       </Card>
@@ -119,9 +128,10 @@ export function TrendsCharts({ days = 14 }: { days?: number }) {
       <Card className="lg:col-span-4">
         <CardHeader title="Risk" description="AI brief risk score over tid." />
         <CardBody>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={data} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
+          <div className="h-64 min-h-[256px]">
+            {mounted ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={data} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.25} />
                 <XAxis dataKey="dayShort" tick={{ fontSize: 12 }} />
                 <YAxis domain={[0, 3]} ticks={[0, 1, 2, 3]} tick={{ fontSize: 12 }} />
@@ -137,6 +147,9 @@ export function TrendsCharts({ days = 14 }: { days?: number }) {
                 />
               </LineChart>
             </ResponsiveContainer>
+            ) : (
+              <div className="h-full w-full" />
+            )}
           </div>
           <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
             OK=0 · LOW=1 · MED=2 · HIGH=3
