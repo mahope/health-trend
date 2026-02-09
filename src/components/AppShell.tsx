@@ -1,12 +1,4 @@
-import Link from "next/link";
-import { cn } from "@/lib/cn";
-
-const nav = [
-  { href: "/", label: "Dashboard" },
-  { href: "/snapshots", label: "Snapshots" },
-  { href: "/garmin", label: "Garmin" },
-  { href: "/settings", label: "Settings" },
-] as const;
+import { SidebarNav } from "@/components/SidebarNav";
 
 export function AppShell({
   userEmail,
@@ -22,7 +14,7 @@ export function AppShell({
         <div className="absolute -top-24 left-1/2 h-72 w-[46rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-emerald-500/15 via-sky-500/10 to-fuchsia-500/10 blur-3xl" />
       </div>
 
-      <div className="mx-auto flex max-w-6xl gap-6 px-4 py-6 md:px-6">
+      <div className="mx-auto flex max-w-6xl gap-6 px-4 py-5 md:px-6">
         {/* Sidebar */}
         <aside className="hidden w-64 shrink-0 md:block">
           <div className="sticky top-6">
@@ -30,19 +22,7 @@ export function AppShell({
               <div className="text-sm font-semibold tracking-tight">Health Trend</div>
               <div className="mt-1 text-xs text-neutral-600 dark:text-neutral-300">{userEmail}</div>
 
-              <nav className="mt-4 grid gap-1">
-                {nav.map((n) => (
-                  <Link
-                    key={n.href}
-                    href={n.href}
-                    className={cn(
-                      "rounded-lg px-3 py-2 text-sm text-neutral-700 hover:bg-black/5 dark:text-neutral-200 dark:hover:bg-white/10",
-                    )}
-                  >
-                    {n.label}
-                  </Link>
-                ))}
-              </nav>
+              <SidebarNav />
 
               <div className="mt-4 text-xs text-neutral-500 dark:text-neutral-400">
                 SaaS-style MVP. Fokus: hurtige snapshots, manual kontekst og AI-brief.

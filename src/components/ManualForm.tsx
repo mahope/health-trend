@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/Input";
+import { TogglePill } from "@/components/ui/TogglePill";
 import { cn } from "@/lib/cn";
 
 type Manual = {
@@ -113,23 +114,17 @@ export function ManualForm({ day }: { day: string }) {
           />
         </div>
 
-        <div className="flex items-center gap-4 pt-6">
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={item.trained ?? false}
-              onChange={(e) => save({ trained: e.target.checked })}
-            />
-            Trænet
-          </label>
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={item.meds ?? false}
-              onChange={(e) => save({ meds: e.target.checked })}
-            />
-            Medicin
-          </label>
+        <div className="flex items-center gap-2 pt-6">
+          <TogglePill
+            label="Trænet"
+            checked={item.trained ?? false}
+            onChange={(next) => save({ trained: next })}
+          />
+          <TogglePill
+            label="Medicin"
+            checked={item.meds ?? false}
+            onChange={(next) => save({ meds: next })}
+          />
         </div>
       </div>
 

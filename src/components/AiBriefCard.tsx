@@ -52,7 +52,7 @@ export function AiBriefCard({ day }: { day: string }) {
             }
           }}
         >
-          {loading ? "Genererer…" : "Generér AI brief"}
+          {loading ? "Genererer…" : "Generér brief"}
         </Button>
 
         {item?.risk && <Badge tone={toneForRisk(item.risk)}>Risk: {item.risk}</Badge>}
