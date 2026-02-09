@@ -56,3 +56,8 @@ Autopilot writes short entries here.
 - Changed: Added mobile pull-to-refresh (coarse pointer/touch only) in `AppShell` using a lightweight `PullToRefresh` wrapper (shows a small top indicator + triggers `router.refresh()`). Marked backlog item as done.
 - Commit: 408cad3
 - Tests: npm run lint ✅, npm run build ✅
+
+## 2026-02-09 23:50 (Europe/Copenhagen)
+- Changed: Added toasts + haptics feedback for snapshot/brief actions on `/snapshots`, `AiBriefCard`, and the mobile action bar (replaces `alert()` with toasts). Marked backlog item as done.
+- Commit: 7b092a5
+- Tests: `npm run lint` ✅, `npm run build` ✅
