@@ -84,7 +84,7 @@ export default function SettingsPage() {
                   issuer,
                 });
                 if (res.error) {
-                  setError(res.error.message);
+                  setError(res.error.message || "Kunne ikke aktivere 2FA");
                 } else {
                   setTotpURI(res.data.totpURI);
                   setBackupCodes(res.data.backupCodes);
@@ -149,7 +149,7 @@ export default function SettingsPage() {
                       trustDevice: true,
                     });
                     if (res.error) {
-                      setError(res.error.message);
+                      setError(res.error.message || "Verificering fejlede");
                     } else {
                       window.location.reload();
                     }

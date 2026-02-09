@@ -52,7 +52,7 @@ export default function LoginPage() {
                   setError(null);
                   try {
                     const res = await authClient.signIn.email({ email, password });
-                    if (res.error) setError(res.error.message);
+                    if (res.error) setError(res.error.message || "Forkert email eller kodeord");
                     else window.location.href = "/";
                   } catch (e: unknown) {
                     setError(e instanceof Error ? e.message : "Login fejlede");

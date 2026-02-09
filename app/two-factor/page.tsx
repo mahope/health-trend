@@ -50,7 +50,7 @@ export default function TwoFactorPage() {
                   trustDevice,
                 });
                 if (res.error) {
-                  setError(res.error.message);
+                  setError(res.error.message || "Forkert kode");
                 } else {
                   window.location.href = "/";
                 }

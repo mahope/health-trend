@@ -62,19 +62,22 @@ export const fileStore: Store = {
 
   async getGarminStatus(userId: string) {
     try {
-      const meta = await readJson<Record<string, unknown> | null>(
+      const meta = await readJson<{ tokensUpdatedAt?: string; status?: string; lastError?: string | null } | null>(
         tokensMetaPath(userId),
         null,
       );
+
       const exists = await fs
         .stat(tokensPath(userId))
         .then(() => true)
         .catch(() => false);
+
       if (!exists) return { connected: false };
+
       return {
         connected: true,
-        tokensUpdatedAt: meta?.tokensUpdatedAt || new Date(0).toISOString(),
-        status: meta?.status || "ok",
+        tokensUpdatedAt: meta?.tokensUpdatedAt ?? new Date(0).toISOString(),
+        status: meta?.status ?? "ok",
         lastError: meta?.lastError ?? null,
       };
     } catch {
