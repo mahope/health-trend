@@ -20,35 +20,40 @@ function num(v: unknown): number | null {
 
 export function pickMetrics(payload: unknown) {
   const p = payload as Record<string, unknown>;
-  const steps = num(p["steps"] ?? p["dailySteps"]);
 
-  const wellness = (p["wellness"] as Record<string, unknown> | undefined) ?? undefined;
+  // Current export format (C:/Users/mads_/Garmin/data/garmin-YYYY-MM-DD.json)
+  // nests most daily values under `stats`.
+  const stats = (p["stats"] as Record<string, unknown> | undefined) ?? undefined;
+
+  const steps = num(p["steps"] ?? p["dailySteps"] ?? stats?.["totalSteps"]);
+
   const restingHr = num(
-    p["restingHeartRate"] ?? p["restingHr"] ?? wellness?.["restingHeartRate"],
+    p["restingHeartRate"] ??
+      p["restingHr"] ??
+      stats?.["restingHeartRate"] ??
+      (p["heartRates"] as Record<string, unknown> | undefined)?.["resting"],
   );
 
   const stress = (p["stress"] as Record<string, unknown> | undefined) ?? undefined;
-  const stressAvg = num(p["stressAvg"] ?? stress?.["avg"]);
+  const stressAvg = num(p["stressAvg"] ?? stress?.["avg"] ?? stress?.["avgStressLevel"] ?? stats?.["averageStressLevel"]);
 
   const sleep = (p["sleep"] as Record<string, unknown> | undefined) ?? undefined;
-  const sleepTimeSeconds = sleep?.["sleepTimeSeconds"];
-  const sleepMinutes = num(
-    sleepTimeSeconds != null ? Number(sleepTimeSeconds) / 60 : p["sleepMinutes"],
-  );
+  // Prefer stats measurableAsleepDuration when available.
+  const sleepSecondsFromStats = stats?.["measurableAsleepDuration"];
+  const sleepTimeSeconds = (sleep as Record<string, unknown> | undefined)?.["sleepTimeSeconds"] ?? sleepSecondsFromStats;
+  const sleepMinutes = num(sleepTimeSeconds != null ? Number(sleepTimeSeconds) / 60 : p["sleepMinutes"]);
   const sleepHours = sleepMinutes != null ? sleepMinutes / 60 : null;
 
-  const bodyBattery = (p["bodyBattery"] as Record<string, unknown> | undefined) ?? undefined;
-  const bodyBatteryHigh = num(bodyBattery?.["high"] ?? p["bodyBatteryHigh"]);
-  const bodyBatteryLow = num(bodyBattery?.["low"] ?? p["bodyBatteryLow"]);
+  const bodyBatteryHigh = num(stats?.["bodyBatteryHighestValue"] ?? p["bodyBatteryHigh"]);
+  const bodyBatteryLow = num(stats?.["bodyBatteryLowestValue"] ?? p["bodyBatteryLow"]);
 
   const spo2 = (p["spo2"] as Record<string, unknown> | undefined) ?? undefined;
-  const spo2Avg = num(p["spo2Avg"] ?? spo2?.["avg"]);
-  const spo2Low = num(p["spo2Low"] ?? spo2?.["low"]);
+  const spo2Avg = num(p["spo2Avg"] ?? spo2?.["avg"] ?? spo2?.["averageSpO2"] ?? stats?.["averageSpo2"]);
+  const spo2Low = num(p["spo2Low"] ?? spo2?.["low"] ?? spo2?.["lowestSpO2"] ?? stats?.["lowestSpo2"]);
 
-  const respiration =
-    (p["respiration"] as Record<string, unknown> | undefined) ?? undefined;
-  const respAvgWaking = num(respiration?.["avgWaking"]);
-  const respAvgSleep = num(respiration?.["avgSleep"]);
+  const respiration = (p["respiration"] as Record<string, unknown> | undefined) ?? undefined;
+  const respAvgWaking = num(respiration?.["avgWaking"] ?? respiration?.["avgWakingRespirationValue"] ?? stats?.["avgWakingRespirationValue"]);
+  const respAvgSleep = num(respiration?.["avgSleep"] ?? respiration?.["avgSleepRespirationValue"] ?? stats?.["avgSleepRespirationValue"]);
 
   const rawActs =
     (Array.isArray(p["activities"]) ? (p["activities"] as unknown[]) : null) ??
