@@ -84,21 +84,71 @@ export function DayPlanCard() {
               </div>
             </div>
 
-            <div className="grid gap-3 md:grid-cols-2">
+            {/* Mobile: compact + expand */}
+            <details className="md:hidden rounded-xl border border-black/10 bg-white/40 p-3 dark:border-white/10 dark:bg-black/15">
+              <summary className="cursor-pointer list-none">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="text-sm font-semibold">Gør i dag + undgå</div>
+                  <div className="text-xs text-neutral-500 dark:text-neutral-400">Tryk for at åbne</div>
+                </div>
+                <div className="mt-2 grid gap-2">
+                  <div>
+                    <div className="text-xs text-neutral-500 dark:text-neutral-400">Top 3</div>
+                    <ul className="mt-1 list-disc pl-5 text-sm text-neutral-700 dark:text-neutral-200 space-y-1">
+                      {(data.ai?.doToday?.length ? data.ai.doToday : data.deterministic.suggestions)
+                        .slice(0, 3)
+                        .map((x, i) => (
+                          <li key={i}>{x}</li>
+                        ))}
+                    </ul>
+                  </div>
+                </div>
+              </summary>
+
+              <div className="mt-3 grid gap-3">
+                <div>
+                  <div className="text-xs text-neutral-500 dark:text-neutral-400">Gør i dag</div>
+                  <ul className="mt-2 list-disc pl-5 text-sm text-neutral-700 dark:text-neutral-200 space-y-1">
+                    {(data.ai?.doToday?.length ? data.ai.doToday : data.deterministic.suggestions)
+                      .slice(0, 6)
+                      .map((x, i) => (
+                        <li key={i}>{x}</li>
+                      ))}
+                  </ul>
+                </div>
+                <div>
+                  <div className="text-xs text-neutral-500 dark:text-neutral-400">Undgå</div>
+                  <ul className="mt-2 list-disc pl-5 text-sm text-neutral-700 dark:text-neutral-200 space-y-1">
+                    {(data.ai?.avoid?.length ? data.ai.avoid : data.deterministic.avoid)
+                      .slice(0, 5)
+                      .map((x, i) => (
+                        <li key={i}>{x}</li>
+                      ))}
+                  </ul>
+                </div>
+              </div>
+            </details>
+
+            {/* Desktop: expanded */}
+            <div className="hidden md:grid gap-3 md:grid-cols-2">
               <div>
                 <div className="text-xs text-neutral-500 dark:text-neutral-400">Gør i dag</div>
                 <ul className="mt-2 list-disc pl-5 text-sm text-neutral-700 dark:text-neutral-200 space-y-1">
-                  {(data.ai?.doToday?.length ? data.ai.doToday : data.deterministic.suggestions).slice(0, 6).map((x, i) => (
-                    <li key={i}>{x}</li>
-                  ))}
+                  {(data.ai?.doToday?.length ? data.ai.doToday : data.deterministic.suggestions)
+                    .slice(0, 6)
+                    .map((x, i) => (
+                      <li key={i}>{x}</li>
+                    ))}
                 </ul>
               </div>
               <div>
                 <div className="text-xs text-neutral-500 dark:text-neutral-400">Undgå</div>
                 <ul className="mt-2 list-disc pl-5 text-sm text-neutral-700 dark:text-neutral-200 space-y-1">
-                  {(data.ai?.avoid?.length ? data.ai.avoid : data.deterministic.avoid).slice(0, 5).map((x, i) => (
-                    <li key={i}>{x}</li>
-                  ))}
+                  {(data.ai?.avoid?.length ? data.ai.avoid : data.deterministic.avoid)
+                    .slice(0, 5)
+                    .map((x, i) => (
+                      <li key={i}>{x}</li>
+                    ))}
                 </ul>
               </div>
             </div>

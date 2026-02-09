@@ -59,33 +59,52 @@ export function ActivitiesCard({ limit = 10 }: { limit?: number }) {
       <CardBody>
         {error && <div className="text-sm text-red-600">{error}</div>}
         {items.length === 0 ? (
-          <div className="text-sm text-neutral-600 dark:text-neutral-300">
-            Ingen aktiviteter fundet endnu.
-          </div>
+          <div className="text-sm text-neutral-600 dark:text-neutral-300">Ingen aktiviteter fundet endnu.</div>
         ) : (
-          <div className="divide-y divide-black/5 dark:divide-white/10">
-            {items.map((a) => (
-              <div key={a.id} className="py-3 flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <div className="text-sm font-medium truncate">
-                    {a.activityName || a.activityType || "Aktivitet"}
+          <>
+            {/* Mobile: show only first 3 */}
+            <div className="md:hidden divide-y divide-black/5 dark:divide-white/10">
+              {items.slice(0, 3).map((a) => (
+                <div key={a.id} className="py-3 flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="text-sm font-medium truncate">{a.activityName || a.activityType || "Aktivitet"}</div>
+                    <div className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">{fmtWhen(a.startTimeLocal)}</div>
                   </div>
-                  <div className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
-                    {fmtWhen(a.startTimeLocal)}
+                  <div className="shrink-0 text-xs text-neutral-600 dark:text-neutral-300 text-right">
+                    {a.distanceKm != null ? `${a.distanceKm.toFixed(1)} km` : ""}
                   </div>
                 </div>
-                <div className="shrink-0 text-xs text-neutral-600 dark:text-neutral-300 text-right">
-                  {a.distanceKm != null ? `${a.distanceKm.toFixed(1)} km` : ""}{
-                    a.distanceKm != null && a.durationMinutes != null ? " · " : ""
-                  }
-                  {a.durationMinutes != null ? `${Math.round(a.durationMinutes)} min` : ""}{
-                    (a.distanceKm != null || a.durationMinutes != null) && a.calories != null ? " · " : ""
-                  }
-                  {a.calories != null ? `${Math.round(a.calories)} kcal` : ""}
+              ))}
+              {items.length > 3 ? (
+                <div className="py-3">
+                  <a className="text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white" href="/activities">
+                    Se alle aktiviteter →
+                  </a>
                 </div>
-              </div>
-            ))}
-          </div>
+              ) : null}
+            </div>
+
+            {/* Desktop: show all */}
+            <div className="hidden md:block divide-y divide-black/5 dark:divide-white/10">
+              {items.map((a) => (
+                <div key={a.id} className="py-3 flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="text-sm font-medium truncate">{a.activityName || a.activityType || "Aktivitet"}</div>
+                    <div className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">{fmtWhen(a.startTimeLocal)}</div>
+                  </div>
+                  <div className="shrink-0 text-xs text-neutral-600 dark:text-neutral-300 text-right">
+                    {a.distanceKm != null ? `${a.distanceKm.toFixed(1)} km` : ""}{
+                      a.distanceKm != null && a.durationMinutes != null ? " · " : ""
+                    }
+                    {a.durationMinutes != null ? `${Math.round(a.durationMinutes)} min` : ""}{
+                      (a.distanceKm != null || a.durationMinutes != null) && a.calories != null ? " · " : ""
+                    }
+                    {a.calories != null ? `${Math.round(a.calories)} kcal` : ""}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </CardBody>
     </Card>
