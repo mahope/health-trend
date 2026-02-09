@@ -2,7 +2,7 @@ import "dotenv/config";
 
 import crypto from "node:crypto";
 import { prisma } from "../src/lib/prisma";
-import { auth } from "../auth";
+import { hashPassword } from "better-auth/crypto";
 
 function requireEnv(name: string): string {
   const v = process.env[name];
@@ -31,24 +31,57 @@ async function ensureUser({
   password: string;
   role: "admin" | "user";
 }) {
-  const existing = await prisma.user.findUnique({ where: { email } });
+  const normalizedEmail = email.toLowerCase();
+
+  const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
   if (existing) {
+    // Ensure role
     if (existing.role !== role) {
-      await prisma.user.update({ where: { email }, data: { role } });
+      await prisma.user.update({ where: { id: existing.id }, data: { role } });
     }
+
+    // Ensure credential account exists (password)
+    const existingAccount = await prisma.account.findFirst({
+      where: { userId: existing.id, providerId: "credential" },
+    });
+
+    if (!existingAccount) {
+      const passwordHash = await hashPassword(password);
+      await prisma.account.create({
+        data: {
+          id: crypto.randomUUID(),
+          userId: existing.id,
+          providerId: "credential",
+          accountId: existing.id,
+          password: passwordHash,
+        },
+      });
+    }
+
     return { created: false };
   }
 
-  const res = await auth.api.signUpEmail({
-    body: { email, password, name },
+  const user = await prisma.user.create({
+    data: {
+      email: normalizedEmail,
+      name,
+      role,
+      emailVerified: false,
+    },
   });
 
-  const maybeErr = (res as unknown as { error?: { message?: string } }).error;
-  if (maybeErr) {
-    throw new Error(`signUpEmail failed for ${email}: ${maybeErr.message || "unknown"}`);
-  }
+  const passwordHash = await hashPassword(password);
 
-  await prisma.user.update({ where: { email }, data: { role } });
+  await prisma.account.create({
+    data: {
+      id: crypto.randomUUID(),
+      userId: user.id,
+      providerId: "credential",
+      accountId: user.id,
+      password: passwordHash,
+    },
+  });
+
   return { created: true };
 }
 
@@ -60,7 +93,7 @@ async function main() {
   const madsPassword = maybeEnv("BOOTSTRAP_MADS_PASSWORD") || randomPassword();
   const teaPassword = maybeEnv("BOOTSTRAP_TEA_PASSWORD") || randomPassword();
 
-  // Base URL/secret are required for Better Auth to behave sanely
+  // Secret is required (hashing uses WebCrypto + app uses Better Auth)
   requireEnv("BETTER_AUTH_SECRET");
   requireEnv("BETTER_AUTH_BASE_URL");
 
