@@ -7,3 +7,8 @@ Autopilot writes short entries here.
 - Commit: 583954c
 - Tests: `npm run lint` ✅, `npm run build` ✅
 
+## 2026-02-09 22:10 (Europe/Copenhagen)
+- Changed: Added lightweight toast system + optional haptics. Wired into Dashboard actions (snapshot/brief) + autosave in Manual form (rate-limited success toast, always toast on error).
+- Commit: 774800b
+- Tests: `npm run lint` ✅, `npm run build` ✅
+
