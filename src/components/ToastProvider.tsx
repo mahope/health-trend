@@ -10,10 +10,21 @@ type Toast = {
   id: string;
   kind: ToastKind;
   title: string;
+  actionLabel?: string;
+  onAction?: () => void;
+  sticky?: boolean;
 };
 
 type ToastApi = {
-  toast: (t: { title: string; kind?: ToastKind; vibrateMs?: number }) => void;
+  toast: (t: {
+    title: string;
+    kind?: ToastKind;
+    vibrateMs?: number;
+    durationMs?: number;
+    actionLabel?: string;
+    onAction?: () => void;
+    sticky?: boolean;
+  }) => void;
 };
 
 const ToastContext = createContext<ToastApi | null>(null);
@@ -33,24 +44,47 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<Toast[]>([]);
   const timers = useRef(new Map<string, number>());
 
-  const toast = useCallback((t: { title: string; kind?: ToastKind; vibrateMs?: number }) => {
-    const id = `${Date.now()}_${Math.random().toString(16).slice(2)}`;
-    const kind: ToastKind = t.kind ?? "info";
-    const next: Toast = { id, kind, title: t.title };
+  const toast = useCallback(
+    (t: {
+      title: string;
+      kind?: ToastKind;
+      vibrateMs?: number;
+      durationMs?: number;
+      actionLabel?: string;
+      onAction?: () => void;
+      sticky?: boolean;
+    }) => {
+      const id = `${Date.now()}_${Math.random().toString(16).slice(2)}`;
+      const kind: ToastKind = t.kind ?? "info";
+      const next: Toast = {
+        id,
+        kind,
+        title: t.title,
+        actionLabel: t.actionLabel,
+        onAction: t.onAction,
+        sticky: t.sticky,
+      };
 
-    setItems((prev) => {
-      const keep = prev.slice(-2); // cap queue size
-      return [...keep, next];
-    });
+      setItems((prev) => {
+        const sticky = prev.filter((x) => x.sticky);
+        const nonSticky = prev.filter((x) => !x.sticky);
+        const keep = nonSticky.slice(-2); // cap queue size (non-sticky)
+        return [...sticky, ...keep, next];
+      });
 
-    if (t.vibrateMs && t.vibrateMs > 0) safeVibrate(t.vibrateMs);
+      if (t.vibrateMs && t.vibrateMs > 0) safeVibrate(t.vibrateMs);
 
-    const handle = window.setTimeout(() => {
-      setItems((prev) => prev.filter((x) => x.id !== id));
-      timers.current.delete(id);
-    }, 2200);
-    timers.current.set(id, handle);
-  }, []);
+      const durationMs = t.durationMs ?? 2200;
+      if (durationMs > 0) {
+        const handle = window.setTimeout(() => {
+          setItems((prev) => prev.filter((x) => x.id !== id));
+          timers.current.delete(id);
+        }, durationMs);
+        timers.current.set(id, handle);
+      }
+    },
+    [],
+  );
 
   const api = useMemo<ToastApi>(() => ({ toast }), [toast]);
 
@@ -84,9 +118,26 @@ function ToastViewport({
             )}
             role="status"
             aria-live="polite"
-            onClick={() => onDismiss(t.id)}
           >
-            {t.title}
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0 flex-1" onClick={() => onDismiss(t.id)}>
+                {t.title}
+              </div>
+              {t.actionLabel && t.onAction ? (
+                <button
+                  className="shrink-0 rounded-lg px-2 py-1 text-xs font-medium text-neutral-900 underline decoration-neutral-300 underline-offset-4 hover:decoration-neutral-600 dark:text-neutral-100 dark:decoration-white/30 dark:hover:decoration-white/70"
+                  onClick={() => {
+                    try {
+                      t.onAction?.();
+                    } finally {
+                      onDismiss(t.id);
+                    }
+                  }}
+                >
+                  {t.actionLabel}
+                </button>
+              ) : null}
+            </div>
           </div>
         ))}
       </div>

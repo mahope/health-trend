@@ -16,7 +16,7 @@
 - [x] Cycle tracking UI (period start, cycle length estimate, symptoms)
 
 ### Data hygiene
-- [ ] Delete snapshots (done ✅) + undo within 30s (optional)
+- [x] Delete snapshots (done ✅) + undo within 30s (optional)
 - [ ] “Recompute” day brief after deleting snapshots
 ### Mobile UX
 1. Toasts/haptics for Snapshot/Brief/Save

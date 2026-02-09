@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { useToast } from "@/components/ToastProvider";
 
 type Snapshot = {
   id: string;
@@ -36,10 +37,13 @@ function todayCphClient(): string {
 }
 
 export default function SnapshotsPage() {
+  const { toast } = useToast();
   const [day, setDay] = useState(todayCphClient());
   const [items, setItems] = useState<Snapshot[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const pendingDelete = useRef<null | { id: string; handle: number }>(null);
 
   async function refresh() {
     setLoading(true);
@@ -156,25 +160,57 @@ export default function SnapshotsPage() {
                       <div className="text-neutral-600 dark:text-neutral-300">Steps: {x.steps ?? "—"}</div>
                       <button
                         className="text-xs text-rose-600 hover:text-rose-800 dark:text-rose-300 dark:hover:text-rose-200"
-                        onClick={async () => {
-                          const ok = confirm("Slet snapshot? (kan ikke fortrydes)");
-                          if (!ok) return;
-                          setLoading(true);
-                          setError(null);
-                          try {
-                            const res = await fetch("/api/snapshots/delete", {
-                              method: "POST",
-                              headers: { "content-type": "application/json" },
-                              body: JSON.stringify({ id: x.id }),
-                            });
-                            const json = await res.json().catch(() => ({}));
-                            if (!res.ok) throw new Error(json.error || "Kunne ikke slette");
-                            await refresh();
-                          } catch (e: unknown) {
-                            setError(e instanceof Error ? e.message : "Fejl");
-                          } finally {
-                            setLoading(false);
+                        onClick={() => {
+                          // If we already have a pending delete, commit it now (so undo stays simple).
+                          if (pendingDelete.current) {
+                            window.clearTimeout(pendingDelete.current.handle);
+                            pendingDelete.current = null;
                           }
+
+                          setError(null);
+
+                          // Optimistic UI: remove immediately, then actually delete after 30s.
+                          const prevItems = items;
+                          setItems((cur) => cur.filter((s) => s.id !== x.id));
+
+                          const handle = window.setTimeout(async () => {
+                            setLoading(true);
+                            try {
+                              const res = await fetch("/api/snapshots/delete", {
+                                method: "POST",
+                                headers: { "content-type": "application/json" },
+                                body: JSON.stringify({ id: x.id }),
+                              });
+                              const json = await res.json().catch(() => ({}));
+                              if (!res.ok) throw new Error(json.error || "Kunne ikke slette");
+                              await refresh();
+                            } catch (e: unknown) {
+                              // Restore list on failure.
+                              setItems(prevItems);
+                              setError(e instanceof Error ? e.message : "Fejl");
+                              toast({ title: "Kunne ikke slette snapshot", kind: "error", vibrateMs: 20 });
+                            } finally {
+                              pendingDelete.current = null;
+                              setLoading(false);
+                            }
+                          }, 30_000);
+
+                          pendingDelete.current = { id: x.id, handle };
+
+                          toast({
+                            title: "Snapshot slettes om 30s",
+                            kind: "info",
+                            durationMs: 30_000,
+                            sticky: true,
+                            actionLabel: "Fortryd",
+                            onAction: () => {
+                              if (pendingDelete.current?.id !== x.id) return;
+                              window.clearTimeout(handle);
+                              pendingDelete.current = null;
+                              setItems(prevItems);
+                              toast({ title: "Sletning fortrudt", kind: "success", vibrateMs: 10 });
+                            },
+                          });
                         }}
                       >
                         Slet
