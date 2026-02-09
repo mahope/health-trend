@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 import { TogglePill } from "@/components/ui/TogglePill";
 import { cn } from "@/lib/cn";
 import { useToast } from "@/components/ToastProvider";
@@ -98,9 +99,59 @@ export function ManualForm({ day }: { day: string }) {
     return <div className="text-sm text-neutral-500">Henter…</div>;
   }
 
+  const currentItem = item;
+
+  function inc(
+    key: "caffeineCups" | "alcoholUnits" | "symptomScore",
+    delta: number,
+    opts?: { min?: number; max?: number },
+  ) {
+    const raw = currentItem[key];
+    const current = typeof raw === "number" ? raw : 0;
+    const next = current + delta;
+    const bounded = Math.min(opts?.max ?? Infinity, Math.max(opts?.min ?? -Infinity, next));
+    save({ [key]: bounded } as Partial<Manual>);
+  }
+
   return (
     <div className="space-y-3">
       {error && <div className="text-sm text-red-600">{error}</div>}
+
+      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+        <Button
+          type="button"
+          size="sm"
+          className="shrink-0 rounded-full"
+          onClick={() => inc("caffeineCups", 1, { min: 0 })}
+        >
+          +1 koffein
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          className="shrink-0 rounded-full"
+          onClick={() => inc("alcoholUnits", 1, { min: 0 })}
+        >
+          +1 alkohol
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          className="shrink-0 rounded-full"
+          onClick={() => inc("symptomScore", 1, { min: 0, max: 3 })}
+        >
+          symptom +1
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant="ghost"
+          className="shrink-0 rounded-full"
+          onClick={() => save({ caffeineCups: null, alcoholUnits: null, symptomScore: null })}
+        >
+          nulstil
+        </Button>
+      </div>
 
       <div className="grid gap-3 md:grid-cols-2">
         <div>
