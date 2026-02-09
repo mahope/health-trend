@@ -44,8 +44,10 @@ export async function computeSleepDebt(
   days = 7,
 ): Promise<{ debtHours: number; avgSleepHours?: number; goalHours?: number }>
 {
-  const profile = await prisma.userProfile.findUnique({ where: { userId }, select: { sleepGoalHours: true } });
-  const goal = profile?.sleepGoalHours ?? 7.5;
+  const rows = (await prisma.$queryRaw`
+    SELECT "sleepGoalHours" FROM "UserProfile" WHERE "userId" = ${userId} LIMIT 1
+  `) as Array<{ sleepGoalHours: number }>;
+  const goal = rows?.[0]?.sleepGoalHours ?? 7.5;
 
   const fromDay = addDaysYmd(toDay, -(days - 1));
   const snaps = await prisma.garminSnapshot.findMany({
@@ -66,13 +68,14 @@ export async function computeSleepDebt(
 
 export async function computeStreaks(userId: string, toDay: string): Promise<{ stepsStreak: number; sleepStreak: number; stepsGoal: number; sleepGoalHours: number }>
 {
-  const profile = await prisma.userProfile.upsert({
-    where: { userId },
-    update: {},
-    create: { userId },
-    select: { stepsGoal: true, sleepGoalHours: true },
-  });
+  // Ensure profile exists
+  await prisma.userProfile.upsert({ where: { userId }, update: {}, create: { userId } });
 
+  const goalRows = (await prisma.$queryRaw`
+    SELECT "stepsGoal", "sleepGoalHours" FROM "UserProfile" WHERE "userId" = ${userId} LIMIT 1
+  `) as Array<{ stepsGoal: number; sleepGoalHours: number }>;
+
+  const profile = goalRows?.[0] ?? { stepsGoal: 8000, sleepGoalHours: 7.5 };
   const daysBack = 60;
   const fromDay = addDaysYmd(toDay, -(daysBack - 1));
   const snaps = await prisma.garminSnapshot.findMany({

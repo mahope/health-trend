@@ -6,12 +6,13 @@ export async function GET() {
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  const profile = await prisma.userProfile.upsert({
-    where: { userId: user.id },
-    update: {},
-    create: { userId: user.id },
-    select: { stepsGoal: true, sleepGoalHours: true },
-  });
+  await prisma.userProfile.upsert({ where: { userId: user.id }, update: {}, create: { userId: user.id } });
+
+  const rows = (await prisma.$queryRaw`
+    SELECT "stepsGoal", "sleepGoalHours" FROM "UserProfile" WHERE "userId" = ${user.id} LIMIT 1
+  `) as Array<{ stepsGoal: number; sleepGoalHours: number }>;
+
+  const profile = rows?.[0] ?? { stepsGoal: 8000, sleepGoalHours: 7.5 };
 
   return NextResponse.json({ ok: true, profile });
 }
@@ -31,7 +32,7 @@ export async function POST(req: Request) {
       ? Math.round(body.sleepGoalHours * 10) / 10
       : undefined;
 
-  const profile = await prisma.userProfile.upsert({
+  await prisma.userProfile.upsert({
     where: { userId: user.id },
     update: {
       ...(stepsGoal != null ? { stepsGoal } : {}),
@@ -42,8 +43,13 @@ export async function POST(req: Request) {
       ...(stepsGoal != null ? { stepsGoal } : {}),
       ...(sleepGoalHours != null ? { sleepGoalHours } : {}),
     },
-    select: { stepsGoal: true, sleepGoalHours: true },
   });
+
+  const rows = (await prisma.$queryRaw`
+    SELECT "stepsGoal", "sleepGoalHours" FROM "UserProfile" WHERE "userId" = ${user.id} LIMIT 1
+  `) as Array<{ stepsGoal: number; sleepGoalHours: number }>;
+
+  const profile = rows?.[0] ?? { stepsGoal: 8000, sleepGoalHours: 7.5 };
 
   return NextResponse.json({ ok: true, profile });
 }
