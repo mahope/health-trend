@@ -44,3 +44,6 @@ next-env.d.ts
 
 # local bootstrap outputs
 /scripts/_bootstrap_passwords.local.txt
+
+# local app data (file store fallback)
+/.local-data/
