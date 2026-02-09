@@ -51,3 +51,8 @@ Autopilot writes short entries here.
 - Changed: Wired existing toast+haptics system into Settings save flows (goals + context) + 2FA enable/verify for quick mobile feedback.
 - Commit: ec107b5
 - Tests: npm run lint ✅, npm run build ✅
+
+## 2026-02-09 23:42 (Europe/Copenhagen)
+- Changed: Added mobile pull-to-refresh (coarse pointer/touch only) in `AppShell` using a lightweight `PullToRefresh` wrapper (shows a small top indicator + triggers `router.refresh()`). Marked backlog item as done.
+- Commit: 408cad3
+- Tests: npm run lint ✅, npm run build ✅
