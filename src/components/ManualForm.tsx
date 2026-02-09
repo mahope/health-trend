@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/Input";
+import { cn } from "@/lib/cn";
 
 type Manual = {
   day: string;
@@ -77,7 +79,9 @@ export function ManualForm({ day }: { day: string }) {
         <div>
           <label className="block text-xs text-neutral-500">Sygdomstegn (0-3)</label>
           <select
-            className="w-full rounded-md border px-3 py-2"
+            className={cn(
+              "h-10 w-full rounded-lg border border-black/10 bg-white px-3 text-sm text-neutral-900 shadow-sm outline-none focus:border-black/20 focus:ring-2 focus:ring-black/10 dark:border-white/10 dark:bg-black/30 dark:text-neutral-100 dark:focus:border-white/20 dark:focus:ring-white/10",
+            )}
             value={item.symptomScore ?? ""}
             onChange={(e) =>
               save({ symptomScore: e.target.value === "" ? null : Number(e.target.value) })
@@ -93,8 +97,7 @@ export function ManualForm({ day }: { day: string }) {
 
         <div>
           <label className="block text-xs text-neutral-500">Koffein (kopper)</label>
-          <input
-            className="w-full rounded-md border px-3 py-2"
+          <Input
             inputMode="numeric"
             value={item.caffeineCups ?? ""}
             onChange={(e) => save({ caffeineCups: e.target.value ? Number(e.target.value) : null })}
@@ -103,8 +106,7 @@ export function ManualForm({ day }: { day: string }) {
 
         <div>
           <label className="block text-xs text-neutral-500">Alkohol (units)</label>
-          <input
-            className="w-full rounded-md border px-3 py-2"
+          <Input
             inputMode="numeric"
             value={item.alcoholUnits ?? ""}
             onChange={(e) => save({ alcoholUnits: e.target.value ? Number(e.target.value) : null })}
@@ -134,13 +136,16 @@ export function ManualForm({ day }: { day: string }) {
       <div>
         <label className="block text-xs text-neutral-500">Noter</label>
         <textarea
-          className="w-full rounded-md border px-3 py-2 min-h-24"
+          className={cn(
+            "w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm outline-none placeholder:text-neutral-400 focus:border-black/20 focus:ring-2 focus:ring-black/10 dark:border-white/10 dark:bg-black/30 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-white/20 dark:focus:ring-white/10",
+            "min-h-28",
+          )}
           value={item.notes ?? ""}
           onChange={(e) => save({ notes: e.target.value })}
         />
       </div>
 
-      <div className="text-xs text-neutral-500">
+      <div className="text-xs text-neutral-500 dark:text-neutral-400">
         {saving ? "Gemmer…" : ""}
       </div>
     </div>

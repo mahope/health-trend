@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { addDays } from "@/lib/date";
+import { Button } from "@/components/ui/Button";
 
 type Snapshot = {
   id: string;
@@ -99,13 +100,15 @@ export function LatestSnapshotCard({ day }: { day: string }) {
       <div className="flex items-center justify-between gap-3">
         <div>
           <div className="font-semibold">Seneste snapshot</div>
-          <div className="text-sm text-neutral-500">
-            {latest ? new Date(latest.takenAt).toLocaleString("da-DK", { hour12: false }) : "Ingen endnu"}
+          <div className="text-sm text-neutral-600 dark:text-neutral-300">
+            {latest
+              ? new Date(latest.takenAt).toLocaleString("da-DK", { hour12: false })
+              : "Ingen endnu"}
           </div>
         </div>
 
-        <button
-          className="rounded-md border px-3 py-2 text-sm disabled:opacity-50"
+        <Button
+          size="sm"
           disabled={loading}
           onClick={async () => {
             setLoading(true);
@@ -117,8 +120,12 @@ export function LatestSnapshotCard({ day }: { day: string }) {
 
               // Re-fetch
               const [a, b] = await Promise.all([
-                fetch(`/api/snapshots/list?day=${encodeURIComponent(day)}`, { cache: "no-store" }),
-                fetch(`/api/snapshots/list?day=${encodeURIComponent(yday)}`, { cache: "no-store" }),
+                fetch(`/api/snapshots/list?day=${encodeURIComponent(day)}`, {
+                  cache: "no-store",
+                }),
+                fetch(`/api/snapshots/list?day=${encodeURIComponent(yday)}`, {
+                  cache: "no-store",
+                }),
               ]);
               const aJson = (await a.json()) as { snapshots?: Snapshot[] };
               const bJson = (await b.json()) as { snapshots?: Snapshot[] };
@@ -132,7 +139,7 @@ export function LatestSnapshotCard({ day }: { day: string }) {
           }}
         >
           {loading ? "Arbejder…" : "Tag snapshot"}
-        </button>
+        </Button>
       </div>
 
       {error && <div className="text-sm text-red-600">{error}</div>}

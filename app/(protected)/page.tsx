@@ -4,58 +4,57 @@ import { ymd } from "@/lib/date";
 import { ManualForm } from "@/components/ManualForm";
 import { AiBriefCard } from "@/components/AiBriefCard";
 import { LatestSnapshotCard } from "@/components/LatestSnapshotCard";
+import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({ headers: await headers() });
   const day = ymd(new Date());
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold">Dashboard</h1>
-        <p className="text-sm text-neutral-500 mt-1">
-          {day} — logget ind som {session?.user.email}
-        </p>
+    <div className="space-y-6">
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+          <p className="text-sm text-neutral-600 dark:text-neutral-300 mt-1">
+            {day} — logget ind som {session?.user.email}
+          </p>
+        </div>
+
+        <div className="hidden md:block text-xs text-neutral-500 dark:text-neutral-400">
+          Tip: Tag 2-3 snapshots pr. dag (morgen/middag/aften).
+        </div>
       </div>
 
-      <section className="grid gap-4 md:grid-cols-2">
-        <div className="rounded-xl border p-4">
-          <h2 className="font-semibold">Snapshots</h2>
-          <p className="text-sm text-neutral-500 mt-1">
-            Seneste snapshot + delta ift. forrige (i dag/i går).
-          </p>
-          <div className="mt-4">
+      <section className="grid gap-4 lg:grid-cols-12">
+        <Card className="lg:col-span-5">
+          <CardHeader
+            title="Snapshots"
+            description="Seneste snapshot + delta ift. forrige (i dag/i går)."
+          />
+          <CardBody>
             <LatestSnapshotCard day={day} />
-          </div>
-        </div>
+          </CardBody>
+        </Card>
 
-        <div className="rounded-xl border p-4">
-          <h2 className="font-semibold">Manual</h2>
-          <p className="text-sm text-neutral-500 mt-1">
-            Hurtig kontekst til AI (symptomer/koffein/alkohol/noter).
-          </p>
-          <div className="mt-4">
+        <Card className="lg:col-span-7">
+          <CardHeader
+            title="Manual"
+            description="Hurtig kontekst til AI (symptomer/koffein/alkohol/noter)."
+          />
+          <CardBody>
             <ManualForm day={day} />
-          </div>
-        </div>
+          </CardBody>
+        </Card>
 
-        <div className="rounded-xl border p-4 md:col-span-2">
-          <h2 className="font-semibold">AI brief</h2>
-          <p className="text-sm text-neutral-500 mt-1">
-            Generér “sygdom/overbelastning” baseret på snapshots + manual + baseline.
-          </p>
-          <div className="mt-4">
+        <Card className="lg:col-span-12">
+          <CardHeader
+            title="AI brief"
+            description="Generér “sygdom/overbelastning” baseret på snapshots + manual + baseline."
+          />
+          <CardBody>
             <AiBriefCard day={day} />
-          </div>
-        </div>
-      </section>
-
-      <section className="rounded-xl border p-4">
-        <h2 className="font-semibold">Næste MVP</h2>
-        <ul className="mt-2 text-sm text-neutral-600 list-disc pl-5 space-y-1">
-          <li>Auto-generate AI brief morgen/aften (job/cron)</li>
-          <li>Notifikationer ved MED/HIGH</li>
-        </ul>
+          </CardBody>
+        </Card>
       </section>
     </div>
   );
