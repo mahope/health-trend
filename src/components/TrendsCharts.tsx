@@ -10,6 +10,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import Link from "next/link";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 
 type Item = {
@@ -32,6 +33,25 @@ function mapRisk(r: Item["risk"]) {
   if (r === "MED") return 2;
   if (r === "HIGH") return 3;
   return null;
+}
+
+function EmptyTrends({ days }: { days: number }) {
+  return (
+    <div className="rounded-2xl border border-dashed border-black/15 bg-white/40 p-5 text-sm text-neutral-700 dark:border-white/15 dark:bg-black/15 dark:text-neutral-200">
+      <div className="font-medium">Ingen trend-data endnu</div>
+      <div className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
+        Når du har taget mindst ét snapshot, dukker der en graf op for de seneste {days} dage.
+      </div>
+      <div className="mt-4">
+        <Link
+          href="#snapshots"
+          className="inline-flex h-9 items-center justify-center rounded-lg bg-black px-3 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:bg-white dark:text-black dark:hover:bg-white/90 dark:focus-visible:ring-white/20"
+        >
+          Tag dit første snapshot
+        </Link>
+      </div>
+    </div>
+  );
 }
 
 export function TrendsCharts({ days = 14 }: { days?: number }) {
@@ -114,53 +134,60 @@ export function TrendsCharts({ days = 14 }: { days?: number }) {
         />
         <CardBody>
           {error ? <div className="text-sm text-red-600">{error}</div> : null}
-          <div className="h-64 min-h-[256px]">
-            {mounted ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={data} margin={{ left: 8, right: 8, top: 10, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.25} />
-                  <XAxis dataKey="dayShort" tick={{ fontSize: 12 }} />
 
-                  {tab === "risk" ? (
-                    <>
-                      <YAxis domain={[0, 3]} ticks={[0, 1, 2, 3]} tick={{ fontSize: 12 }} />
-                      <Tooltip />
-                      <Line
-                        type="monotone"
-                        dataKey="riskScore"
-                        stroke="#f59e0b"
-                        strokeWidth={2}
-                        dot={{ r: 3 }}
-                        connectNulls
-                        name="Risk"
-                      />
-                    </>
-                  ) : (
-                    <>
-                      <YAxis tick={{ fontSize: 12 }} />
-                      <Tooltip />
-                      {tab === "steps" ? (
-                        <Line type="monotone" dataKey="steps" stroke="#111827" strokeWidth={2} dot={false} name="Steps" />
-                      ) : null}
-                      {tab === "stress" ? (
-                        <Line type="monotone" dataKey="stressAvg" stroke="#0ea5e9" strokeWidth={2} dot={false} name="Stress" />
-                      ) : null}
-                      {tab === "sleep" ? (
-                        <Line type="monotone" dataKey="sleepHours" stroke="#10b981" strokeWidth={2} dot={false} name="Søvn (h)" />
-                      ) : null}
-                    </>
-                  )}
-                </LineChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full w-full" />
-            )}
-          </div>
-          {tab === "risk" ? (
-            <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
-              OK=0 · LOW=1 · MED=2 · HIGH=3
-            </div>
-          ) : null}
+          {!error && items.length === 0 ? (
+            <EmptyTrends days={days} />
+          ) : (
+            <>
+              <div className="h-64 min-h-[256px]">
+                {mounted ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={data} margin={{ left: 8, right: 8, top: 10, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.25} />
+                      <XAxis dataKey="dayShort" tick={{ fontSize: 12 }} />
+
+                      {tab === "risk" ? (
+                        <>
+                          <YAxis domain={[0, 3]} ticks={[0, 1, 2, 3]} tick={{ fontSize: 12 }} />
+                          <Tooltip />
+                          <Line
+                            type="monotone"
+                            dataKey="riskScore"
+                            stroke="#f59e0b"
+                            strokeWidth={2}
+                            dot={{ r: 3 }}
+                            connectNulls
+                            name="Risk"
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <YAxis tick={{ fontSize: 12 }} />
+                          <Tooltip />
+                          {tab === "steps" ? (
+                            <Line type="monotone" dataKey="steps" stroke="#111827" strokeWidth={2} dot={false} name="Steps" />
+                          ) : null}
+                          {tab === "stress" ? (
+                            <Line type="monotone" dataKey="stressAvg" stroke="#0ea5e9" strokeWidth={2} dot={false} name="Stress" />
+                          ) : null}
+                          {tab === "sleep" ? (
+                            <Line type="monotone" dataKey="sleepHours" stroke="#10b981" strokeWidth={2} dot={false} name="Søvn (h)" />
+                          ) : null}
+                        </>
+                      )}
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-full w-full" />
+                )}
+              </div>
+              {tab === "risk" ? (
+                <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+                  OK=0 · LOW=1 · MED=2 · HIGH=3
+                </div>
+              ) : null}
+            </>
+          )}
         </CardBody>
       </Card>
 
@@ -172,46 +199,57 @@ export function TrendsCharts({ days = 14 }: { days?: number }) {
         />
         <CardBody>
           {error ? <div className="text-sm text-red-600">{error}</div> : null}
-          <div className="h-64 min-h-[256px]">
-            {mounted ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={data} margin={{ left: 8, right: 8, top: 10, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.25} />
-                  <XAxis dataKey="dayShort" tick={{ fontSize: 12 }} />
-                  <YAxis yAxisId="left" tick={{ fontSize: 12 }} />
-                  <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12 }} />
-                  <Tooltip />
-                  <Line yAxisId="left" type="monotone" dataKey="steps" stroke="#111827" strokeWidth={2} dot={false} name="Steps" />
-                  <Line yAxisId="right" type="monotone" dataKey="stressAvg" stroke="#0ea5e9" strokeWidth={2} dot={false} name="Stress" />
-                  <Line yAxisId="right" type="monotone" dataKey="sleepHours" stroke="#10b981" strokeWidth={2} dot={false} name="Søvn (h)" />
-                </LineChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full w-full" />
-            )}
-          </div>
+
+          {!error && items.length === 0 ? (
+            <EmptyTrends days={days} />
+          ) : (
+            <div className="h-64 min-h-[256px]">
+              {mounted ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={data} margin={{ left: 8, right: 8, top: 10, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.25} />
+                    <XAxis dataKey="dayShort" tick={{ fontSize: 12 }} />
+                    <YAxis yAxisId="left" tick={{ fontSize: 12 }} />
+                    <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12 }} />
+                    <Tooltip />
+                    <Line yAxisId="left" type="monotone" dataKey="steps" stroke="#111827" strokeWidth={2} dot={false} name="Steps" />
+                    <Line yAxisId="right" type="monotone" dataKey="stressAvg" stroke="#0ea5e9" strokeWidth={2} dot={false} name="Stress" />
+                    <Line yAxisId="right" type="monotone" dataKey="sleepHours" stroke="#10b981" strokeWidth={2} dot={false} name="Søvn (h)" />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full w-full" />
+              )}
+            </div>
+          )}
         </CardBody>
       </Card>
 
       <Card className="hidden lg:block lg:col-span-4">
         <CardHeader title="Risk" description="AI brief risk score over tid." />
         <CardBody>
-          <div className="h-64 min-h-[256px]">
-            {mounted ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={data} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.25} />
-                  <XAxis dataKey="dayShort" tick={{ fontSize: 12 }} />
-                  <YAxis domain={[0, 3]} ticks={[0, 1, 2, 3]} tick={{ fontSize: 12 }} />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="riskScore" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} connectNulls name="Risk" />
-                </LineChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full w-full" />
-            )}
-          </div>
-          <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">OK=0 · LOW=1 · MED=2 · HIGH=3</div>
+          {!error && items.length === 0 ? (
+            <EmptyTrends days={days} />
+          ) : (
+            <>
+              <div className="h-64 min-h-[256px]">
+                {mounted ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={data} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.25} />
+                      <XAxis dataKey="dayShort" tick={{ fontSize: 12 }} />
+                      <YAxis domain={[0, 3]} ticks={[0, 1, 2, 3]} tick={{ fontSize: 12 }} />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="riskScore" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} connectNulls name="Risk" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-full w-full" />
+                )}
+              </div>
+              <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">OK=0 · LOW=1 · MED=2 · HIGH=3</div>
+            </>
+          )}
         </CardBody>
       </Card>
     </div>

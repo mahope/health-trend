@@ -42,25 +42,29 @@ export default async function DashboardPage() {
       />
 
       <section className="grid gap-4 lg:grid-cols-12">
-        <Card className="lg:col-span-5">
-          <CardHeader
-            title="Snapshots"
-            description="Seneste snapshot + delta ift. forrige (i dag/i går)."
-          />
-          <CardBody>
-            <LatestSnapshotCard day={day} />
-          </CardBody>
-        </Card>
+        <div id="snapshots" className="lg:col-span-5">
+          <Card>
+            <CardHeader
+              title="Snapshots"
+              description="Seneste snapshot + delta ift. forrige (i dag/i går)."
+            />
+            <CardBody>
+              <LatestSnapshotCard day={day} />
+            </CardBody>
+          </Card>
+        </div>
 
-        <Card className="lg:col-span-7">
-          <CardHeader
-            title="Manual"
-            description="Hurtig kontekst til AI (symptomer/koffein/alkohol/noter)."
-          />
-          <CardBody>
-            <ManualForm day={day} />
-          </CardBody>
-        </Card>
+        <div className="lg:col-span-7">
+          <Card>
+            <CardHeader
+              title="Manual"
+              description="Hurtig kontekst til AI (symptomer/koffein/alkohol/noter)."
+            />
+            <CardBody>
+              <ManualForm day={day} />
+            </CardBody>
+          </Card>
+        </div>
 
         <Card className="lg:col-span-12">
           <CardHeader
