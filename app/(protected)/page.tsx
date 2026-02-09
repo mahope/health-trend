@@ -7,6 +7,7 @@ import { AiBriefCard } from "@/components/AiBriefCard";
 import { LatestSnapshotCard } from "@/components/LatestSnapshotCard";
 import { TrendsCharts } from "@/components/TrendsCharts";
 import { ActivitiesCard } from "@/components/ActivitiesCard";
+import { DayPlanCard } from "@/components/DayPlanCard";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { PageHeader } from "@/components/PageHeader";
 import { DashboardActions } from "@/components/DashboardActions";
@@ -74,7 +75,8 @@ export default async function DashboardPage() {
         <div className="lg:col-span-8">
           <TrendsCharts days={14} />
         </div>
-        <div className="lg:col-span-4">
+        <div className="lg:col-span-4 space-y-4">
+          <DayPlanCard />
           <ActivitiesCard limit={10} />
         </div>
       </div>
