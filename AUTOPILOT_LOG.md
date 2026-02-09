@@ -76,3 +76,8 @@ Autopilot writes short entries here.
 - Changed: Improved first-run empty state for snapshots: added a clear “Tag første snapshot” CTA (mobile-friendly) + nicer error box that shows hint/file path when Garmin JSON is missing.
 - Commit: 5f6141f
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 00:33 (Europe/Copenhagen)
+- Changed: Added empty state + CTA in Trends charts when there’s no data yet (links to “Snapshots” section). Added `id="snapshots"` anchor on dashboard.
+- Commit: e01f307
+- Tests: `npm run lint` ✅, `npm run build` ✅
