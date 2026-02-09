@@ -24,6 +24,7 @@ model User {
   manualDays    ManualDaily[]
   snapshots     GarminSnapshot[]
   briefs        AiBrief[]
+  alerts        Alert[]
   emailVerified    Boolean @default(false)
   twoFactorEnabled Boolean @default(false)
   image            String?
@@ -138,6 +139,25 @@ model AiBrief {
 
   @@unique([userId, day])
   @@index([userId, day])
+}
+
+model Alert {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  day      String
+  severity String // LOW|MED|HIGH
+  title    String
+  body     String
+
+  deliveredAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, day])
+  @@index([deliveredAt])
+  @@unique([userId, day, severity, title])
 }
 
 model TwoFactor {
