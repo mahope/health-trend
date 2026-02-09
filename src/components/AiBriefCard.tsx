@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/cn";
@@ -26,8 +26,27 @@ export function AiBriefCard({ day }: { day: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/ai/brief?day=${encodeURIComponent(day)}`, {
+          cache: "no-store",
+        });
+        const json = (await res.json()) as { item?: Brief | null };
+        if (!res.ok) return;
+        if (!cancelled) setItem(json.item ?? null);
+      } catch {
+        // ignore on load
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [day]);
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
 
       <div className="flex items-center gap-3">
         <Button
@@ -59,15 +78,15 @@ export function AiBriefCard({ day }: { day: string }) {
       </div>
 
       {item ? (
-        <div className="rounded-2xl border border-black/10 bg-white/50 p-5 shadow-sm dark:border-white/10 dark:bg-black/20 space-y-4">
+        <div className="rounded-2xl border border-black/10 bg-white/50 p-5 shadow-sm dark:border-white/10 dark:bg-black/20 space-y-5">
           <div className="flex items-center justify-between gap-3">
-            <div className="text-sm font-semibold tracking-tight">Kort fortalt</div>
+            <div className="text-sm font-semibold tracking-tight">Overblik</div>
             <div className="text-xs text-neutral-500 dark:text-neutral-400">
               {new Date(item.createdAt).toLocaleString("da-DK", { hour12: false })}
             </div>
           </div>
 
-          <div className="text-sm text-neutral-800 dark:text-neutral-100">
+          <div className="text-sm leading-relaxed text-neutral-900 dark:text-neutral-100">
             {item.short}
           </div>
 
@@ -113,14 +132,12 @@ export function AiBriefCard({ day }: { day: string }) {
           ) : null}
         </div>
       ) : (
-        <div className="text-sm text-neutral-500 dark:text-neutral-400">
-          Tryk for at generere. (Kræver OPENAI_API_KEY)
+        <div className="rounded-2xl border border-dashed border-black/15 bg-white/40 p-5 text-sm text-neutral-600 dark:border-white/15 dark:bg-black/15 dark:text-neutral-300">
+          Ingen brief endnu. Klik “Generér brief” (kræver <code>OPENAI_API_KEY</code>).
         </div>
       )}
 
-      {error && (
-        <div className={cn("text-sm text-red-600")}>{error}</div>
-      )}
+      {error && <div className={cn("text-sm text-red-600")}>{error}</div>}
     </div>
   );
 }

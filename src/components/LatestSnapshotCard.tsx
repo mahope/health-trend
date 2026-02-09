@@ -141,8 +141,11 @@ export function LatestSnapshotCard({ day }: { day: string }) {
       {error && <div className="text-sm text-red-600">{error}</div>}
 
       {!latest && !loading && (
-        <div className="text-sm text-neutral-500">
-          Tip: Klik “Tag snapshot” (den læser din lokale `garmin-YYYY-MM-DD.json`).
+        <div className="rounded-2xl border border-dashed border-black/15 bg-white/40 p-5 text-sm text-neutral-700 dark:border-white/15 dark:bg-black/15 dark:text-neutral-200">
+          <div className="font-medium">Ingen snapshots endnu</div>
+          <div className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
+            Klik “Tag snapshot” — den læser din lokale <code>garmin-YYYY-MM-DD.json</code>.
+          </div>
         </div>
       )}
 
