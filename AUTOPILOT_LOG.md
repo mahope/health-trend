@@ -31,3 +31,8 @@ Autopilot writes short entries here.
 - Changed: Included profile context (sex/pregnant/cycleDay + derived cyclePhase) in the AI weekly report prompt payload + instruction tweak to mention cycle variation only when relevant. Marked backlog item as done.
 - Commit: ad6d91b
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-09 23:00 (Europe/Copenhagen)
+- Changed: Added basic cycle tracking to Settings (last period start, cycle length estimate, symptoms). Extended profile context API + Prisma schema/migration.
+- Commit: e6d8866
+- Tests: `npm run lint` ✅, `npm run build` ✅
