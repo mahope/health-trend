@@ -8,7 +8,7 @@ function avg(nums: Array<number | null | undefined>): number | null {
   return xs.reduce((a, b) => a + b, 0) / xs.length;
 }
 
-function cyclePhaseFromDay(cycleDay: number | null | undefined): string | null {
+export function cyclePhaseFromDay(cycleDay: number | null | undefined): string | null {
   if (!cycleDay || !Number.isFinite(cycleDay)) return null;
   // Very rough heuristic (assume ~28d cycle)
   if (cycleDay <= 5) return "menstruation";

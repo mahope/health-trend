@@ -11,7 +11,7 @@
 
 ### Settings / personalisation
 - [x] Sex + cycle context used in AI prompts (brief)
-- [ ] Sex + cycle context used in AI prompts (day plan)
+- [x] Sex + cycle context used in AI prompts (day plan)
 - [ ] Sex + cycle context used in AI prompts (weekly report)
 - [ ] Cycle tracking UI (period start, cycle length estimate, symptoms)
 
