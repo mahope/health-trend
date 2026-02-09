@@ -5,6 +5,7 @@ import { ymd } from "@/lib/date";
 import { ManualForm } from "@/components/ManualForm";
 import { AiBriefCard } from "@/components/AiBriefCard";
 import { LatestSnapshotCard } from "@/components/LatestSnapshotCard";
+import { TrendsCharts } from "@/components/TrendsCharts";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { PageHeader } from "@/components/PageHeader";
 import { DashboardActions } from "@/components/DashboardActions";
@@ -37,7 +38,6 @@ export default async function DashboardPage() {
       />
 
       <section className="grid gap-4 lg:grid-cols-12">
-        {/* Mid row */}
         <Card className="lg:col-span-5">
           <CardHeader
             title="Snapshots"
@@ -58,7 +58,6 @@ export default async function DashboardPage() {
           </CardBody>
         </Card>
 
-        {/* Bottom row */}
         <Card className="lg:col-span-12">
           <CardHeader
             title="AI brief"
@@ -69,6 +68,8 @@ export default async function DashboardPage() {
           </CardBody>
         </Card>
       </section>
+
+      <TrendsCharts days={14} />
     </div>
   );
 }

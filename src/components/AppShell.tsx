@@ -1,4 +1,20 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import { SidebarNav } from "@/components/SidebarNav";
+
+function titleForPath(path: string): { title: string; subtitle: string } {
+  if (path === "/") return { title: "Dashboard", subtitle: "Din sundheds-stream, destilleret." };
+  if (path.startsWith("/snapshots"))
+    return { title: "Snapshots", subtitle: "Tag snapshots (morgen/middag/aften) og se udvikling." };
+  if (path.startsWith("/alerts"))
+    return { title: "Alerts", subtitle: "Autogenererede advarsler (MED/HIGH) fra AI brief job." };
+  if (path.startsWith("/garmin"))
+    return { title: "Garmin", subtitle: "Token-only. Importér eksisterende tokens uden login." };
+  if (path.startsWith("/settings"))
+    return { title: "Settings", subtitle: "2FA (TOTP) og konto." };
+  return { title: "Health Trend", subtitle: "" };
+}
 
 export function AppShell({
   userEmail,
@@ -7,6 +23,9 @@ export function AppShell({
   userEmail: string;
   children: React.ReactNode;
 }) {
+  const pathname = usePathname() || "/";
+  const { title, subtitle } = titleForPath(pathname);
+
   return (
     <div className="min-h-screen">
       <div className="pointer-events-none fixed inset-0 -z-10">
@@ -36,14 +55,12 @@ export function AppShell({
           {/* Topbar */}
           <div className="mb-6 flex items-center justify-between gap-4">
             <div>
-              <div className="text-lg font-semibold tracking-tight">Dashboard</div>
-              <div className="text-sm text-neutral-600 dark:text-neutral-300">
-                Din sundheds-stream, destilleret.
-              </div>
+              <div className="text-lg font-semibold tracking-tight">{title}</div>
+              {subtitle ? (
+                <div className="text-sm text-neutral-600 dark:text-neutral-300">{subtitle}</div>
+              ) : null}
             </div>
-            <div className="md:hidden text-xs text-neutral-500 dark:text-neutral-400">
-              {userEmail}
-            </div>
+            <div className="md:hidden text-xs text-neutral-500 dark:text-neutral-400">{userEmail}</div>
           </div>
 
           {children}
