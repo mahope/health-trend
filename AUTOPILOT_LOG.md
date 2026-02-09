@@ -41,3 +41,8 @@ Autopilot writes short entries here.
 - Changed: Added 30s undo for snapshot delete on /snapshots (optimistic remove, delayed delete) using a toast action button. Extended toast provider to support actions + custom duration + sticky toasts.
 - Commit: e8f68c3
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-09 23:23 (Europe/Copenhagen)
+- Changed: When a snapshot is deleted, the cached AI brief for that day is now best-effort recomputed (if AI is configured). If recompute fails, the brief cache is cleared to avoid showing stale data. Marked backlog item as done.
+- Commit: 21f709d
+- Tests: `npm run lint` ✅, `npm run build` ✅
