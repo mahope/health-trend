@@ -4,6 +4,7 @@ import { getStore } from "@/lib/store";
 import { pickMetrics, readGarminJsonForDay, todayCph } from "@/lib/garminLocal";
 import { generateAiBriefForUser } from "@/lib/aiBrief";
 import { getClientIp, rateLimit } from "@/lib/rateLimit";
+import { detectEarlyWarning } from "@/lib/insights";
 
 function isAuthorized(req: Request): { ok: true } | { ok: false; reason: string } {
   const secret = process.env.CRON_SECRET;
@@ -88,12 +89,39 @@ export async function POST(req: Request) {
       continue;
     }
 
+    // 2) Deterministic early-warning (baseline anomaly)
+    try {
+      const ew = await detectEarlyWarning(u.id, day);
+      if (ew.ok) {
+        await prisma.alert.upsert({
+          where: {
+            userId_day_severity_title: {
+              userId: u.id,
+              day,
+              severity: ew.severity,
+              title: ew.title,
+            },
+          },
+          update: { body: ew.body },
+          create: {
+            userId: u.id,
+            day,
+            severity: ew.severity,
+            title: ew.title,
+            body: ew.body,
+          },
+        });
+      }
+    } catch {
+      // ignore
+    }
+
     if (mode === "snapshot_only") {
       results.push(out);
       continue;
     }
 
-    // 2) AI brief
+    // 3) AI brief
     try {
       const { saved, risk } = await generateAiBriefForUser(u.id, day);
       out.brief = { ok: true, risk };

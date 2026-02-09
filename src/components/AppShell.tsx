@@ -13,6 +13,10 @@ function titleForPath(path: string): { title: string; subtitle: string } {
     return { title: "Alerts", subtitle: "Autogenererede advarsler (MED/HIGH) fra AI brief job." };
   if (path.startsWith("/activities"))
     return { title: "Aktiviteter", subtitle: "Seneste aktiviteter udledt fra snapshots." };
+  if (path.startsWith("/insights"))
+    return { title: "Indsigter", subtitle: "Små widgets der hjælper dig i hverdagen." };
+  if (path.startsWith("/reports/weekly"))
+    return { title: "Ugereview", subtitle: "AI opsummering + fokus til næste uge." };
   if (path.startsWith("/garmin"))
     return { title: "Garmin", subtitle: "Token-only. Importér eksisterende tokens uden login." };
   if (path.startsWith("/settings"))

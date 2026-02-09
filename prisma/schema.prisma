@@ -42,6 +42,10 @@ model UserProfile {
 
   sex String @default("male") // male|female
 
+  // Goals (simple, editable)
+  stepsGoal Int @default(8000)
+  sleepGoalHours Float @default(7.5)
+
   // Optional female-specific context
   pregnant Boolean @default(false)
   cycleDay Int?
