@@ -17,6 +17,12 @@ export default function SettingsPage() {
   const [goalsLoading, setGoalsLoading] = useState(false);
   const [goalsSaving, setGoalsSaving] = useState(false);
 
+  const [sex, setSex] = useState<"male" | "female">("male");
+  const [pregnant, setPregnant] = useState(false);
+  const [cycleDay, setCycleDay] = useState<string>("");
+  const [contextLoading, setContextLoading] = useState(false);
+  const [contextSaving, setContextSaving] = useState(false);
+
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
 
   const [error, setError] = useState<string | null>(null);
@@ -60,6 +66,27 @@ export default function SettingsPage() {
         }
       } finally {
         if (!cancelled) setGoalsLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setContextLoading(true);
+      try {
+        const res = await fetch("/api/profile/context", { cache: "no-store" });
+        const json = (await res.json()) as { profile?: { sex: "male" | "female"; pregnant: boolean; cycleDay: number | null } };
+        if (res.ok && json.profile && !cancelled) {
+          setSex(json.profile.sex);
+          setPregnant(Boolean(json.profile.pregnant));
+          setCycleDay(json.profile.cycleDay ? String(json.profile.cycleDay) : "");
+        }
+      } finally {
+        if (!cancelled) setContextLoading(false);
       }
     })();
     return () => {
@@ -131,6 +158,83 @@ export default function SettingsPage() {
           <div className="text-xs text-neutral-500">
             Bruges i streaks + søvngæld på “Indsigter”.
           </div>
+        </div>
+      </section>
+
+      <section className="rounded-xl border p-4 space-y-3">
+        <h2 className="font-semibold">Krop & kontekst</h2>
+        <p className="text-sm text-neutral-500">
+          Bruges til mere præcise indsigter (fx cyklus/menstruation).
+        </p>
+
+        <div className="grid gap-3 max-w-md">
+          <label className="text-sm">
+            <div className="text-xs text-neutral-500">Køn</div>
+            <select
+              className="w-full rounded-md border px-3 py-2"
+              value={sex}
+              disabled={contextLoading || contextSaving}
+              onChange={(e) => setSex(e.target.value === "female" ? "female" : "male")}
+            >
+              <option value="male">Mand</option>
+              <option value="female">Kvinde</option>
+            </select>
+          </label>
+
+          {sex === "female" ? (
+            <>
+              <label className="inline-flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={pregnant}
+                  disabled={contextLoading || contextSaving}
+                  onChange={(e) => setPregnant(e.target.checked)}
+                />
+                Gravid
+              </label>
+
+              <label className="text-sm">
+                <div className="text-xs text-neutral-500">Cyklusdag (valgfri)</div>
+                <input
+                  className="w-full rounded-md border px-3 py-2"
+                  inputMode="numeric"
+                  placeholder="fx 12"
+                  value={cycleDay}
+                  disabled={contextLoading || contextSaving}
+                  onChange={(e) => setCycleDay(e.target.value.replace(/\D/g, ""))}
+                />
+                <div className="mt-1 text-xs text-neutral-500">1–40. Tom = ukendt.</div>
+              </label>
+            </>
+          ) : null}
+
+          <button
+            className="rounded-md bg-black text-white py-2 disabled:opacity-50"
+            disabled={contextLoading || contextSaving}
+            onClick={async () => {
+              setContextSaving(true);
+              setError(null);
+              try {
+                const res = await fetch("/api/profile/context", {
+                  method: "POST",
+                  headers: { "content-type": "application/json" },
+                  body: JSON.stringify({
+                    sex,
+                    pregnant,
+                    cycleDay: sex === "female" && cycleDay ? Number(cycleDay) : null,
+                  }),
+                });
+                const json = await res.json();
+                if (!res.ok) throw new Error(json.error || "Kunne ikke gemme");
+              } catch (e: unknown) {
+                setError(e instanceof Error ? e.message : "Kunne ikke gemme");
+              } finally {
+                setContextSaving(false);
+              }
+            }}
+          >
+            {contextSaving ? "Gemmer…" : "Gem"}
+          </button>
         </div>
       </section>
 

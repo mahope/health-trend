@@ -8,6 +8,14 @@
 - [x] **Full PWA** (install-only)
 
 ## Next (20 ideas)
+
+### Settings / personalisation
+- [ ] Sex + cycle context used in AI prompts (brief + day plan + weekly report)
+- [ ] Cycle tracking UI (period start, cycle length estimate, symptoms)
+
+### Data hygiene
+- [ ] Delete snapshots (done ✅) + undo within 30s (optional)
+- [ ] “Recompute” day brief after deleting snapshots
 ### Mobile UX
 1. Toasts/haptics for Snapshot/Brief/Save
 2. Manual autosave status (Gemmer… / Gemt ✓)

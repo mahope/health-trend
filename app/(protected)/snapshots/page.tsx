@@ -148,12 +148,37 @@ export default function SnapshotsPage() {
                 </div>
               ) : (
                 items.map((x) => (
-                  <div key={x.id} className="flex items-center justify-between text-sm">
+                  <div key={x.id} className="flex items-center justify-between gap-3 text-sm">
                     <div className="text-neutral-800 dark:text-neutral-100">
                       {fmtTime(x.takenAt)}
                     </div>
-                    <div className="text-neutral-600 dark:text-neutral-300">
-                      Steps: {x.steps ?? "—"}
+                    <div className="flex items-center gap-3">
+                      <div className="text-neutral-600 dark:text-neutral-300">Steps: {x.steps ?? "—"}</div>
+                      <button
+                        className="text-xs text-rose-600 hover:text-rose-800 dark:text-rose-300 dark:hover:text-rose-200"
+                        onClick={async () => {
+                          const ok = confirm("Slet snapshot? (kan ikke fortrydes)");
+                          if (!ok) return;
+                          setLoading(true);
+                          setError(null);
+                          try {
+                            const res = await fetch("/api/snapshots/delete", {
+                              method: "POST",
+                              headers: { "content-type": "application/json" },
+                              body: JSON.stringify({ id: x.id }),
+                            });
+                            const json = await res.json().catch(() => ({}));
+                            if (!res.ok) throw new Error(json.error || "Kunne ikke slette");
+                            await refresh();
+                          } catch (e: unknown) {
+                            setError(e instanceof Error ? e.message : "Fejl");
+                          } finally {
+                            setLoading(false);
+                          }
+                        }}
+                      >
+                        Slet
+                      </button>
                     </div>
                   </div>
                 ))
