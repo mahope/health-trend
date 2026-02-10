@@ -44,6 +44,7 @@
 17. [x] Health endpoint + basic uptime page
 18. [x] Better cron logging + idempotency key
 19. [x] Security headers (CSP-lite, etc.)
+- [x] Settings: vis app-version + git sha (kopiér)
 
 ### Design/system
 20. [x] Design tokens (spacing/typography) pass

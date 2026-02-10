@@ -477,6 +477,30 @@ export default function SettingsPage() {
       </section>
 
       <section className="rounded-xl border p-4 space-y-3">
+        <h2 className="font-semibold">Om appen</h2>
+        <div className="text-sm text-neutral-600">
+          Version {process.env.NEXT_PUBLIC_APP_VERSION} ({process.env.NEXT_PUBLIC_GIT_SHA})
+        </div>
+        <button
+          className="rounded-md border px-3 py-2"
+          onClick={async () => {
+            const text = `Health Trend v${process.env.NEXT_PUBLIC_APP_VERSION} (${process.env.NEXT_PUBLIC_GIT_SHA})`;
+            try {
+              await navigator.clipboard.writeText(text);
+              rateLimitedToast({ title: "Build-info kopieret", kind: "success", vibrateMs: 8 });
+            } catch {
+              rateLimitedToast({ title: "Kunne ikke kopiere", kind: "error", vibrateMs: 25 });
+            }
+          }}
+        >
+          Kopiér build-info
+        </button>
+        <div className="text-xs text-neutral-500">
+          Praktisk hvis du rapporterer bugs eller tester deploys.
+        </div>
+      </section>
+
+      <section className="rounded-xl border p-4 space-y-3">
         <h2 className="font-semibold">Log ud</h2>
         <button
           className="rounded-md border px-3 py-2"
