@@ -29,7 +29,7 @@
 ### Garmin value
 7. [x] Sleep debt trend chart (7/14d)
 8. [x] Recovery score widget (BB low + stress + sleep)
-9. Activity streaks by type (walk/run/strength)
+9. [x] Activity streaks by type (walk/run/strength)
 10. [x] Best-days patterns: what correlates with LOW risk
 11. [x] “Tomorrow plan” (based on today)
 

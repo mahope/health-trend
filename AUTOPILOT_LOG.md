@@ -160,3 +160,11 @@ pm run build ?
 - Changed: Improved first-time empty state on Dashboard (clear CTAs to Snapshots/Garmin). Added Recovery score widget card (BB low + sleep + stress) based on latest snapshot. Marked backlog item #8 as done.
 - Commit: 71270f2
 - Tests: npm run lint OK, npm run build OK
+
+## 2026-02-10 03:10 (Europe/Copenhagen)
+- Changed: Added activity streaks by type (run/walk/strength) via new /api/activities/streaks endpoint and small streak pills in Activities card.
+- Commit: 90b64ee
+- Tests: 
+pm run lint ?, 
+pm run build ?
+
