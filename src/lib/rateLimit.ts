@@ -39,7 +39,11 @@ export function getClientIp(req: Request) {
 type LegacyRateLimitOpts = { key: string; windowMs: number; max: number };
 
 function isRequestLike(x: unknown): x is Request {
-  return !!x && typeof x === "object" && "headers" in (x as any) && typeof (x as any).headers?.get === "function";
+  if (!x || typeof x !== "object") return false;
+  const maybe = x as { headers?: unknown };
+  if (!maybe.headers || typeof maybe.headers !== "object") return false;
+  const h = maybe.headers as { get?: unknown };
+  return typeof h.get === "function";
 }
 
 /**
