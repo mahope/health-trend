@@ -213,3 +213,8 @@ pm run build ?
 - Changed: Improved empty states on /activities + /alerts with clear mobile CTAs to Snapshots/Dashboard/Garmin.
 - Commit: 71891f6
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 04:52 (Europe/Copenhagen)
+- Changed: Improved first-snapshot empty state on /snapshots: added a Copy path CTA + reuse expected path string; missing_garmin_file error now offers copy-path + Garmin link.
+- Commit: cdcb81f
+- Tests: `npm run lint` ✅, `npm run build` ✅
