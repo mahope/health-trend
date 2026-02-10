@@ -188,3 +188,8 @@ pm run build ?
 - Changed: Added a reusable `Skeleton` UI component and wired skeleton loaders into Dashboard cards (Latest snapshot, Recovery, AI brief) for nicer mobile loading states.
 - Commit: dab1288
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 04:00 (Europe/Copenhagen)
+- Changed: Added route-level loading UI for authenticated routes via `app/(protected)/loading.tsx` (dashboard-like skeleton during navigation/refresh). Marked backlog item as done.
+- Commit: a979b5a
+- Tests: `npm run lint` ✅, `npm run build` ✅
