@@ -228,3 +228,8 @@ pm run build ?
 - Changed: Improved empty trends CTA: the Trends empty state now links to /snapshots and /garmin (instead of #snapshots anchor), clearer mobile buttons. 
 - Commit: bda3539 
 - Tests: npm run lint OK, npm run build OK
+
+## 2026-02-10 05:22 (Europe/Copenhagen)
+- Changed: Improved dashboard first-snapshot empty state (Latest Snapshot card): shows expected Garmin file path, one-tap copy, and quick links to Garmin/Snapshots.
+- Commit: f45b650
+- Tests: npm run lint ?, npm run build ?
