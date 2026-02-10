@@ -233,3 +233,8 @@ pm run build ?
 - Changed: Improved dashboard first-snapshot empty state (Latest Snapshot card): shows expected Garmin file path, one-tap copy, and quick links to Garmin/Snapshots.
 - Commit: f45b650
 - Tests: npm run lint ?, npm run build ?
+
+## 2026-02-10 05:32 (Europe/Copenhagen)
+- Changed: Added build info in Settings (app version + git sha) with copy-to-clipboard button. Exposed NEXT_PUBLIC_APP_VERSION + NEXT_PUBLIC_GIT_SHA via next.config.ts.
+- Commit: 52cc6b4
+- Tests: npm run lint OK, npm run build OK
