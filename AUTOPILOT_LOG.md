@@ -193,3 +193,8 @@ pm run build ?
 - Changed: Added route-level loading UI for authenticated routes via `app/(protected)/loading.tsx` (dashboard-like skeleton during navigation/refresh). Marked backlog item as done.
 - Commit: a979b5a
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 04:17 (Europe/Copenhagen)
+- Changed: Made `CardHeader` mobile-first by stacking actions below title/description on small screens (avoids cramped button rows).
+- Commit: 420199b
+- Tests: `npm run lint` ✅, `npm run build` ✅
