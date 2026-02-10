@@ -100,21 +100,21 @@ export function InsightsCards() {
           />
           <CardBody>
             <div className="mb-2 flex items-center justify-between gap-3">
-              <div className="text-sm text-neutral-600 dark:text-neutral-300">
+              <div className="text-sm text-[color:var(--text-tertiary)]">
                 Trend (14 dage)
               </div>
               <div className="inline-flex overflow-hidden rounded-lg border border-[color:var(--border-subtle)]">
                 <button
                   type="button"
                   onClick={() => setWindowDays(7)}
-                  className={`px-2 py-1 text-xs ${windowDays === 7 ? "bg-black/5 dark:bg-white/10" : "bg-transparent"}`}
+                  className={`px-2 py-1 text-xs ${windowDays === 7 ? "bg-[color:var(--bg-selected)]" : "bg-transparent"}`}
                 >
                   7d
                 </button>
                 <button
                   type="button"
                   onClick={() => setWindowDays(14)}
-                  className={`px-2 py-1 text-xs ${windowDays === 14 ? "bg-black/5 dark:bg-white/10" : "bg-transparent"}`}
+                  className={`px-2 py-1 text-xs ${windowDays === 14 ? "bg-[color:var(--bg-selected)]" : "bg-transparent"}`}
                 >
                   14d
                 </button>
@@ -127,17 +127,17 @@ export function InsightsCards() {
 
             {error && <div className="text-sm text-[color:var(--text-error)]">{error}</div>}
             {!data ? (
-              <div className="text-sm text-neutral-600 dark:text-neutral-300">Henter…</div>
+              <div className="text-sm text-[color:var(--text-tertiary)]">Henter…</div>
             ) : (
               <div className="space-y-2">
                 <div className="text-2xl font-semibold tracking-tight">
                   {data.sleepDebt.debtHours} t
                 </div>
-                <div className="text-sm text-neutral-600 dark:text-neutral-300">
+                <div className="text-sm text-[color:var(--text-tertiary)]">
                   Mål: {data.sleepDebt.goalHours?.toFixed(1)}t/nat · Snit:{" "}
                   {data.sleepDebt.avgSleepHours?.toFixed(1) ?? "—"}t
                 </div>
-                <div className="text-sm text-neutral-600 dark:text-neutral-300">
+                <div className="text-sm text-[color:var(--text-tertiary)]">
                   Forslag i aften: sigt efter{" "}
                   {Math.min(
                     10,
@@ -160,11 +160,11 @@ export function InsightsCards() {
           <CardBody>
             {error && <div className="text-sm text-[color:var(--text-error)]">{error}</div>}
             {!data ? (
-              <div className="text-sm text-neutral-600 dark:text-neutral-300">Henter…</div>
+              <div className="text-sm text-[color:var(--text-tertiary)]">Henter…</div>
             ) : (
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-xl border border-[color:var(--border-subtle)] p-3">
-                  <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                  <div className="text-xs text-[color:var(--text-caption)]">
                     Steps (mål {data.streaks.stepsGoal})
                   </div>
                   <div className="mt-1 text-2xl font-semibold tracking-tight">
@@ -172,7 +172,7 @@ export function InsightsCards() {
                   </div>
                 </div>
                 <div className="rounded-xl border border-[color:var(--border-subtle)] p-3">
-                  <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                  <div className="text-xs text-[color:var(--text-caption)]">
                     Søvn (mål {data.streaks.sleepGoalHours.toFixed(1)}t)
                   </div>
                   <div className="mt-1 text-2xl font-semibold tracking-tight">
@@ -195,14 +195,14 @@ export function InsightsCards() {
             {error && <div className="text-sm text-[color:var(--text-error)]">{error}</div>}
 
             {!best ? (
-              <div className="text-sm text-neutral-600 dark:text-neutral-300">Henter…</div>
+              <div className="text-sm text-[color:var(--text-tertiary)]">Henter…</div>
             ) : best.counts.daysWithRisk === 0 ? (
               <EmptyState
                 title="Ingen risikovurderinger endnu"
                 description={
                   <>
                     Når du har genereret AI brief for nogle dage, kan vi finde mønstre i dine bedste (LOW) dage.
-                    <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+                    <div className="mt-2 text-xs text-[color:var(--text-caption)]">
                       Tip: tag 2–3 snapshots om dagen i et par dage — så begynder der at komme vurderinger.
                     </div>
                   </>
@@ -224,7 +224,7 @@ export function InsightsCards() {
                 description={
                   <>
                     Der er ikke nogen LOW-dage i de seneste ~30 dage. Når der kommer nogle, viser vi forskelle her.
-                    <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+                    <div className="mt-2 text-xs text-[color:var(--text-caption)]">
                       Du kan stadig bruge dashboardet dagligt til at få forslag og se trends.
                     </div>
                   </>
@@ -242,8 +242,8 @@ export function InsightsCards() {
               />
             ) : (
               <div className="space-y-3">
-                <div className="text-sm text-neutral-600 dark:text-neutral-300">
-                  LOW dage: <span className="font-medium text-neutral-900 dark:text-neutral-100">{best.counts.lowDays}</span> /{" "}
+                <div className="text-sm text-[color:var(--text-tertiary)]">
+                  LOW dage: <span className="font-medium text-[color:var(--text-primary)]">{best.counts.lowDays}</span> /{" "}
                   {best.counts.daysWithRisk}
                 </div>
 
@@ -263,7 +263,7 @@ export function InsightsCards() {
                   />
                 </div>
 
-                <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                <div className="text-xs text-[color:var(--text-caption)]">
                   *Dette er bare et simpelt gennemsnit (ikke statistik). Tænk “pegepind”, ikke sandhed.*
                 </div>
               </div>
@@ -292,15 +292,15 @@ function Metric({
 
   return (
     <div className="rounded-xl border border-[color:var(--border-subtle)] p-3">
-      <div className="text-xs text-neutral-500 dark:text-neutral-400">{label}</div>
+      <div className="text-xs text-[color:var(--text-caption)]">{label}</div>
       <div
         className={`mt-1 text-lg font-semibold tracking-tight ${
-          isGood === null ? "text-neutral-900 dark:text-neutral-100" : isGood ? "text-emerald-700 dark:text-emerald-300" : "text-rose-700 dark:text-rose-300"
+          isGood === null ? "text-[color:var(--text-primary)]" : isGood ? "text-emerald-700 dark:text-emerald-300" : "text-rose-700 dark:text-rose-300"
         }`}
       >
         {text}
       </div>
-      <div className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">(LOW vs. alle)</div>
+      <div className="mt-1 text-xs text-[color:var(--text-caption)]">(LOW vs. alle)</div>
     </div>
   );
 }

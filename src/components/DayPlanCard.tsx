@@ -115,9 +115,9 @@ export function DayPlanCard() {
           </div>
         ) : (
           <div className="space-y-3">
-            <div className="text-sm text-neutral-700 dark:text-neutral-200">
+            <div className="text-sm text-[color:var(--text-secondary)]">
               <div className="font-medium">{data.ai?.headline || "Dagens fokus"}</div>
-              <div className="text-neutral-600 dark:text-neutral-300">
+              <div className="text-[color:var(--text-tertiary)]">
                 {data.ai?.focus || data.deterministic.reason}
               </div>
             </div>
@@ -127,12 +127,12 @@ export function DayPlanCard() {
               <summary className="cursor-pointer list-none">
                 <div className="flex items-center justify-between gap-3">
                   <div className="text-sm font-semibold">Gør i dag + undgå</div>
-                  <div className="text-xs text-neutral-500 dark:text-neutral-400">Tryk for at åbne</div>
+                  <div className="text-xs text-[color:var(--text-caption)]">Tryk for at åbne</div>
                 </div>
                 <div className="mt-2 grid gap-2">
                   <div>
-                    <div className="text-xs text-neutral-500 dark:text-neutral-400">Top 3</div>
-                    <ul className="mt-1 list-disc pl-5 text-sm text-neutral-700 dark:text-neutral-200 space-y-1">
+                    <div className="text-xs text-[color:var(--text-caption)]">Top 3</div>
+                    <ul className="mt-1 list-disc pl-5 text-sm text-[color:var(--text-secondary)] space-y-1">
                       {(data.ai?.doToday?.length ? data.ai.doToday : data.deterministic.suggestions)
                         .slice(0, 3)
                         .map((x, i) => (
@@ -145,8 +145,8 @@ export function DayPlanCard() {
 
               <div className="mt-3 grid gap-3">
                 <div>
-                  <div className="text-xs text-neutral-500 dark:text-neutral-400">Gør i dag</div>
-                  <ul className="mt-2 list-disc pl-5 text-sm text-neutral-700 dark:text-neutral-200 space-y-1">
+                  <div className="text-xs text-[color:var(--text-caption)]">Gør i dag</div>
+                  <ul className="mt-2 list-disc pl-5 text-sm text-[color:var(--text-secondary)] space-y-1">
                     {(data.ai?.doToday?.length ? data.ai.doToday : data.deterministic.suggestions)
                       .slice(0, 6)
                       .map((x, i) => (
@@ -155,8 +155,8 @@ export function DayPlanCard() {
                   </ul>
                 </div>
                 <div>
-                  <div className="text-xs text-neutral-500 dark:text-neutral-400">Undgå</div>
-                  <ul className="mt-2 list-disc pl-5 text-sm text-neutral-700 dark:text-neutral-200 space-y-1">
+                  <div className="text-xs text-[color:var(--text-caption)]">Undgå</div>
+                  <ul className="mt-2 list-disc pl-5 text-sm text-[color:var(--text-secondary)] space-y-1">
                     {(data.ai?.avoid?.length ? data.ai.avoid : data.deterministic.avoid)
                       .slice(0, 5)
                       .map((x, i) => (
@@ -170,8 +170,8 @@ export function DayPlanCard() {
             {/* Desktop: expanded */}
             <div className="hidden md:grid gap-3 md:grid-cols-2">
               <div>
-                <div className="text-xs text-neutral-500 dark:text-neutral-400">Gør i dag</div>
-                <ul className="mt-2 list-disc pl-5 text-sm text-neutral-700 dark:text-neutral-200 space-y-1">
+                <div className="text-xs text-[color:var(--text-caption)]">Gør i dag</div>
+                <ul className="mt-2 list-disc pl-5 text-sm text-[color:var(--text-secondary)] space-y-1">
                   {(data.ai?.doToday?.length ? data.ai.doToday : data.deterministic.suggestions)
                     .slice(0, 6)
                     .map((x, i) => (
@@ -180,8 +180,8 @@ export function DayPlanCard() {
                 </ul>
               </div>
               <div>
-                <div className="text-xs text-neutral-500 dark:text-neutral-400">Undgå</div>
-                <ul className="mt-2 list-disc pl-5 text-sm text-neutral-700 dark:text-neutral-200 space-y-1">
+                <div className="text-xs text-[color:var(--text-caption)]">Undgå</div>
+                <ul className="mt-2 list-disc pl-5 text-sm text-[color:var(--text-secondary)] space-y-1">
                   {(data.ai?.avoid?.length ? data.ai.avoid : data.deterministic.avoid)
                     .slice(0, 5)
                     .map((x, i) => (
@@ -193,20 +193,20 @@ export function DayPlanCard() {
 
             <div className="grid gap-3 md:grid-cols-2">
               <div className="rounded-xl border border-[color:var(--border-subtle)] p-3 text-sm">
-                <div className="text-xs text-neutral-500 dark:text-neutral-400">Koffein</div>
-                <div className="mt-1 text-neutral-700 dark:text-neutral-200">
+                <div className="text-xs text-[color:var(--text-caption)]">Koffein</div>
+                <div className="mt-1 text-[color:var(--text-secondary)]">
                   {data.ai?.caffeine || "Hold koffein tidligere på dagen (helst før kl. 14)."}
                 </div>
               </div>
               <div className="rounded-xl border border-[color:var(--border-subtle)] p-3 text-sm">
-                <div className="text-xs text-neutral-500 dark:text-neutral-400">Sengetid</div>
-                <div className="mt-1 text-neutral-700 dark:text-neutral-200">
+                <div className="text-xs text-[color:var(--text-caption)]">Sengetid</div>
+                <div className="mt-1 text-[color:var(--text-secondary)]">
                   {data.ai?.bedtime || data.deterministic.bedtimeHint}
                 </div>
               </div>
             </div>
 
-            <a className="text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white" href="/insights">
+            <a className="text-sm text-[color:var(--text-tertiary)] hover:text-[color:var(--text-primary)]" href="/insights">
               Se flere indsigter →
             </a>
           </div>

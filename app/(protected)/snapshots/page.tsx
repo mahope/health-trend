@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { useToast } from "@/components/ToastProvider";
 import { EmptyState, InlineEmptyLink } from "@/components/EmptyState";
 
@@ -169,20 +169,20 @@ export default function SnapshotsPage() {
         <CardBody>
           <div className="grid gap-3 md:grid-cols-2">
             <div>
-              <label className="block text-xs text-neutral-500 dark:text-neutral-400">Dag</label>
+              <label className="block text-xs text-[color:var(--text-caption)]">Dag</label>
               <Input value={day} onChange={(e) => setDay(e.target.value)} placeholder="YYYY-MM-DD" />
             </div>
-            <div className="text-xs text-neutral-500 dark:text-neutral-400 md:pt-6">
+            <div className="text-xs text-[color:var(--text-caption)] md:pt-6">
               Snapshot læses lokalt fra{" "}
               <code>garmin-YYYY-MM-DD.json</code> (Garmin data-mappe).
             </div>
           </div>
 
           {error ? (
-            <div className="mt-3 rounded-2xl border border-red-500/20 bg-red-50/60 p-4 text-sm text-red-800 dark:border-red-400/20 dark:bg-red-950/30 dark:text-red-200">
+            <div className="mt-3 rounded-2xl border border-[color:var(--border-error)] bg-[color:var(--bg-error)] p-4 text-sm text-[color:var(--text-error-body)]">
               <div className="font-medium">{error.message}</div>
               {(error.hint || error.file) && (
-                <div className="mt-1 text-xs text-red-700/90 dark:text-red-200/80">
+                <div className="mt-1 text-xs text-[color:var(--text-error-detail)]">
                   {error.hint ? <div>{error.hint}</div> : null}
                   {error.file ? (
                     <div>
@@ -197,12 +197,9 @@ export default function SnapshotsPage() {
                   <Button size="sm" variant="ghost" disabled={loading} onClick={copyExpectedPath}>
                     Kopiér filsti
                   </Button>
-                  <Link
-                    href="/garmin"
-                    className="inline-flex h-9 items-center justify-center rounded-[var(--radius-control)] border border-white/20 bg-white/20 px-3 text-xs font-medium text-red-900/90 transition-colors hover:bg-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 dark:border-white/15 dark:bg-white/5 dark:text-red-100"
-                  >
+                  <LinkButton href="/garmin" variant="secondary" size="sm">
                     Åbn Garmin
-                  </Link>
+                  </LinkButton>
                 </div>
               ) : null}
             </div>
@@ -228,7 +225,7 @@ export default function SnapshotsPage() {
                         </li>
                         <li>Tryk “Tag første snapshot”.</li>
                       </ol>
-                      <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+                      <div className="mt-2 text-xs text-[color:var(--text-caption)]">
                         Snapshot læses lokalt fra <code className="break-all">{expectedFile}</code>.
                       </div>
                       <div className="mt-2">
@@ -244,16 +241,13 @@ export default function SnapshotsPage() {
                       <Button className="w-full" variant="ghost" disabled={loading} onClick={copyExpectedPath}>
                         Kopiér filsti
                       </Button>
-                      <Link
-                        href="/garmin"
-                        className="inline-flex h-10 w-full items-center justify-center rounded-[var(--radius-control)] border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] px-4 text-sm font-medium text-neutral-900 transition-colors hover:bg-[color:var(--surface-control-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring-subtle)] dark:text-neutral-100"
-                      >
+                      <LinkButton href="/garmin" variant="secondary" className="w-full">
                         Tjek Garmin data
-                      </Link>
-                      <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                      </LinkButton>
+                      <div className="text-xs text-[color:var(--text-caption)]">
                         Hvis den fejler, får du en sti/hint herover.
                       </div>
-                      <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                      <div className="text-xs text-[color:var(--text-caption)]">
                         Se også: <InlineEmptyLink href="/garmin">Garmin</InlineEmptyLink>
                       </div>
                     </div>
@@ -262,11 +256,11 @@ export default function SnapshotsPage() {
               ) : (
                 items.map((x) => (
                   <div key={x.id} className="flex items-center justify-between gap-3 text-sm">
-                    <div className="text-neutral-800 dark:text-neutral-100">{fmtTime(x.takenAt)}</div>
+                    <div className="text-[color:var(--text-primary)]">{fmtTime(x.takenAt)}</div>
                     <div className="flex items-center gap-3">
-                      <div className="text-neutral-600 dark:text-neutral-300">Steps: {x.steps ?? "—"}</div>
+                      <div className="text-[color:var(--text-tertiary)]">Steps: {x.steps ?? "—"}</div>
                       <button
-                        className="text-xs text-rose-600 hover:text-rose-800 dark:text-rose-300 dark:hover:text-rose-200"
+                        className="text-xs text-[color:var(--text-error)] hover:opacity-80"
                         onClick={() => {
                           // If we already have a pending delete, commit it now (so undo stays simple).
                           if (pendingDelete.current) {
@@ -348,10 +342,10 @@ export default function SnapshotsPage() {
               ) : (
                 deltas.map((d) => (
                   <div key={d.b.id} className="flex items-center justify-between text-sm">
-                    <div className="text-neutral-800 dark:text-neutral-100">
+                    <div className="text-[color:var(--text-primary)]">
                       {fmtTime(d.a.takenAt)} → {fmtTime(d.b.takenAt)}
                     </div>
-                    <div className="text-neutral-600 dark:text-neutral-300">Δ steps: {d.dSteps ?? "—"}</div>
+                    <div className="text-[color:var(--text-tertiary)]">Δ steps: {d.dSteps ?? "—"}</div>
                   </div>
                 ))
               )}

@@ -16,7 +16,7 @@ export function PageHeader({
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
         {subtitle ? (
-          <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
+          <p className="mt-1 text-sm text-[color:var(--text-tertiary)]">
             {subtitle}
           </p>
         ) : null}

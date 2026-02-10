@@ -20,11 +20,11 @@ export function Button({
 
   const variants: Record<Variant, string> = {
     primary:
-      "bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90",
+      "bg-[color:var(--button-primary-bg)] text-[color:var(--button-primary-text)] hover:bg-[color:var(--button-primary-hover)]",
     secondary:
-      "border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] hover:bg-[color:var(--surface-control-hover)] text-neutral-900 dark:text-neutral-100",
+      "border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] hover:bg-[color:var(--surface-control-hover)] text-[color:var(--text-primary)]",
     ghost:
-      "hover:bg-black/5 text-neutral-800 dark:hover:bg-white/10 dark:text-neutral-100",
+      "hover:bg-[color:var(--bg-hover)] text-[color:var(--text-primary)]",
   };
 
   const sizes = {

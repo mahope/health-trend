@@ -13,12 +13,12 @@ export function FormField({
 }) {
   return (
     <div className={cn("space-y-1", className)}>
-      <div className="text-xs text-[color:var(--text-muted)] dark:text-[color:var(--text-muted-dark)]">
+      <div className="text-xs text-[color:var(--text-caption)]">
         {label}
       </div>
       {children}
       {description && (
-        <div className="text-xs text-[color:var(--text-muted)] dark:text-[color:var(--text-muted-dark)]">
+        <div className="text-xs text-[color:var(--text-caption)]">
           {description}
         </div>
       )}

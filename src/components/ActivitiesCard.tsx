@@ -75,7 +75,7 @@ export function ActivitiesCard({ limit = 10 }: { limit?: number }) {
         description={`Seneste ${limit} (fra snapshots).`}
         right={
           <Link
-            className="text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white"
+            className="text-sm text-[color:var(--text-tertiary)] hover:text-[color:var(--text-primary)]"
             href="/activities"
           >
             Se alle
@@ -98,11 +98,11 @@ export function ActivitiesCard({ limit = 10 }: { limit?: number }) {
               return (
                 <div
                   key={key}
-                  className="inline-flex items-center gap-2 rounded-full border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] px-3 py-1.5 text-xs text-neutral-700 dark:text-neutral-200"
+                  className="inline-flex items-center gap-2 rounded-full border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] px-3 py-1.5 text-xs text-[color:var(--text-secondary)]"
                   title={max > 0 ? `${label}: ${cur} dage i træk (max ${max})` : `${label}: ingen streak endnu`}
                 >
                   <span className="font-medium">{label}</span>
-                  <span className="text-neutral-500 dark:text-neutral-400">{cur > 0 ? `${cur}d` : "—"}</span>
+                  <span className="text-[color:var(--text-caption)]">{cur > 0 ? `${cur}d` : "—"}</span>
                 </div>
               );
             })}
@@ -111,9 +111,9 @@ export function ActivitiesCard({ limit = 10 }: { limit?: number }) {
 
         {error && <div className="text-sm text-[color:var(--text-error)]">{error}</div>}
         {items.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] p-5 text-sm text-neutral-700 dark:text-neutral-200">
+          <div className="rounded-2xl border border-dashed border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] p-5 text-sm text-[color:var(--text-secondary)]">
             <div className="font-medium">Ingen aktiviteter endnu</div>
-            <div className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
+            <div className="mt-1 text-sm text-[color:var(--text-tertiary)]">
               Aktiviteter kommer fra dine snapshots (Garmin eksport). Tag dit første snapshot for at begynde at se dem.
             </div>
             <div className="mt-4">
@@ -125,21 +125,21 @@ export function ActivitiesCard({ limit = 10 }: { limit?: number }) {
         ) : (
           <>
             {/* Mobile: show only first 3 */}
-            <div className="md:hidden divide-y divide-black/5 dark:divide-white/10">
+            <div className="md:hidden divide-y divide-[color:var(--divide-color)]">
               {items.slice(0, 3).map((a) => (
                 <div key={a.id} className="py-3 flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <div className="text-sm font-medium truncate">{a.activityName || a.activityType || "Aktivitet"}</div>
-                    <div className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">{fmtWhen(a.startTimeLocal)}</div>
+                    <div className="mt-1 text-xs text-[color:var(--text-caption)]">{fmtWhen(a.startTimeLocal)}</div>
                   </div>
-                  <div className="shrink-0 text-xs text-neutral-600 dark:text-neutral-300 text-right">
+                  <div className="shrink-0 text-xs text-[color:var(--text-tertiary)] text-right">
                     {a.distanceKm != null ? `${a.distanceKm.toFixed(1)} km` : ""}
                   </div>
                 </div>
               ))}
               {items.length > 3 ? (
                 <div className="py-3">
-                  <Link className="text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white" href="/activities">
+                  <Link className="text-sm text-[color:var(--text-tertiary)] hover:text-[color:var(--text-primary)]" href="/activities">
                     Se alle aktiviteter →
                   </Link>
                 </div>
@@ -147,14 +147,14 @@ export function ActivitiesCard({ limit = 10 }: { limit?: number }) {
             </div>
 
             {/* Desktop: show all */}
-            <div className="hidden md:block divide-y divide-black/5 dark:divide-white/10">
+            <div className="hidden md:block divide-y divide-[color:var(--divide-color)]">
               {items.map((a) => (
                 <div key={a.id} className="py-3 flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <div className="text-sm font-medium truncate">{a.activityName || a.activityType || "Aktivitet"}</div>
-                    <div className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">{fmtWhen(a.startTimeLocal)}</div>
+                    <div className="mt-1 text-xs text-[color:var(--text-caption)]">{fmtWhen(a.startTimeLocal)}</div>
                   </div>
-                  <div className="shrink-0 text-xs text-neutral-600 dark:text-neutral-300 text-right">
+                  <div className="shrink-0 text-xs text-[color:var(--text-tertiary)] text-right">
                     {a.distanceKm != null ? `${a.distanceKm.toFixed(1)} km` : ""}{
                       a.distanceKm != null && a.durationMinutes != null ? " · " : ""
                     }

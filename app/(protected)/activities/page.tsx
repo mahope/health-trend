@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { EmptyState, InlineEmptyLink } from "@/components/EmptyState";
 
 type Activity = {
@@ -75,7 +75,7 @@ export default function ActivitiesPage() {
         <CardBody>
           <div className="grid gap-3 md:grid-cols-3">
             <div>
-              <label className="block text-xs text-neutral-500 dark:text-neutral-400">Limit</label>
+              <label className="block text-xs text-[color:var(--text-caption)]">Limit</label>
               <Input
                 inputMode="numeric"
                 value={String(limit)}
@@ -83,7 +83,7 @@ export default function ActivitiesPage() {
               />
             </div>
             <div>
-              <label className="block text-xs text-neutral-500 dark:text-neutral-400">Lookback (dage)</label>
+              <label className="block text-xs text-[color:var(--text-caption)]">Lookback (dage)</label>
               <Input
                 inputMode="numeric"
                 value={String(days)}
@@ -102,7 +102,7 @@ export default function ActivitiesPage() {
             </div>
           </div>
 
-          {error && <div className="mt-3 text-sm text-red-600">{error}</div>}
+          {error && <div className="mt-3 text-sm text-[color:var(--text-error)]">{error}</div>}
         </CardBody>
       </Card>
 
@@ -116,7 +116,7 @@ export default function ActivitiesPage() {
                 <>
                   Aktiviteter udledes fra dine snapshots. Når du har en Garmin eksport + tager et snapshot efter en træning,
                   dukker de op her.
-                  <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+                  <div className="mt-2 text-xs text-[color:var(--text-caption)]">
                     Tip: hvis du lige er startet, så gå til <InlineEmptyLink href="/snapshots">Snapshots</InlineEmptyLink> og
                     tag dit første snapshot.
                   </div>
@@ -124,34 +124,28 @@ export default function ActivitiesPage() {
               }
               actions={
                 <div className="grid gap-2">
-                  <Link
-                    href="/snapshots"
-                    className="inline-flex h-10 w-full items-center justify-center rounded-[var(--radius-control)] bg-black px-4 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring-subtle)] dark:bg-white dark:text-black dark:hover:bg-white/90"
-                  >
+                  <LinkButton href="/snapshots" variant="primary" className="w-full">
                     Gå til Snapshots
-                  </Link>
-                  <Link
-                    href="/garmin"
-                    className="inline-flex h-10 w-full items-center justify-center rounded-[var(--radius-control)] border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] px-4 text-sm font-medium text-neutral-900 transition-colors hover:bg-[color:var(--surface-control-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring-subtle)] dark:text-neutral-100"
-                  >
+                  </LinkButton>
+                  <LinkButton href="/garmin" variant="secondary" className="w-full">
                     Tjek Garmin data
-                  </Link>
+                  </LinkButton>
                 </div>
               }
             />
           ) : (
-            <div className="divide-y divide-black/5 dark:divide-white/10">
+            <div className="divide-y divide-[color:var(--divide-color)]">
               {items.map((a) => (
                 <div key={a.id} className="py-3 flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <div className="text-sm font-medium truncate">
                       {a.activityName || a.activityType || "Aktivitet"}
                     </div>
-                    <div className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                    <div className="mt-1 text-xs text-[color:var(--text-caption)]">
                       {fmtWhen(a.startTimeLocal)}
                     </div>
                   </div>
-                  <div className="shrink-0 text-xs text-neutral-600 dark:text-neutral-300 text-right">
+                  <div className="shrink-0 text-xs text-[color:var(--text-tertiary)] text-right">
                     {a.distanceKm != null ? `${a.distanceKm.toFixed(1)} km` : ""}{
                       a.distanceKm != null && a.durationMinutes != null ? " · " : ""
                     }

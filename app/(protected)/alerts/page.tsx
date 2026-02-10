@@ -56,7 +56,7 @@ export default function AlertsPage() {
           description="Autogenererede advarsler (MED/HIGH) fra AI brief job."
           right={
             <button
-              className="text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white"
+              className="text-sm text-[color:var(--text-tertiary)] hover:text-[color:var(--text-primary)]"
               onClick={refresh}
               disabled={loading}
             >
@@ -73,7 +73,7 @@ export default function AlertsPage() {
               description={
                 <>
                   Alerts kommer typisk først efter du har taget snapshots og der er blevet genereret AI brief for nogle dage.
-                  <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+                  <div className="mt-2 text-xs text-[color:var(--text-caption)]">
                     Start her: <InlineEmptyLink href="/snapshots">tag et snapshot</InlineEmptyLink> og kig på <InlineEmptyLink href="/">Dashboard</InlineEmptyLink>.
                   </div>
                 </>
@@ -102,13 +102,13 @@ export default function AlertsPage() {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <div className="text-sm font-semibold tracking-tight">{a.title}</div>
-                      <div className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                      <div className="mt-1 text-xs text-[color:var(--text-caption)]">
                         {a.day} · {formatDateTime(a.createdAt)}
                       </div>
                     </div>
                     <Badge tone={tone(a.severity)}>{a.severity}</Badge>
                   </div>
-                  <div className="mt-3 text-sm text-neutral-800 dark:text-neutral-100">
+                  <div className="mt-3 text-sm text-[color:var(--text-primary)]">
                     {a.body}
                   </div>
                 </div>

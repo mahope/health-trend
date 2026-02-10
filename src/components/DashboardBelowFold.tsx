@@ -9,7 +9,7 @@ const TrendsCharts = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="rounded-2xl border border-dashed border-black/15 bg-white/40 p-5 text-sm text-neutral-700 dark:border-white/15 dark:bg-black/15 dark:text-neutral-200">
+      <div className="rounded-2xl border border-dashed border-[color:var(--border-dashed)] bg-[color:var(--surface-inset)] p-5 text-sm text-[color:var(--text-secondary)]">
         Indlæser charts…
       </div>
     ),

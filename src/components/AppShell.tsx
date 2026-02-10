@@ -66,7 +66,7 @@ export function AppShell({
       <div className="min-h-screen">
         <MobileNav open={menuOpen} onClose={() => setMenuOpen(false)} userEmail={userEmail} />
       <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-b from-white via-white to-white dark:from-neutral-950 dark:via-black dark:to-black" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[var(--gradient-from)] via-[var(--gradient-via)] to-[var(--gradient-to)]" />
         <div className="absolute -top-24 left-1/2 h-72 w-[46rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-emerald-500/10 via-sky-500/8 to-fuchsia-500/8 blur-3xl" />
       </div>
 
@@ -76,11 +76,11 @@ export function AppShell({
           <div className="sticky top-6">
             <div className="rounded-2xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-card)] p-4 shadow-sm backdrop-blur">
               <div className="text-sm font-semibold tracking-tight">Health Trend</div>
-              <div className="mt-1 text-xs text-neutral-600 dark:text-neutral-300">{userEmail}</div>
+              <div className="mt-1 text-xs text-[color:var(--text-tertiary)]">{userEmail}</div>
 
               <SidebarNav />
 
-              <div className="mt-4 text-xs text-neutral-500 dark:text-neutral-400">
+              <div className="mt-4 text-xs text-[color:var(--text-caption)]">
                 SaaS-style MVP. Fokus: hurtige snapshots, manual kontekst og AI-brief.
               </div>
             </div>
@@ -93,7 +93,7 @@ export function AppShell({
           <div className="mb-3 flex items-center justify-between gap-4">
             <div className="flex items-start gap-3">
               <button
-                className="md:hidden mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] text-neutral-900 shadow-sm dark:text-neutral-100"
+                className="md:hidden mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] text-[color:var(--text-primary)] shadow-sm"
                 aria-label="Åbn menu"
                 onClick={() => setMenuOpen(true)}
               >
@@ -103,14 +103,14 @@ export function AppShell({
               <div>
                 <div className="text-lg font-semibold tracking-tight">{title}</div>
                 {subtitle ? (
-                  <div className="text-sm text-neutral-600 dark:text-neutral-300">{subtitle}</div>
+                  <div className="text-sm text-[color:var(--text-tertiary)]">{subtitle}</div>
                 ) : null}
                 {pathname === "/" ? <AiCoachLine /> : null}
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="hidden sm:block text-xs text-neutral-500 dark:text-neutral-400 max-w-[40vw] truncate">
+              <div className="hidden sm:block text-xs text-[color:var(--text-caption)] max-w-[40vw] truncate">
                 {userEmail}
               </div>
               <UserMenu userEmail={userEmail} />

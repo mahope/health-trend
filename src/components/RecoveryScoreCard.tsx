@@ -169,7 +169,7 @@ export function RecoveryScoreCard({ day }: { day: string }) {
                 <LinkButton href="/garmin" variant="secondary">
                   Tjek Garmin data
                 </LinkButton>
-                <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                <div className="text-xs text-[color:var(--text-caption)]">
                   Tip: tag typisk 2–3 snapshots om dagen (morgen/middag/aften).
                 </div>
               </div>
@@ -177,31 +177,31 @@ export function RecoveryScoreCard({ day }: { day: string }) {
           />
         ) : (
           <div className="space-y-2">
-            <div className="text-sm text-neutral-800 dark:text-neutral-100">
+            <div className="text-sm text-[color:var(--text-primary)]">
               {computed?.score != null
                 ? "Jo højere, jo bedre. Brug den som pejling (ikke facit)."
                 : "Ikke nok data endnu — tag gerne 1–2 snapshots mere i dag."}
             </div>
 
             <div className="grid grid-cols-3 gap-2 text-xs">
-              <div className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] p-2 text-neutral-700 dark:text-neutral-200">
-                <div className="text-neutral-500 dark:text-neutral-400">BB low</div>
+              <div className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] p-2 text-[color:var(--text-secondary)]">
+                <div className="text-[color:var(--text-caption)]">BB low</div>
                 <div className="font-medium">{computed?.bbLow ?? "—"}</div>
               </div>
-              <div className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] p-2 text-neutral-700 dark:text-neutral-200">
-                <div className="text-neutral-500 dark:text-neutral-400">Søvn</div>
+              <div className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] p-2 text-[color:var(--text-secondary)]">
+                <div className="text-[color:var(--text-caption)]">Søvn</div>
                 <div className="font-medium">
                   {computed?.sleep != null ? `${computed.sleep.toFixed(1)} h` : "—"}
                 </div>
               </div>
-              <div className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] p-2 text-neutral-700 dark:text-neutral-200">
-                <div className="text-neutral-500 dark:text-neutral-400">Stress</div>
+              <div className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] p-2 text-[color:var(--text-secondary)]">
+                <div className="text-[color:var(--text-caption)]">Stress</div>
                 <div className="font-medium">{computed?.stress ?? "—"}</div>
               </div>
             </div>
 
             {latest ? (
-              <div className="text-xs text-neutral-500 dark:text-neutral-400">
+              <div className="text-xs text-[color:var(--text-caption)]">
                 Baseret på seneste snapshot ({formatDateTime(latest.takenAt)}).
               </div>
             ) : null}

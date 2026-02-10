@@ -453,7 +453,7 @@ export default function SettingsPage() {
       <Card>
         <CardHeader title="Om appen" description="Praktisk hvis du rapporterer bugs eller tester deploys." />
         <CardBody>
-        <div className="text-sm text-neutral-600 dark:text-neutral-300">
+        <div className="text-sm text-[color:var(--text-tertiary)]">
           Version {process.env.NEXT_PUBLIC_APP_VERSION} ({process.env.NEXT_PUBLIC_GIT_SHA})
         </div>
         <Button

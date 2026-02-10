@@ -42,7 +42,7 @@ export function CardHeader({
       <div>
         <div className="text-sm font-semibold tracking-tight">{title}</div>
         {description && (
-          <div className="mt-1 text-sm text-[color:var(--text-muted)] dark:text-[color:var(--text-muted-dark)]">
+          <div className="mt-1 text-sm text-[color:var(--text-tertiary)]">
             {description}
           </div>
         )}

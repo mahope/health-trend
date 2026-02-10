@@ -58,12 +58,12 @@ export default function GarminPage() {
 
         {status ? (
           status.connected ? (
-            <div className="text-sm text-neutral-700 dark:text-neutral-200">
+            <div className="text-sm text-[color:var(--text-secondary)]">
               Connected. Sidst opdateret: {formatDateTime(status.tokensUpdatedAt)} ({status.status})
               {status.lastError ? (
-                <div className="mt-1 text-xs text-rose-700 dark:text-rose-300">Sidste fejl: {status.lastError}</div>
+                <div className="mt-1 text-xs text-[color:var(--text-error)]">Sidste fejl: {status.lastError}</div>
               ) : null}
-              <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+              <div className="mt-2 text-xs text-[color:var(--text-caption)]">
                 Næste step: gå til <InlineEmptyLink href="/snapshots">Snapshots</InlineEmptyLink> og tag dit første snapshot.
               </div>
             </div>
@@ -73,7 +73,7 @@ export default function GarminPage() {
               description={
                 <>
                   For at kunne tage dit første snapshot skal serveren kunne hente Garmin-data.
-                  <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+                  <div className="mt-2 text-xs text-[color:var(--text-caption)]">
                     Tip: hvis du allerede har tokens lokalt, kan du importere dem herunder.
                   </div>
                 </>
@@ -109,7 +109,7 @@ export default function GarminPage() {
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-card)] p-4 space-y-3">
           <h2 className="font-semibold">Connect (Garmin login)</h2>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+          <p className="text-sm text-[color:var(--text-caption)]">
             Indtast dit Garmin login her. Vi gemmer <b>ikke</b> dit password — kun tokens (krypteret).
             <span className="block mt-1">
               Når du er connected, kan du gå til <InlineEmptyLink href="/snapshots">Snapshots</InlineEmptyLink> og tage dit første snapshot.
@@ -127,7 +127,7 @@ export default function GarminPage() {
                 }}
                 autoComplete="username"
               />
-              {fieldError?.email ? <div className="mt-1 text-xs text-rose-700 dark:text-rose-300">{fieldError.email}</div> : null}
+              {fieldError?.email ? <div className="mt-1 text-xs text-[color:var(--text-error)]">{fieldError.email}</div> : null}
             </div>
 
             <div>
@@ -142,7 +142,7 @@ export default function GarminPage() {
                 autoComplete="current-password"
               />
               {fieldError?.password ? (
-                <div className="mt-1 text-xs text-rose-700 dark:text-rose-300">{fieldError.password}</div>
+                <div className="mt-1 text-xs text-[color:var(--text-error)]">{fieldError.password}</div>
               ) : null}
             </div>
 
@@ -193,7 +193,7 @@ export default function GarminPage() {
               {loggingIn ? "Logger ind…" : cooldownUntil && Date.now() < cooldownUntil ? "Vent lidt…" : "Login og connect"}
             </Button>
 
-            <div className="text-xs text-neutral-500 dark:text-neutral-400">
+            <div className="text-xs text-[color:var(--text-caption)]">
               Hvis login fejler pga. forkert password, viser vi en pæn fejl (401).
               <span className="block mt-1">
                 Note: I prod kører dette via Python i Docker-image (repo-contained script). Lokalt kræver det at <code>python3</code> findes i PATH, eller at du sætter <code>HEALTH_TREND_PYTHON</code>.
@@ -204,7 +204,7 @@ export default function GarminPage() {
 
         <div id="connect" className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-card)] p-4 space-y-3">
           <h2 className="font-semibold">Fallback: import local tokens</h2>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+          <p className="text-sm text-[color:var(--text-caption)]">
             Dette læser lokale Garmin tokens fra serveren og gemmer dem krypteret.
           </p>
 

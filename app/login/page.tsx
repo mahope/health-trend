@@ -15,7 +15,7 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen flex items-center justify-center p-6">
       <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-b from-neutral-50 via-white to-white dark:from-neutral-950 dark:via-black dark:to-black" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[var(--gradient-from)] via-[var(--gradient-via)] to-[var(--gradient-to)]" />
         <div className="absolute -top-24 left-1/2 h-72 w-[46rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-emerald-500/15 via-sky-500/10 to-fuchsia-500/10 blur-3xl" />
       </div>
 
@@ -41,7 +41,7 @@ export default function LoginPage() {
                 autoComplete="current-password"
               />
 
-              {error && <div className="text-sm text-red-600">{error}</div>}
+              {error && <div className="text-sm text-[color:var(--text-error)]">{error}</div>}
 
               <Button
                 variant="primary"
@@ -64,7 +64,7 @@ export default function LoginPage() {
                 {loading ? "Logger ind…" : "Log ind"}
               </Button>
 
-              <div className="text-xs text-neutral-500 dark:text-neutral-400">
+              <div className="text-xs text-[color:var(--text-caption)]">
                 2FA (TOTP) kan aktiveres i Settings efter login.
               </div>
             </div>

@@ -37,13 +37,13 @@ export function RiskHero({
         }
       />
       <CardBody>
-        <div className="text-sm text-neutral-800 dark:text-neutral-100">
+        <div className="text-sm text-[color:var(--text-primary)]">
           {short?.trim()
             ? short
             : "Generér et brief for at få risiko-vurdering og forslag."}
         </div>
         {createdAt ? (
-          <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+          <div className="mt-2 text-xs text-[color:var(--text-caption)]">
             Sidst genereret: {createdAt.toLocaleString("da-DK", { hour12: false })}
           </div>
         ) : null}

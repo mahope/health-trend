@@ -95,7 +95,7 @@ export function MobileNav({
       >
         <div className="p-4">
           <div className="text-sm font-semibold tracking-tight">Health Trend</div>
-          <div className="mt-1 text-xs text-neutral-600 dark:text-neutral-300">
+          <div className="mt-1 text-xs text-[color:var(--text-tertiary)]">
             {userEmail}
           </div>
 
@@ -110,8 +110,8 @@ export function MobileNav({
                   className={cn(
                     "rounded-lg px-3 py-2 text-sm transition-colors",
                     active
-                      ? "bg-black/5 text-neutral-900 dark:bg-white/10 dark:text-white"
-                      : "text-neutral-700 hover:bg-black/5 dark:text-neutral-200 dark:hover:bg-white/10",
+                      ? "bg-[color:var(--bg-selected)] text-[color:var(--text-primary)]"
+                      : "text-[color:var(--text-secondary)] hover:bg-[color:var(--bg-hover)]",
                   )}
                 >
                   {n.label}

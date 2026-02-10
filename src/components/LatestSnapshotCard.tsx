@@ -167,7 +167,7 @@ export function LatestSnapshotCard({ day }: { day: string }) {
       <div className="flex items-center justify-between gap-3">
         <div>
           <div className="font-semibold">Seneste snapshot</div>
-          <div className="text-sm text-neutral-600 dark:text-neutral-300">
+          <div className="text-sm text-[color:var(--text-tertiary)]">
             {latest
               ? formatDateTime(latest.takenAt)
               : "Ingen endnu — tag dit første"}
@@ -180,10 +180,10 @@ export function LatestSnapshotCard({ day }: { day: string }) {
       </div>
 
       {error && (
-        <div className="rounded-2xl border border-red-500/20 bg-red-50/60 p-4 text-sm text-red-800 dark:border-red-400/20 dark:bg-red-950/30 dark:text-red-200">
+        <div className="rounded-2xl border border-[color:var(--border-error)] bg-[color:var(--bg-error)] p-4 text-sm text-[color:var(--text-error-body)]">
           <div className="font-medium">{error.message}</div>
           {(error.hint || error.file) && (
-            <div className="mt-1 text-xs text-red-700/90 dark:text-red-200/80">
+            <div className="mt-1 text-xs text-[color:var(--text-error-detail)]">
               {error.hint ? <div>{error.hint}</div> : null}
               {error.file ? (
                 <div>
@@ -232,7 +232,7 @@ export function LatestSnapshotCard({ day }: { day: string }) {
                 Kopiér filsti
               </Button>
 
-              <div className="text-xs text-neutral-500 dark:text-neutral-400">
+              <div className="text-xs text-[color:var(--text-caption)]">
                 Snapshot læses lokalt fra <code className="break-all">{expectedFile}</code>.
               </div>
 
@@ -240,29 +240,29 @@ export function LatestSnapshotCard({ day }: { day: string }) {
                 <div
                   className={
                     copyState === "ok"
-                      ? "text-xs text-emerald-700 dark:text-emerald-300"
-                      : "text-xs text-rose-700 dark:text-rose-300"
+                      ? "text-xs text-[color:var(--text-success)]"
+                      : "text-xs text-[color:var(--text-error)]"
                   }
                 >
                   {copyState === "ok" ? "Filsti kopieret ✓" : "Kunne ikke kopiere filsti"}
                 </div>
               ) : null}
 
-              <div className="text-xs text-neutral-500 dark:text-neutral-400">
+              <div className="text-xs text-[color:var(--text-caption)]">
                 Hvis den fejler, får du en sti/hint herover. Se også: <InlineEmptyLink href="/garmin">Garmin</InlineEmptyLink>
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
                 <Link
                   href="/garmin"
-                  className="text-xs text-neutral-600 underline decoration-neutral-400 underline-offset-2 hover:decoration-neutral-700 dark:text-neutral-400 dark:decoration-neutral-600 dark:hover:decoration-neutral-300"
+                  className="text-xs text-[color:var(--text-tertiary)] underline decoration-[color:var(--text-caption)] underline-offset-2 hover:decoration-[color:var(--text-secondary)]"
                 >
                   Åbn Garmin
                 </Link>
-                <span className="text-xs text-neutral-400 dark:text-neutral-500">·</span>
+                <span className="text-xs text-[color:var(--text-caption)]">·</span>
                 <Link
                   href="/snapshots"
-                  className="text-xs text-neutral-600 underline decoration-neutral-400 underline-offset-2 hover:decoration-neutral-700 dark:text-neutral-400 dark:decoration-neutral-600 dark:hover:decoration-neutral-300"
+                  className="text-xs text-[color:var(--text-tertiary)] underline decoration-[color:var(--text-caption)] underline-offset-2 hover:decoration-[color:var(--text-secondary)]"
                 >
                   Åbn Snapshots
                 </Link>
@@ -313,7 +313,7 @@ export function LatestSnapshotCard({ day }: { day: string }) {
           </MetricGrid>
 
           {prev && (
-            <div className="text-xs text-neutral-500 dark:text-neutral-400">
+            <div className="text-xs text-[color:var(--text-caption)]">
               Delta er ift. forrige snapshot ({formatDateTime(prev.takenAt)}).
             </div>
           )}

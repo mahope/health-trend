@@ -118,8 +118,7 @@ function ToastViewport({
             key={t.id}
             className={cn(
               "pointer-events-auto rounded-xl border px-3 py-2 text-sm shadow-lg backdrop-blur",
-              "bg-[color:var(--surface-card)] text-neutral-900 border-[color:var(--border-subtle)]",
-              "dark:text-neutral-100",
+              "bg-[color:var(--surface-card)] text-[color:var(--text-primary)] border-[color:var(--border-subtle)]",
               t.kind === "success" && "border-emerald-500/30",
               t.kind === "error" && "border-red-500/30",
             )}
@@ -131,7 +130,7 @@ function ToastViewport({
               </div>
               {t.actionLabel && t.onAction ? (
                 <button
-                  className="shrink-0 rounded-lg px-2 py-1 text-xs font-medium text-neutral-900 underline decoration-neutral-300 underline-offset-4 hover:decoration-neutral-600 dark:text-neutral-100 dark:decoration-white/30 dark:hover:decoration-white/70"
+                  className="shrink-0 rounded-lg px-2 py-1 text-xs font-medium text-[color:var(--text-primary)] underline decoration-[color:var(--text-caption)] underline-offset-4 hover:decoration-[color:var(--text-secondary)]"
                   onClick={() => {
                     try {
                       t.onAction?.();

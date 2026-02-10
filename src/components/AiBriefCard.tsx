@@ -96,19 +96,19 @@ export function AiBriefCard({ day }: { day: string }) {
         <div className="rounded-2xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] p-5 shadow-sm space-y-5">
           <div className="flex items-center justify-between gap-3">
             <div className="text-sm font-semibold tracking-tight">Overblik</div>
-            <div className="text-xs text-neutral-500 dark:text-neutral-400">
+            <div className="text-xs text-[color:var(--text-caption)]">
               {formatDateTime(item.createdAt)}
             </div>
           </div>
 
-          <div className="text-sm leading-relaxed text-neutral-900 dark:text-neutral-100">
+          <div className="text-sm leading-relaxed text-[color:var(--text-primary)]">
             {item.short}
           </div>
 
           {item.signals?.length ? (
             <ResponsiveSection
               title="Signaler"
-              badge={<div className="text-xs text-neutral-500 dark:text-neutral-400">{item.signals.length} stk.</div>}
+              badge={<div className="text-xs text-[color:var(--text-caption)]">{item.signals.length} stk.</div>}
               hint="Tryk for at åbne"
             >
               <ul className="grid gap-2 md:grid-cols-2">
@@ -119,9 +119,9 @@ export function AiBriefCard({ day }: { day: string }) {
                   >
                     <div className="flex items-baseline justify-between gap-3">
                       <div className="text-sm font-medium">{s.name}</div>
-                      <div className="text-xs text-neutral-500 dark:text-neutral-400">{s.value}</div>
+                      <div className="text-xs text-[color:var(--text-caption)]">{s.value}</div>
                     </div>
-                    <div className="mt-1 text-xs text-neutral-600 dark:text-neutral-300">{s.why}</div>
+                    <div className="mt-1 text-xs text-[color:var(--text-tertiary)]">{s.why}</div>
                   </li>
                 ))}
               </ul>
@@ -131,7 +131,7 @@ export function AiBriefCard({ day }: { day: string }) {
           {item.suggestions?.length ? (
             <ResponsiveSection
               title="Forslag"
-              badge={<div className="text-xs text-neutral-500 dark:text-neutral-400">{item.suggestions.length} stk.</div>}
+              badge={<div className="text-xs text-[color:var(--text-caption)]">{item.suggestions.length} stk.</div>}
               hint="Tryk for at åbne"
             >
               <ul className="grid gap-2 md:grid-cols-2">
@@ -141,7 +141,7 @@ export function AiBriefCard({ day }: { day: string }) {
                     className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] p-3"
                   >
                     <div className="text-sm font-medium">{s.title}</div>
-                    <div className="mt-1 text-sm text-neutral-700 dark:text-neutral-200">{s.detail}</div>
+                    <div className="mt-1 text-sm text-[color:var(--text-secondary)]">{s.detail}</div>
                   </li>
                 ))}
               </ul>

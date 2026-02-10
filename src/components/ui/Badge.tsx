@@ -11,7 +11,7 @@ export function Badge({
 }) {
   const tones: Record<string, string> = {
     neutral:
-      "bg-black/5 text-neutral-700 dark:bg-white/10 dark:text-neutral-200",
+      "bg-[color:var(--bg-hover)] text-[color:var(--text-secondary)]",
     ok: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-200",
     low: "bg-sky-500/15 text-sky-700 dark:text-sky-200",
     med: "bg-amber-500/15 text-amber-800 dark:text-amber-200",

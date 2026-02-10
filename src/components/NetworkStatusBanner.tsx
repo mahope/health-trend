@@ -38,7 +38,7 @@ export function NetworkStatusBanner() {
 
   return (
     <div
-      className="mb-3 rounded-xl border border-amber-500/30 bg-amber-50 px-3 py-2 text-sm text-amber-950 shadow-sm dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-50"
+      className="mb-3 rounded-xl border border-[color:var(--border-warning)] bg-[color:var(--bg-warning)] px-3 py-2 text-sm text-[color:var(--text-warning-body)] shadow-sm"
       role="status"
       aria-live="polite"
     >

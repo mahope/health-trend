@@ -224,7 +224,7 @@ export function ManualForm({ day }: { day: string }) {
         />
       </FormField>
 
-      <div className="text-xs text-neutral-500 dark:text-neutral-400">
+      <div className="text-xs text-[color:var(--text-caption)]">
         {saving ? "Gemmer…" : justSaved ? "Gemt ✓" : ""}
       </div>
     </div>

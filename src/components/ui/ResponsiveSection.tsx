@@ -30,7 +30,7 @@ export function ResponsiveSection({
             {badge}
           </div>
           {hint && (
-            <div className="mt-1 text-xs text-[color:var(--text-muted)] dark:text-[color:var(--text-muted-dark)]">
+            <div className="mt-1 text-xs text-[color:var(--text-caption)]">
               {hint}
             </div>
           )}

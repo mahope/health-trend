@@ -30,7 +30,7 @@ export default function TwoFactorPage() {
             autoComplete="one-time-code"
           />
 
-          <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+          <label className="flex items-center gap-2 text-sm text-[color:var(--text-secondary)]">
             <input
               type="checkbox"
               checked={trustDevice}

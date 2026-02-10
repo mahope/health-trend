@@ -85,7 +85,7 @@ export function UserMenu({ userEmail }: { userEmail: string }) {
         ref={triggerRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[color:var(--border-subtle)] bg-[color:var(--surface-card)] text-sm font-semibold text-neutral-900 shadow-sm backdrop-blur hover:bg-[color:var(--surface-control-hover)] dark:text-neutral-100"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[color:var(--border-subtle)] bg-[color:var(--surface-card)] text-sm font-semibold text-[color:var(--text-primary)] shadow-sm backdrop-blur hover:bg-[color:var(--surface-control-hover)]"
         aria-label="Åbn bruger-menu"
         aria-haspopup="menu"
         aria-expanded={open}
@@ -100,8 +100,8 @@ export function UserMenu({ userEmail }: { userEmail: string }) {
           className="absolute right-0 mt-2 w-56 rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-card)] p-2 shadow-lg backdrop-blur"
         >
           <div className="px-2 py-2">
-            <div className="text-xs text-neutral-500 dark:text-neutral-400">Logget ind som</div>
-            <div className="text-sm font-medium truncate text-neutral-900 dark:text-neutral-100">{userEmail}</div>
+            <div className="text-xs text-[color:var(--text-caption)]">Logget ind som</div>
+            <div className="text-sm font-medium truncate text-[color:var(--text-primary)]">{userEmail}</div>
           </div>
 
           <div className="px-2 py-2">
@@ -112,7 +112,7 @@ export function UserMenu({ userEmail }: { userEmail: string }) {
             href="/settings"
             role="menuitem"
             tabIndex={-1}
-            className="block rounded-lg px-2 py-2 text-sm text-neutral-800 hover:bg-black/5 focus:bg-black/5 focus:outline-none dark:text-neutral-100 dark:hover:bg-white/10 dark:focus:bg-white/10"
+            className="block rounded-lg px-2 py-2 text-sm text-[color:var(--text-primary)] hover:bg-[color:var(--bg-hover)] focus:bg-[color:var(--bg-hover)] focus:outline-none"
             onClick={() => setOpen(false)}
           >
             Settings
@@ -122,7 +122,7 @@ export function UserMenu({ userEmail }: { userEmail: string }) {
             type="button"
             role="menuitem"
             tabIndex={-1}
-            className="mt-1 w-full rounded-lg px-2 py-2 text-left text-sm text-neutral-800 hover:bg-black/5 focus:bg-black/5 focus:outline-none dark:text-neutral-100 dark:hover:bg-white/10 dark:focus:bg-white/10"
+            className="mt-1 w-full rounded-lg px-2 py-2 text-left text-sm text-[color:var(--text-primary)] hover:bg-[color:var(--bg-hover)] focus:bg-[color:var(--bg-hover)] focus:outline-none"
             onClick={async () => {
               await authClient.signOut();
               window.location.href = "/login";

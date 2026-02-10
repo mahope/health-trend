@@ -110,8 +110,8 @@ export function TrendsCharts({ days = 14 }: { days?: number }) {
         className={
           "rounded-full px-3 py-1 text-xs font-medium transition-colors " +
           (active
-            ? "bg-black text-white dark:bg-white dark:text-black"
-            : "bg-black/5 text-neutral-700 hover:bg-black/10 dark:bg-white/10 dark:text-neutral-200 dark:hover:bg-white/15")
+            ? "bg-[color:var(--button-primary-bg)] text-[color:var(--button-primary-text)]"
+            : "bg-[color:var(--bg-hover)] text-[color:var(--text-secondary)] hover:bg-[color:var(--bg-active)]")
         }
         onClick={() => setTab(id)}
         type="button"
@@ -187,7 +187,7 @@ export function TrendsCharts({ days = 14 }: { days?: number }) {
                 )}
               </div>
               {tab === "risk" ? (
-                <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+                <div className="mt-2 text-xs text-[color:var(--text-caption)]">
                   OK=0 · LOW=1 · MED=2 · HIGH=3
                 </div>
               ) : null}
@@ -252,7 +252,7 @@ export function TrendsCharts({ days = 14 }: { days?: number }) {
                   <div className="h-full w-full" />
                 )}
               </div>
-              <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">OK=0 · LOW=1 · MED=2 · HIGH=3</div>
+              <div className="mt-2 text-xs text-[color:var(--text-caption)]">OK=0 · LOW=1 · MED=2 · HIGH=3</div>
             </>
           )}
         </CardBody>

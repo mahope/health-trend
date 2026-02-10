@@ -38,8 +38,8 @@ export function TabGroup({
             className={cn(
               "h-8 rounded-md px-2.5 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring-subtle)]",
               selected
-                ? "bg-black text-white dark:bg-white dark:text-black"
-                : "text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-white/10",
+                ? "bg-[color:var(--button-primary-bg)] text-[color:var(--button-primary-text)]"
+                : "text-[color:var(--text-secondary)] hover:bg-[color:var(--bg-hover)]",
             )}
           >
             {t.label}

@@ -195,18 +195,18 @@ export default function WeeklyReportPage() {
         <CardBody>
           {error && <div className="text-sm text-[color:var(--text-error)]">{error}</div>}
           {!data ? (
-            <div className="text-sm text-neutral-600 dark:text-neutral-300">Henter…</div>
+            <div className="text-sm text-[color:var(--text-tertiary)]">Henter…</div>
           ) : (
             <div className="space-y-4">
               <div>
-                <div className="text-sm text-neutral-500 dark:text-neutral-400">Headline</div>
+                <div className="text-sm text-[color:var(--text-caption)]">Headline</div>
                 <div className="text-lg font-semibold tracking-tight">{data.ai?.headline || "—"}</div>
               </div>
 
               <div className="grid gap-4 md:grid-cols-3">
                 <div>
                   <div className="text-sm font-medium">Wins</div>
-                  <ul className="mt-2 list-disc pl-5 text-sm text-neutral-700 dark:text-neutral-200 space-y-1">
+                  <ul className="mt-2 list-disc pl-5 text-sm text-[color:var(--text-secondary)] space-y-1">
                     {(data.ai?.wins || []).map((x: string, i: number) => (
                       <li key={i}>{x}</li>
                     ))}
@@ -214,7 +214,7 @@ export default function WeeklyReportPage() {
                 </div>
                 <div>
                   <div className="text-sm font-medium">Risici</div>
-                  <ul className="mt-2 list-disc pl-5 text-sm text-neutral-700 dark:text-neutral-200 space-y-1">
+                  <ul className="mt-2 list-disc pl-5 text-sm text-[color:var(--text-secondary)] space-y-1">
                     {(data.ai?.risks || []).map((x: string, i: number) => (
                       <li key={i}>{x}</li>
                     ))}
@@ -222,7 +222,7 @@ export default function WeeklyReportPage() {
                 </div>
                 <div>
                   <div className="text-sm font-medium">Fokus næste uge</div>
-                  <ul className="mt-2 list-disc pl-5 text-sm text-neutral-700 dark:text-neutral-200 space-y-1">
+                  <ul className="mt-2 list-disc pl-5 text-sm text-[color:var(--text-secondary)] space-y-1">
                     {(data.ai?.focusNextWeek || []).map((x: string, i: number) => (
                       <li key={i}>{x}</li>
                     ))}
@@ -232,14 +232,14 @@ export default function WeeklyReportPage() {
 
               <div className="rounded-xl border border-[color:var(--border-subtle)] p-3">
                 <div className="text-sm font-medium">Én lille vane</div>
-                <div className="mt-1 text-sm text-neutral-700 dark:text-neutral-200">
+                <div className="mt-1 text-sm text-[color:var(--text-secondary)]">
                   {data.ai?.oneSmallHabit || "—"}
                 </div>
               </div>
 
               <details className="text-sm">
-                <summary className="cursor-pointer text-neutral-600 dark:text-neutral-300">Vis rå data</summary>
-                <pre className="mt-2 overflow-auto rounded-xl bg-black/5 p-3 text-xs dark:bg-white/10">
+                <summary className="cursor-pointer text-[color:var(--text-tertiary)]">Vis rå data</summary>
+                <pre className="mt-2 overflow-auto rounded-xl bg-[color:var(--bg-hover)] p-3 text-xs">
                   {JSON.stringify(data.summary, null, 2)}
                 </pre>
               </details>

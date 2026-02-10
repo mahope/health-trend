@@ -36,7 +36,7 @@ export function AiCoachLine() {
   if (!text) return null;
 
   return (
-    <div className="mt-1 text-xs text-neutral-600 dark:text-neutral-300">
+    <div className="mt-1 text-xs text-[color:var(--text-tertiary)]">
       <span className="font-medium">Coach:</span>{" "}
       <span className="truncate align-bottom">{text}</span>
     </div>
