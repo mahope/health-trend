@@ -40,7 +40,7 @@
 15. [x] AI: detect ‘overstimulation’ pattern (manual+time)
 
 ### Security/ops
-16. Rate limiting on manual upsert + auth endpoints
+- [x] Rate limiting on manual upsert + auth endpoints
 17. Health endpoint + basic uptime page
 18. Better cron logging + idempotency key
 19. Security headers (CSP-lite, etc.)

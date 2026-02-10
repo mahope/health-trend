@@ -1,41 +1,131 @@
-type Entry = { count: number; resetAt: number };
+import { NextResponse } from "next/server";
 
-const buckets = new Map<string, Entry>();
-
-export function rateLimit({
-  key,
-  windowMs,
-  max,
-}: {
-  key: string;
+type RateLimitOptions = {
+  /** Human-readable name used in the key (e.g. "auth" / "manual-upsert") */
+  name: string;
+  /** Max requests within the window */
+  limit: number;
+  /** Rolling window duration */
   windowMs: number;
-  max: number;
-}): { ok: true } | { ok: false; retryAfterSeconds: number } {
-  const now = Date.now();
-  const cur = buckets.get(key);
+  /** Extra key material (e.g. userId) */
+  keyParts?: Array<string | number | null | undefined>;
+};
 
-  if (!cur || cur.resetAt <= now) {
-    buckets.set(key, { count: 1, resetAt: now + windowMs });
-    return { ok: true };
-  }
+type Bucket = {
+  count: number;
+  resetAt: number;
+};
 
-  if (cur.count >= max) {
-    const retryAfterSeconds = Math.max(1, Math.ceil((cur.resetAt - now) / 1000));
-    return { ok: false, retryAfterSeconds };
-  }
-
-  cur.count += 1;
-  buckets.set(key, cur);
-  return { ok: true };
+function getStore(): Map<string, Bucket> {
+  const g = globalThis as unknown as { __healthTrendRateLimitStore?: Map<string, Bucket> };
+  if (!g.__healthTrendRateLimitStore) g.__healthTrendRateLimitStore = new Map();
+  return g.__healthTrendRateLimitStore;
 }
 
-export function getClientIp(req: Request): string {
-  // Best-effort: behind proxies/CDN, x-forwarded-for is common.
-  const xff = req.headers.get("x-forwarded-for");
-  if (xff) return xff.split(",")[0]?.trim() || "unknown";
+export function getClientIp(req: Request) {
+  // In most deployments, the real client IP will be forwarded by the edge/proxy.
+  const xfwd = req.headers.get("x-forwarded-for");
+  if (xfwd) return xfwd.split(",")[0]?.trim() || "unknown";
 
-  const realIp = req.headers.get("x-real-ip");
-  if (realIp) return realIp.trim();
+  const xRealIp = req.headers.get("x-real-ip");
+  if (xRealIp) return xRealIp.trim();
+
+  const cf = req.headers.get("cf-connecting-ip");
+  if (cf) return cf.trim();
 
   return "unknown";
+}
+
+type LegacyRateLimitOpts = { key: string; windowMs: number; max: number };
+
+function isRequestLike(x: unknown): x is Request {
+  return !!x && typeof x === "object" && "headers" in (x as any) && typeof (x as any).headers?.get === "function";
+}
+
+/**
+ * Rate limit helper.
+ *
+ * Supports two call styles:
+ * 1) New (request-aware): rateLimit(req, { name, limit, windowMs, keyParts })
+ * 2) Legacy (key-only):  rateLimit({ key, windowMs, max })
+ */
+export function rateLimit(
+  req: Request,
+  opts: RateLimitOptions,
+): { ok: true; headers: Record<string, string> } | { ok: false; response: NextResponse };
+export function rateLimit(
+  opts: LegacyRateLimitOpts,
+): { ok: true } | { ok: false; retryAfterSeconds: number };
+export function rateLimit(
+  a: Request | LegacyRateLimitOpts,
+  b?: RateLimitOptions,
+):
+  | { ok: true; headers: Record<string, string> }
+  | { ok: false; response: NextResponse }
+  | { ok: true }
+  | { ok: false; retryAfterSeconds: number } {
+  const now = Date.now();
+
+  // Legacy: rateLimit({ key, windowMs, max })
+  if (!isRequestLike(a)) {
+    const { key, windowMs, max } = a;
+    const store = getStore();
+    const existing = store.get(key);
+
+    const resetAt = existing && existing.resetAt > now ? existing.resetAt : now + windowMs;
+    const count = existing && existing.resetAt > now ? existing.count + 1 : 1;
+
+    store.set(key, { count, resetAt });
+
+    if (count > max) {
+      const retryAfterSeconds = Math.max(1, Math.ceil((resetAt - now) / 1000));
+      return { ok: false as const, retryAfterSeconds };
+    }
+
+    return { ok: true as const };
+  }
+
+  // New: rateLimit(req, { name, limit, windowMs, keyParts })
+  const req = a;
+  const opts = b!;
+
+  const ip = getClientIp(req);
+
+  const keyParts = [opts.name, ip, ...(opts.keyParts ?? [])]
+    .filter((p) => p !== null && p !== undefined)
+    .map((p) => String(p));
+
+  const key = keyParts.join(":");
+
+  const store = getStore();
+  const existing = store.get(key);
+
+  const resetAt = existing && existing.resetAt > now ? existing.resetAt : now + opts.windowMs;
+  const count = existing && existing.resetAt > now ? existing.count + 1 : 1;
+
+  store.set(key, { count, resetAt });
+
+  const remaining = Math.max(0, opts.limit - count);
+
+  if (count > opts.limit) {
+    const retryAfterSeconds = Math.max(1, Math.ceil((resetAt - now) / 1000));
+
+    const res = NextResponse.json({ error: "rate_limited", retryAfterSeconds }, { status: 429 });
+
+    res.headers.set("Retry-After", String(retryAfterSeconds));
+    res.headers.set("X-RateLimit-Limit", String(opts.limit));
+    res.headers.set("X-RateLimit-Remaining", "0");
+    res.headers.set("X-RateLimit-Reset", String(Math.ceil(resetAt / 1000)));
+
+    return { ok: false as const, response: res };
+  }
+
+  return {
+    ok: true as const,
+    headers: {
+      "X-RateLimit-Limit": String(opts.limit),
+      "X-RateLimit-Remaining": String(remaining),
+      "X-RateLimit-Reset": String(Math.ceil(resetAt / 1000)),
+    },
+  };
 }
