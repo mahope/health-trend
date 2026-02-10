@@ -244,3 +244,12 @@ pm run build ?
 - Changed: Tweaked dashboard “Seneste snapshot” header CTA: button now says “Tag første snapshot” when none, otherwise “Tag nyt snapshot”. Subtitle now hints “Ingen endnu — tag dit første”.
 - Commit: fe43543
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+
+## 2026-02-10 05:52 (Europe/Copenhagen)
+- Changed: Refactor: use shared <EmptyState> for TrendsCharts + AI brief empty CTA (first snapshot).
+- Commit: 6eba10f
+- Tests: `npm run lint` ✅, `npm run build` ✅
+\n## 2026-02-10 06:00 (Europe/Copenhagen)\n- Changed: Added actionable CTAs to Insights ? Best-days empty states (links to Dashboard/Snapshots/Trends).\n- Commit: 146228b\n- Tests: 
+pm run lint ?, 
+pm run build ?\n
