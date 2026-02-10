@@ -250,6 +250,9 @@ pm run build ?
 - Changed: Refactor: use shared <EmptyState> for TrendsCharts + AI brief empty CTA (first snapshot).
 - Commit: 6eba10f
 - Tests: `npm run lint` ✅, `npm run build` ✅
-\n## 2026-02-10 06:00 (Europe/Copenhagen)\n- Changed: Added actionable CTAs to Insights ? Best-days empty states (links to Dashboard/Snapshots/Trends).\n- Commit: 146228b\n- Tests: 
-pm run lint ?, 
-pm run build ?\n
+
+
+## 2026-02-10 06:24 (Europe/Copenhagen)
+- Changed: Improved Garmin page empty state when not connected, with clearer CTA to import tokens + links to Snapshots (first snapshot flow). Standardized buttons to UI Button.
+- Commit: 67014a5
+- Tests: `npm run lint` ✅, `npm run build` ✅
