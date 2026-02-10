@@ -32,7 +32,13 @@ export function CardHeader({
   right?: React.ReactNode;
 }) {
   return (
-    <div className={cn("flex items-start justify-between gap-4 p-5", className)}>
+    <div
+      className={cn(
+        // Mobile-first: stack header content + actions to avoid cramped button rows.
+        "flex flex-col gap-3 p-5 sm:flex-row sm:items-start sm:justify-between sm:gap-4",
+        className,
+      )}
+    >
       <div>
         <div className="text-sm font-semibold tracking-tight">{title}</div>
         {description && (
@@ -41,7 +47,7 @@ export function CardHeader({
           </div>
         )}
       </div>
-      {right}
+      {right ? <div className="flex shrink-0 items-center gap-2">{right}</div> : null}
     </div>
   );
 }

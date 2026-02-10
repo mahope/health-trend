@@ -50,6 +50,7 @@
 21. [x] Input/Button focus states (a11y)
 22. [x] Skeleton loaders for cards
 23. [x] Route-level loading skeleton for protected pages (Next.js loading.tsx)
+24. [x] Mobile: CardHeader actions stack below title on small screens (avoid cramped buttons)
 
 ## Autopilot log
 See `AUTOPILOT_LOG.md`
