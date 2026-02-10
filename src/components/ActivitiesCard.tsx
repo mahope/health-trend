@@ -21,8 +21,15 @@ function fmtWhen(s?: string) {
   return d.toLocaleString("da-DK", { hour12: false, month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
 }
 
+type Streak = { current: number; longest: number; lastDayHad: string | null };
+
+type StreaksResp = {
+  streaks?: { walk: Streak; run: Streak; strength: Streak };
+};
+
 export function ActivitiesCard({ limit = 10 }: { limit?: number }) {
   const [items, setItems] = useState<Activity[]>([]);
+  const [streaks, setStreaks] = useState<StreaksResp["streaks"] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -43,6 +50,23 @@ export function ActivitiesCard({ limit = 10 }: { limit?: number }) {
     };
   }, [limit]);
 
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/activities/streaks?days=60`, { cache: "no-store" });
+        const json = (await res.json()) as StreaksResp;
+        if (!res.ok) return;
+        if (!cancelled) setStreaks(json.streaks ?? null);
+      } catch {
+        // optional enhancement; ignore
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <Card>
       <CardHeader
@@ -58,6 +82,32 @@ export function ActivitiesCard({ limit = 10 }: { limit?: number }) {
         }
       />
       <CardBody>
+        {streaks ? (
+          <div className="mb-4 flex flex-wrap gap-2">
+            {(
+              [
+                { key: "run", label: "Løb" },
+                { key: "walk", label: "Gåtur" },
+                { key: "strength", label: "Styrke" },
+              ] as const
+            ).map(({ key, label }) => {
+              const s = streaks[key];
+              const cur = s?.current ?? 0;
+              const max = s?.longest ?? 0;
+              return (
+                <div
+                  key={key}
+                  className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-3 py-1.5 text-xs text-neutral-700 dark:border-white/10 dark:bg-black/20 dark:text-neutral-200"
+                  title={max > 0 ? `${label}: ${cur} dage i træk (max ${max})` : `${label}: ingen streak endnu`}
+                >
+                  <span className="font-medium">{label}</span>
+                  <span className="text-neutral-500 dark:text-neutral-400">{cur > 0 ? `${cur}d` : "—"}</span>
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
+
         {error && <div className="text-sm text-red-600">{error}</div>}
         {items.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-black/15 bg-white/40 p-5 text-sm text-neutral-700 dark:border-white/15 dark:bg-black/15 dark:text-neutral-200">
