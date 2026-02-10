@@ -156,11 +156,11 @@ export default function SnapshotsPage() {
           title="Snapshots"
           description="Tag snapshots (morgen/middag/aften) og se udvikling."
           right={
-            <div className="flex items-center gap-2">
-              <Button size="sm" disabled={loading} onClick={takeSnapshot}>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <Button className="w-full sm:w-auto" size="sm" disabled={loading} onClick={takeSnapshot}>
                 {loading ? "Arbejder…" : "Tag snapshot"}
               </Button>
-              <Button size="sm" disabled={loading} onClick={refresh}>
+              <Button className="w-full sm:w-auto" size="sm" disabled={loading} onClick={refresh}>
                 Refresh
               </Button>
             </div>
