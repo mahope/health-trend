@@ -170,12 +170,12 @@ export function LatestSnapshotCard({ day }: { day: string }) {
           <div className="text-sm text-neutral-600 dark:text-neutral-300">
             {latest
               ? new Date(latest.takenAt).toLocaleString("da-DK", { hour12: false })
-              : "Ingen endnu"}
+              : "Ingen endnu — tag dit første"}
           </div>
         </div>
 
         <Button size="sm" disabled={loading} onClick={takeSnapshot}>
-          {loading ? "Arbejder…" : "Tag snapshot"}
+          {loading ? "Arbejder…" : latest ? "Tag nyt snapshot" : "Tag første snapshot"}
         </Button>
       </div>
 
