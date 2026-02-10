@@ -208,3 +208,8 @@ pm run build ?
 - Changed: Deferred the heavy “below fold” dashboard section (trends/day plan/activities) using a small `DeferredMount` intersection observer wrapper, so it only mounts when you scroll near it.
 - Commit: b09a3f4
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 04:43 (Europe/Copenhagen)
+- Changed: Improved empty states on /activities + /alerts with clear mobile CTAs to Snapshots/Dashboard/Garmin.
+- Commit: 71891f6
+- Tests: `npm run lint` ✅, `npm run build` ✅
