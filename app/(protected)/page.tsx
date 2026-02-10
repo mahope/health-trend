@@ -4,9 +4,6 @@ import { redirect } from "next/navigation";
 import { ymd } from "@/lib/date";
 import { ManualForm } from "@/components/ManualForm";
 import { AiBriefCard } from "@/components/AiBriefCard";
-import { LatestSnapshotCard } from "@/components/LatestSnapshotCard";
-import { DashboardBelowFold } from "@/components/DashboardBelowFold";
-import { DeferredMount } from "@/components/DeferredMount";
 import { MobileActionBar } from "@/components/MobileActionBar";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { PageHeader } from "@/components/PageHeader";
@@ -14,6 +11,7 @@ import { DashboardActions } from "@/components/DashboardActions";
 import { RiskHero } from "@/components/RiskHero";
 import { RecoveryScoreCard } from "@/components/RecoveryScoreCard";
 import { EmptyState, InlineEmptyLink } from "@/components/EmptyState";
+import { DayPlanCard } from "@/components/DayPlanCard";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 
@@ -102,6 +100,7 @@ export default async function DashboardPage() {
         </>
       ) : (
         <>
+          {/* Simple dashboard: Today → Plan → Manual → Brief */}
           <section className="grid gap-4 lg:grid-cols-12">
             <div className="lg:col-span-8">
               <RiskHero
@@ -116,56 +115,27 @@ export default async function DashboardPage() {
             </div>
           </section>
 
-          <section className="grid gap-4 lg:grid-cols-12">
-            <div id="snapshots" className="lg:col-span-5">
-              <Card>
-                <CardHeader
-                  title="Snapshots"
-                  description="Seneste snapshot + delta ift. forrige (i dag/i går)."
-                />
-                <CardBody>
-                  <LatestSnapshotCard day={day} />
-                </CardBody>
-              </Card>
-            </div>
-
-            <div className="lg:col-span-7">
-              <Card>
-                <CardHeader
-                  title="Manual"
-                  description="Hurtig kontekst til AI (symptomer/koffein/alkohol/noter)."
-                />
-                <CardBody>
-                  <ManualForm day={day} />
-                </CardBody>
-              </Card>
-            </div>
-
-            <Card className="lg:col-span-12">
-              <CardHeader
-                title="AI brief"
-                description="Signaler + forslag — genereret fra snapshots, manual og baseline."
-              />
-              <CardBody>
-                <AiBriefCard day={day} />
-              </CardBody>
-            </Card>
-          </section>
+          <DayPlanCard />
 
           <div id="manual" />
+          <Card>
+            <CardHeader title="Manual" description="Hurtig kontekst til AI (symptomer/koffein/alkohol/noter)." />
+            <CardBody>
+              <ManualForm day={day} />
+            </CardBody>
+          </Card>
 
-          <DeferredMount
-            placeholder={
-              <Card>
-                <CardHeader title="Trends" description="Indlæser de tunge sektioner…" />
-                <CardBody>
-                  <div className="h-24 rounded-xl border border-dashed border-black/10 bg-black/5 dark:border-white/10 dark:bg-white/5" />
-                </CardBody>
-              </Card>
-            }
-          >
-            <DashboardBelowFold days={14} />
-          </DeferredMount>
+          <Card>
+            <CardHeader title="AI brief" description="Overblik + fold ud for detaljer." />
+            <CardBody>
+              <AiBriefCard day={day} />
+              <div className="mt-3 flex flex-wrap gap-2 text-sm">
+                <Link className="underline underline-offset-4" href="/snapshots">Snapshots</Link>
+                <Link className="underline underline-offset-4" href="/activities">Aktiviteter</Link>
+                <Link className="underline underline-offset-4" href="/insights">Indsigter</Link>
+              </div>
+            </CardBody>
+          </Card>
         </>
       )}
     </div>

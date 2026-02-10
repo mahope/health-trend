@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/serverAuth";
 import { getStore } from "@/lib/store";
 import { pickMetrics, readGarminJsonForDay, todayCph } from "@/lib/garminLocal";
+import { fetchGarminDailyFromTokens } from "@/lib/garminRemote";
 
 export async function POST(req: Request) {
   const user = await requireUser();
@@ -20,15 +21,20 @@ export async function POST(req: Request) {
   let payload: unknown;
   let file = "";
   try {
-    const res = await readGarminJsonForDay(day);
-    payload = res.payload;
-    file = res.file;
+    // Prefer remote Garmin via tokens, fallback to local JSON.
+    try {
+      payload = await fetchGarminDailyFromTokens(user.id, day);
+    } catch {
+      const res = await readGarminJsonForDay(day);
+      payload = res.payload;
+      file = res.file;
+    }
   } catch {
     return NextResponse.json(
       {
         error: "missing_garmin_file",
         file,
-        hint: "Run your garmin export pipeline first (C:/Users/mads_/Garmin/data/garmin-YYYY-MM-DD.json)",
+        hint: "Connect Garmin (recommended) or run local export pipeline first (C:/Users/mads_/Garmin/data/garmin-YYYY-MM-DD.json)",
       },
       { status: 400 },
     );

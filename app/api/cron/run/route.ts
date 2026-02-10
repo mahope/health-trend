@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getStore } from "@/lib/store";
 import { pickMetrics, readGarminJsonForDay, todayCph } from "@/lib/garminLocal";
+import { fetchGarminDailyFromTokens } from "@/lib/garminRemote";
 import { generateAiBriefForUser } from "@/lib/aiBrief";
 import { getClientIp, rateLimit } from "@/lib/rateLimit";
 import { detectEarlyWarning } from "@/lib/insights";
@@ -89,9 +90,16 @@ export async function POST(req: Request) {
   for (const u of users) {
     const out: (typeof results)[number] = { userId: u.id, email: u.email };
 
-    // 1) Snapshot from local garmin json
+    // 1) Snapshot (prefer Garmin tokens → fallback to local JSON)
     try {
-      const { payload } = await readGarminJsonForDay(day);
+      let payload: unknown;
+      try {
+        payload = await fetchGarminDailyFromTokens(u.id, day);
+      } catch {
+        const local = await readGarminJsonForDay(day);
+        payload = local.payload;
+      }
+
       const metrics = pickMetrics(payload);
       await store.createSnapshot(u.id, {
         day,
@@ -101,13 +109,7 @@ export async function POST(req: Request) {
       });
       out.snapshot = { ok: true };
     } catch (e: unknown) {
-      out.snapshot = {
-        ok: false,
-        error:
-          e instanceof Error
-            ? e.message
-            : "Kunne ikke læse garmin-JSON (mangler fil eller parse-fejl)",
-      };
+      out.snapshot = { ok: false, error: e instanceof Error ? e.message : "Kunne ikke hente Garmin data" };
       results.push(out);
       continue;
     }

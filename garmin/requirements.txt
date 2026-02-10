@@ -1,2 +1,2 @@
 garminconnect==0.2.26
-# garminconnect pulls garth; pin if needed
+# garminconnect pulls garth + requests

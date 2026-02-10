@@ -1,7 +1,7 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { SidebarNav } from "@/components/SidebarNav";
 import { MobileNav } from "@/components/MobileNav";
 import { MobileUiProvider } from "@/components/MobileUiContext";
@@ -37,8 +37,29 @@ export function AppShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname() || "/";
+  const router = useRouter();
   const { title, subtitle } = titleForPath(pathname);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // Mandatory onboarding: if not connected to Garmin, push user to /garmin (client-side).
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      // allow onboarding + settings
+      if (pathname.startsWith("/garmin") || pathname.startsWith("/settings") || pathname.startsWith("/login")) return;
+      try {
+        const res = await fetch("/api/garmin/status", { cache: "no-store" });
+        const json = (await res.json()) as { status?: { connected: boolean } };
+        const connected = Boolean(json?.status?.connected);
+        if (!connected && !cancelled) router.replace("/garmin");
+      } catch {
+        // ignore
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [pathname, router]);
 
   return (
     <MobileUiProvider value={{ openMenu: () => setMenuOpen(true) }}>
