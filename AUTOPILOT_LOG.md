@@ -3,7 +3,7 @@
 Autopilot writes short entries here.
 
 ## 2026-02-09 22:00 (Europe/Copenhagen)
-- Changed: UserMenu now closes on outside click + Esc. Marked the 3 “Now” backlog items as done. Added `scripts/kill-port-3000.ps1` helper.
+- Changed: UserMenu now closes on outside click + Esc. Marked the 3 "Now" backlog items as done. Added `scripts/kill-port-3000.ps1` helper.
 - Commit: 583954c
 - Tests: `npm run lint` ✅, `npm run build` ✅
 
@@ -68,22 +68,22 @@ Autopilot writes short entries here.
 - Tests: `npm run lint` ✅, `npm run build` ✅
 
 ## 2026-02-10 00:10 (Europe/Copenhagen)
-- Changed: Added quick chips in Manual form for +1 koffein/+1 alkohol/+1 symptom (capped at 3) + a small “nulstil” action. Marked backlog item as done.
+- Changed: Added quick chips in Manual form for +1 koffein/+1 alkohol/+1 symptom (capped at 3) + a small "nulstil" action. Marked backlog item as done.
 - Commit: 02f73fc
 - Tests: `npm run lint` ✅, `npm run build` ✅
 
 ## 2026-02-10 00:22 (Europe/Copenhagen)
-- Changed: Improved first-run empty state for snapshots: added a clear “Tag første snapshot” CTA (mobile-friendly) + nicer error box that shows hint/file path when Garmin JSON is missing.
+- Changed: Improved first-run empty state for snapshots: added a clear "Tag første snapshot" CTA (mobile-friendly) + nicer error box that shows hint/file path when Garmin JSON is missing.
 - Commit: 5f6141f
 - Tests: `npm run lint` ✅, `npm run build` ✅
 
 ## 2026-02-10 00:33 (Europe/Copenhagen)
-- Changed: Added empty state + CTA in Trends charts when there’s no data yet (links to “Snapshots” section). Added `id="snapshots"` anchor on dashboard.
+- Changed: Added empty state + CTA in Trends charts when there's no data yet (links to "Snapshots" section). Added `id="snapshots"` anchor on dashboard.
 - Commit: e01f307
 - Tests: `npm run lint` ✅, `npm run build` ✅
 
 ## 2026-02-10 00:40 (Europe/Copenhagen)
-- Changed: Improved first-run empty states: AI brief card now guides snapshot/manual first with CTAs; Activities card now has a clearer “Tag snapshot” CTA. Also deferred heavy Recharts trends charts into a lazy-loaded client boundary (`DashboardBelowFold`) for faster initial render. Marked backlog perf item as done.
+- Changed: Improved first-run empty states: AI brief card now guides snapshot/manual first with CTAs; Activities card now has a clearer "Tag snapshot" CTA. Also deferred heavy Recharts trends charts into a lazy-loaded client boundary (`DashboardBelowFold`) for faster initial render. Marked backlog perf item as done.
 - Commit: c4b50ac
 - Tests: `npm run lint` ✅, `npm run build` ✅
 
@@ -95,8 +95,8 @@ Autopilot writes short entries here.
 ## 2026-02-10 01:05 (Europe/Copenhagen)
 - Changed: Added sleep debt trend (14-day sparkline) in Insights with a 7d/14d debt-window toggle. Added new API endpoint /api/insights/sleep-debt-trend.
 - Commit: 8cb716a
-- Tests: 
-pm run lint ?, 
+- Tests:
+pm run lint ?,
 pm run build ?
 
 
@@ -111,7 +111,7 @@ pm run build ?
 - Tests: `npm run lint` ✅, `npm run build` ✅
 
 ## 2026-02-10 01:30 (Europe/Copenhagen)
-- Changed: Added “Plan i morgen” alongside “Plan i dag” (toggle) in DayPlanCard. Implemented `/api/plan/tomorrow` endpoint + a simple deterministic tomorrow heuristic (based on today) + optional AI prompt.
+- Changed: Added "Plan i morgen" alongside "Plan i dag" (toggle) in DayPlanCard. Implemented `/api/plan/tomorrow` endpoint + a simple deterministic tomorrow heuristic (based on today) + optional AI prompt.
 - Commit: dd246fd
 - Tests: `npm run lint` ✅, `npm run build` ✅
 
@@ -121,7 +121,7 @@ pm run build ?
 - Tests: `npm run lint` ✅, `npm run build` ✅
 
 ## 2026-02-10 01:53 (Europe/Copenhagen)
-- Changed: Extended AI daily brief prompt to optionally suggest what to track manually next (0-3 fields). When present, we prepend a “Track i manual (i morgen)” suggestion for quick guidance. Marked backlog items (weekly save/share + track-next) as done.
+- Changed: Extended AI daily brief prompt to optionally suggest what to track manually next (0-3 fields). When present, we prepend a "Track i manual (i morgen)" suggestion for quick guidance. Marked backlog items (weekly save/share + track-next) as done.
 - Commit: 5c2d264
 - Tests: `npm run lint` ✅, `npm run build` ✅
 
@@ -141,7 +141,7 @@ pm run build ?
 - Tests: `npm run lint` ✅, `npm run build` ✅
 
 ## 2026-02-10 02:30 (Europe/Copenhagen)
-- Changed: Improved “no data yet” UX for AI brief: server now returns a clear error when you try to generate a brief without any snapshots; UI shows a friendly message (“Tag mindst ét snapshot først.”).
+- Changed: Improved "no data yet" UX for AI brief: server now returns a clear error when you try to generate a brief without any snapshots; UI shows a friendly message ("Tag mindst ét snapshot først.").
 - Commit: e2e19f4
 - Tests: `npm run lint` ✅, `npm run build` ✅
 
@@ -164,12 +164,17 @@ pm run build ?
 ## 2026-02-10 03:10 (Europe/Copenhagen)
 - Changed: Added activity streaks by type (run/walk/strength) via new /api/activities/streaks endpoint and small streak pills in Activities card.
 - Commit: 90b64ee
+- Tests: (not recorded)
+
+
+## 2026-02-10 03:20 (Europe/Copenhagen)
+- Changed: Added app-wide security headers via Next.js headers() (CSP-lite, Permissions-Policy, frame protections, nosniff, referrer-policy; HSTS in prod). Marked backlog item as done.
+- Commit: 912f067
+- Tests: npm run lint OK, npm run build OK
+
+## 2026-02-10 03:30 (Europe/Copenhagen)
+- Changed: Improved first-run Dashboard: when no snapshots exist, we now show a focused empty-state + an optional Manual card (instead of a bunch of empty widgets). Also tightened a11y focus rings (focus-visible) for Input + TogglePill. Marked backlog item #21 as done.
+- Commit: 2243116
 - Tests: 
 pm run lint ?, 
 pm run build ?
-
- 
-## 2026-02-10 03:20 (Europe/Copenhagen) 
-- Changed: Added app-wide security headers via Next.js headers() (CSP-lite, Permissions-Policy, frame protections, nosniff, referrer-policy; HSTS in prod). Marked backlog item as done. 
-- Commit: 912f067 
-- Tests: npm run lint OK, npm run build OK
