@@ -96,7 +96,8 @@ export async function generateAiBriefForUser(userId: string, day: string) {
       `Tag højde for profil-kontekst (sex, evt graviditet, cycleDay/cyclePhase) når du vurderer signaler og forslag.\n` +
       `Hvis profile.sex=female og cyclePhase findes: nævn kort om variation i fx RHR/stress/søvn kan hænge sammen med cyklus (uden at overforklare).\n\n` +
       `Returnér JSON med præcis denne struktur:\n` +
-      `{\n  "risk": "OK"|"LOW"|"MED"|"HIGH",\n  "short": string,\n  "signals": [{"name": string, "value": string, "why": string}],\n  "suggestions": [{"title": string, "detail": string}]\n}\n\n` +
+      `{\n  "risk": "OK"|"LOW"|"MED"|"HIGH",\n  "short": string,\n  "signals": [{"name": string, "value": string, "why": string}],\n  "suggestions": [{"title": string, "detail": string}],\n  "trackNext": [{"field": "symptomScore"|"caffeineCups"|"alcoholUnits"|"trained"|"notes", "label": string, "why": string}]\n}\n\n` +
+      `trackNext: vælg 0-3 felter som er mest værd at tracke i morgen for at afklare signalerne.\n\n` +
       `Data (JSON):\n` +
       JSON.stringify(prompt),
   );
@@ -109,6 +110,34 @@ export async function generateAiBriefForUser(userId: string, day: string) {
   const short = typeof ai.short === "string" ? ai.short : "";
   const signals = Array.isArray(ai.signals) ? ai.signals : [];
   const suggestions = Array.isArray(ai.suggestions) ? ai.suggestions : [];
+
+  // Optional: suggest what to track manually next (based on today’s signals)
+  const trackNext = Array.isArray((ai as { trackNext?: unknown }).trackNext)
+    ? (
+        (ai as { trackNext: unknown[] }).trackNext.filter((x) => x && typeof x === "object") as Array<{
+          field?: string;
+          label?: string;
+          why?: string;
+        }>
+      ).slice(0, 3)
+    : [];
+
+  if (trackNext.length) {
+    const lines = trackNext
+      .map((t) => {
+        const label = typeof t.label === "string" ? t.label : typeof t.field === "string" ? t.field : "";
+        const why = typeof t.why === "string" ? t.why : "";
+        return label ? `• ${label}${why ? ` — ${why}` : ""}` : null;
+      })
+      .filter(Boolean);
+
+    if (lines.length) {
+      suggestions.unshift({
+        title: "Track i manual (i morgen)",
+        detail: lines.join("\n"),
+      });
+    }
+  }
 
   const saved = await prisma.aiBrief.upsert({
     where: { userId_day: { userId, day } },
