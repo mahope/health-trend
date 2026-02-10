@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { EmptyState, InlineEmptyLink } from "@/components/EmptyState";
+import { Button } from "@/components/ui/Button";
 
 type Status =
   | { connected: false }
@@ -39,37 +42,73 @@ export default function GarminPage() {
         </p>
       </div>
 
-      <div className="rounded-xl border p-4 space-y-3">
+      <div className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-card)] p-4 space-y-3">
         <h2 className="font-semibold">Status</h2>
+
         {status ? (
           status.connected ? (
-            <div className="text-sm text-neutral-700">
-              Connected. Sidst opdateret: {new Date(status.tokensUpdatedAt).toLocaleString("da-DK")} ({status.status})
+            <div className="text-sm text-neutral-700 dark:text-neutral-200">
+              Connected. Sidst opdateret: {new Date(status.tokensUpdatedAt).toLocaleString("da-DK", { hour12: false })} ({status.status})
+              {status.lastError ? (
+                <div className="mt-1 text-xs text-rose-700 dark:text-rose-300">Sidste fejl: {status.lastError}</div>
+              ) : null}
+              <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+                Næste step: gå til <InlineEmptyLink href="/snapshots">Snapshots</InlineEmptyLink> og tag dit første snapshot.
+              </div>
             </div>
           ) : (
-            <div className="text-sm text-neutral-500">Ikke connected endnu.</div>
+            <EmptyState
+              title="Ikke connected endnu"
+              description={
+                <>
+                  For at kunne tage dit første snapshot skal serveren kunne hente Garmin-data.
+                  <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+                    Tip: hvis du allerede har tokens lokalt, kan du importere dem herunder.
+                  </div>
+                </>
+              }
+              actions={
+                <div className="flex flex-wrap items-center gap-2">
+                  <Link
+                    href="#connect"
+                    className="inline-flex h-10 items-center justify-center rounded-lg bg-black px-4 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:bg-white dark:text-black dark:hover:bg-white/90 dark:focus-visible:ring-white/20"
+                  >
+                    Importér tokens
+                  </Link>
+                  <Link
+                    href="/snapshots"
+                    className="inline-flex h-10 items-center justify-center rounded-lg border border-black/10 bg-white px-4 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:border-white/10 dark:bg-black/30 dark:text-neutral-100 dark:hover:bg-black/45 dark:focus-visible:ring-white/20"
+                  >
+                    Åbn Snapshots
+                  </Link>
+                </div>
+              }
+            />
           )
         ) : (
-          <div className="text-sm text-neutral-500">Henter…</div>
+          <div className="text-sm text-neutral-500 dark:text-neutral-400">Henter…</div>
         )}
 
         {error && <div className="text-sm text-red-600">{error}</div>}
 
         <div className="flex gap-2">
-          <button className="rounded-md border px-3 py-2" onClick={refresh} disabled={loading}>
-            Refresh
-          </button>
+          <Button variant="ghost" onClick={refresh} disabled={loading}>
+            {loading ? "Henter…" : "Refresh"}
+          </Button>
         </div>
       </div>
 
-      <div className="rounded-xl border p-4 space-y-3">
+      <div id="connect" className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-card)] p-4 space-y-3">
         <h2 className="font-semibold">Connect (import local)</h2>
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-neutral-500 dark:text-neutral-400">
           Dette læser fra <code>C:/Users/mads_/Garmin/tokens/oauth1_token.json</code> + <code>oauth2_token.json</code> på serveren og gemmer krypteret.
+          <span className="block mt-1">
+            Når du er connected, kan du gå til <InlineEmptyLink href="/snapshots">Snapshots</InlineEmptyLink> og tage dit første snapshot.
+          </span>
         </p>
 
-        <button
-          className="rounded-md bg-black text-white px-3 py-2 disabled:opacity-50"
+        <Button
+          variant="primary"
           disabled={loading}
           onClick={async () => {
             setLoading(true);
@@ -91,7 +130,7 @@ export default function GarminPage() {
           }}
         >
           {loading ? "Arbejder…" : "Importér tokens"}
-        </button>
+        </Button>
       </div>
 
       <div className="rounded-xl border p-4">
