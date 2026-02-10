@@ -91,3 +91,11 @@ Autopilot writes short entries here.
 - Changed: Added a top-level dashboard empty-state CTA when user has no snapshots yet (links to #snapshots / #manual).
 - Commit: 85109f8
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 01:05 (Europe/Copenhagen)
+- Changed: Added sleep debt trend (14-day sparkline) in Insights with a 7d/14d debt-window toggle. Added new API endpoint /api/insights/sleep-debt-trend.
+- Commit: 8cb716a
+- Tests: 
+pm run lint ?, 
+pm run build ?
+
