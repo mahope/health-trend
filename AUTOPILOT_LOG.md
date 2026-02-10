@@ -139,3 +139,11 @@ pm run build ?
 - Changed: Added `/api/health` endpoint (JSON + db ping) + a minimal `/uptime` page for quick mobile status checks. Also fixed a lingering eslint `no-explicit-any` issue in `rateLimit` helper.
 - Commit: 39a7f8c
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 02:30 (Europe/Copenhagen)
+- Changed: Improved “no data yet” UX for AI brief: server now returns a clear error when you try to generate a brief without any snapshots; UI shows a friendly message (“Tag mindst ét snapshot først.”).
+- Commit: e2e19f4
+- Tests: `npm run lint` ✅, `npm run build` ✅
+\n## 2026-02-10 02:44 (Europe/Copenhagen)\n- Changed: Standardized first-run empty states for snapshots on Dashboard + LatestSnapshotCard using the shared EmptyState component, with clearer next steps + links to Garmin/Snapshots.\n- Commit: 251c08d\n- Tests: 
+pm run lint ?, 
+pm run build ?\n
