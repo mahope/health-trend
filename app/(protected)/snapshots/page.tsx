@@ -5,6 +5,7 @@ import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useToast } from "@/components/ToastProvider";
+import { EmptyState, InlineEmptyLink } from "@/components/EmptyState";
 
 type Snapshot = {
   id: string;
@@ -16,6 +17,13 @@ type Snapshot = {
   sleepHours?: number | null;
   bodyBatteryHigh?: number | null;
   bodyBatteryLow?: number | null;
+};
+
+type TakeSnapshotError = {
+  code?: string;
+  message: string;
+  file?: string;
+  hint?: string;
 };
 
 function fmtTime(iso: string) {
@@ -41,7 +49,7 @@ export default function SnapshotsPage() {
   const [day, setDay] = useState(todayCphClient());
   const [items, setItems] = useState<Snapshot[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<TakeSnapshotError | null>(null);
 
   const pendingDelete = useRef<null | { id: string; handle: number }>(null);
 
@@ -56,7 +64,53 @@ export default function SnapshotsPage() {
       if (!res.ok) throw new Error(json?.error || "Kunne ikke hente snapshots");
       setItems(json.items ?? []);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Fejl");
+      setError({ message: e instanceof Error ? e.message : "Fejl" });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function takeSnapshot() {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/snapshots/take", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ day }),
+      });
+
+      const json = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        error?: string;
+        file?: string;
+        hint?: string;
+      };
+
+      if (!res.ok) {
+        if (json?.error === "missing_garmin_file") {
+          setError({
+            code: json.error,
+            message: "Mangler Garmin-fil til den valgte dag.",
+            file: json.file,
+            hint: json.hint,
+          });
+          toast({ title: "Mangler Garmin-fil", kind: "error", vibrateMs: 35 });
+          return;
+        }
+
+        const msg = json?.error || "Kunne ikke tage snapshot";
+        setError({ message: msg });
+        toast({ title: msg, kind: "error", vibrateMs: 45 });
+        return;
+      }
+
+      toast({ title: "Snapshot taget ✓", kind: "success", vibrateMs: 12 });
+      await refresh();
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Fejl";
+      setError({ message: msg });
+      toast({ title: msg, kind: "error", vibrateMs: 45 });
     } finally {
       setLoading(false);
     }
@@ -68,7 +122,7 @@ export default function SnapshotsPage() {
   }, [day]);
 
   const deltas = useMemo(() => {
-    if (items.length < 2) return [] as Array<{ a: Snapshot; b: Snapshot; dSteps?: number | null }>;
+    if (items.length < 2) return [] as Array<{ a: Snapshot; b: Snapshot; dSteps?: number | null }>; // at least 2 to compare
     const out: Array<{ a: Snapshot; b: Snapshot; dSteps?: number | null }> = [];
     for (let i = 1; i < items.length; i++) {
       const a = items[i - 1];
@@ -91,31 +145,7 @@ export default function SnapshotsPage() {
           description="Tag snapshots (morgen/middag/aften) og se udvikling."
           right={
             <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                disabled={loading}
-                onClick={async () => {
-                  setLoading(true);
-                  setError(null);
-                  try {
-                    const res = await fetch("/api/snapshots/take", {
-                      method: "POST",
-                      headers: { "content-type": "application/json" },
-                      body: JSON.stringify({ day }),
-                    });
-                    const json = await res.json();
-                    if (!res.ok) throw new Error(json?.error || "Kunne ikke tage snapshot");
-                    toast({ title: "Snapshot taget ✓", kind: "success", vibrateMs: 12 });
-                    await refresh();
-                  } catch (e: unknown) {
-                    const msg = e instanceof Error ? e.message : "Fejl";
-                    setError(msg);
-                    toast({ title: msg, kind: "error", vibrateMs: 45 });
-                  } finally {
-                    setLoading(false);
-                  }
-                }}
-              >
+              <Button size="sm" disabled={loading} onClick={takeSnapshot}>
                 {loading ? "Arbejder…" : "Tag snapshot"}
               </Button>
               <Button size="sm" disabled={loading} onClick={refresh}>
@@ -128,19 +158,29 @@ export default function SnapshotsPage() {
           <div className="grid gap-3 md:grid-cols-2">
             <div>
               <label className="block text-xs text-neutral-500 dark:text-neutral-400">Dag</label>
-              <Input
-                value={day}
-                onChange={(e) => setDay(e.target.value)}
-                placeholder="YYYY-MM-DD"
-              />
+              <Input value={day} onChange={(e) => setDay(e.target.value)} placeholder="YYYY-MM-DD" />
             </div>
             <div className="text-xs text-neutral-500 dark:text-neutral-400 md:pt-6">
               Snapshot læses lokalt fra{" "}
-              <code>C:/Users/mads_/Garmin/data/garmin-YYYY-MM-DD.json</code> og gemmes.
+              <code>C:/Users/mads_/Garmin/data/garmin-YYYY-MM-DD.json</code>.
             </div>
           </div>
 
-          {error && <div className="mt-3 text-sm text-red-600">{error}</div>}
+          {error ? (
+            <div className="mt-3 rounded-2xl border border-red-500/20 bg-red-50/60 p-4 text-sm text-red-800 dark:border-red-400/20 dark:bg-red-950/30 dark:text-red-200">
+              <div className="font-medium">{error.message}</div>
+              {(error.hint || error.file) && (
+                <div className="mt-1 text-xs text-red-700/90 dark:text-red-200/80">
+                  {error.hint ? <div>{error.hint}</div> : null}
+                  {error.file ? (
+                    <div>
+                      Fil: <code className="break-all">{error.file}</code>
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </div>
+          ) : null}
         </CardBody>
       </Card>
 
@@ -150,15 +190,35 @@ export default function SnapshotsPage() {
           <CardBody>
             <div className="space-y-2">
               {items.length === 0 ? (
-                <div className="text-sm text-neutral-600 dark:text-neutral-300">
-                  Ingen snapshots endnu.
-                </div>
+                <EmptyState
+                  title="Ingen snapshots endnu"
+                  description={
+                    <>
+                      For at komme i gang skal der ligge en Garmin eksport for dagen. Når du har taget det første snapshot,
+                      begynder dashboardet at kunne lave trends + AI brief.
+                      <div className="mt-2">
+                        Tip: tag typisk 2–3 snapshots om dagen (morgen/middag/aften).
+                      </div>
+                    </>
+                  }
+                  actions={
+                    <div className="grid gap-2">
+                      <Button variant="primary" disabled={loading} onClick={takeSnapshot}>
+                        {loading ? "Arbejder…" : "Tag første snapshot"}
+                      </Button>
+                      <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                        Hvis den fejler, får du en sti/hint herover.
+                      </div>
+                      <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                        Se også: <InlineEmptyLink href="/garmin">Garmin</InlineEmptyLink>
+                      </div>
+                    </div>
+                  }
+                />
               ) : (
                 items.map((x) => (
                   <div key={x.id} className="flex items-center justify-between gap-3 text-sm">
-                    <div className="text-neutral-800 dark:text-neutral-100">
-                      {fmtTime(x.takenAt)}
-                    </div>
+                    <div className="text-neutral-800 dark:text-neutral-100">{fmtTime(x.takenAt)}</div>
                     <div className="flex items-center gap-3">
                       <div className="text-neutral-600 dark:text-neutral-300">Steps: {x.steps ?? "—"}</div>
                       <button
@@ -184,13 +244,13 @@ export default function SnapshotsPage() {
                                 headers: { "content-type": "application/json" },
                                 body: JSON.stringify({ id: x.id }),
                               });
-                              const json = await res.json().catch(() => ({}));
+                              const json = (await res.json().catch(() => ({}))) as { error?: string };
                               if (!res.ok) throw new Error(json.error || "Kunne ikke slette");
                               await refresh();
                             } catch (e: unknown) {
                               // Restore list on failure.
                               setItems(prevItems);
-                              setError(e instanceof Error ? e.message : "Fejl");
+                              setError({ message: e instanceof Error ? e.message : "Fejl" });
                               toast({ title: "Kunne ikke slette snapshot", kind: "error", vibrateMs: 20 });
                             } finally {
                               pendingDelete.current = null;
@@ -231,18 +291,23 @@ export default function SnapshotsPage() {
           <CardBody>
             <div className="space-y-2">
               {deltas.length === 0 ? (
-                <div className="text-sm text-neutral-600 dark:text-neutral-300">
-                  Tag mindst 2 snapshots.
-                </div>
+                <EmptyState
+                  title={items.length === 0 ? "Ingen data at sammenligne" : "Tag mindst 2 snapshots"}
+                  description={
+                    items.length === 0 ? (
+                      <>Når du har taget første snapshot, kan du begynde at sammenligne udvikling mellem dem.</>
+                    ) : (
+                      <>Når du tager et snapshot mere (fx i eftermiddag), viser vi delta her.</>
+                    )
+                  }
+                />
               ) : (
                 deltas.map((d) => (
                   <div key={d.b.id} className="flex items-center justify-between text-sm">
                     <div className="text-neutral-800 dark:text-neutral-100">
                       {fmtTime(d.a.takenAt)} → {fmtTime(d.b.takenAt)}
                     </div>
-                    <div className="text-neutral-600 dark:text-neutral-300">
-                      Δ steps: {d.dSteps ?? "—"}
-                    </div>
+                    <div className="text-neutral-600 dark:text-neutral-300">Δ steps: {d.dSteps ?? "—"}</div>
                   </div>
                 ))
               )}

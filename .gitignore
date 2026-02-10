@@ -48,3 +48,6 @@ next-env.d.ts
 
 # local app data (file store fallback)
 /.local-data/
+
+# autopilot
+_autopilot_prompt.txt

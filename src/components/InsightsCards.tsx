@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Sparkline } from "@/components/Sparkline";
+import { EmptyState } from "@/components/EmptyState";
 
 type Insights = {
   sleepDebt: { debtHours: number; avgSleepHours?: number; goalHours?: number };
@@ -11,33 +12,71 @@ type Insights = {
 
 type SleepDebtTrend = { series: Array<{ day: string; debtHours: number }> };
 
+type BestDays = {
+  window: { start: string; end: string; days: number };
+  counts: { daysWithRisk: number; lowDays: number };
+  avg: {
+    all: { steps: number | null; sleepHours: number | null; stressAvg: number | null; bodyBatteryLow: number | null };
+    low: { steps: number | null; sleepHours: number | null; stressAvg: number | null; bodyBatteryLow: number | null };
+    diff: { steps: number | null; sleepHours: number | null; stressAvg: number | null; bodyBatteryLow: number | null };
+  };
+};
+
+function fmtSigned(n: number, decimals = 0) {
+  const sign = n > 0 ? "+" : n < 0 ? "−" : "";
+  const abs = Math.abs(n);
+  return `${sign}${abs.toFixed(decimals)}`;
+}
+
 export function InsightsCards() {
   const [data, setData] = useState<Insights | null>(null);
   const [trend, setTrend] = useState<SleepDebtTrend | null>(null);
+  const [best, setBest] = useState<BestDays | null>(null);
   const [windowDays, setWindowDays] = useState<7 | 14>(7);
   const [error, setError] = useState<string | null>(null);
 
-  const qs = useMemo(() => new URLSearchParams({ sleepDebtDays: String(windowDays) }).toString(), [windowDays]);
+  const qs = useMemo(
+    () => new URLSearchParams({ sleepDebtDays: String(windowDays) }).toString(),
+    [windowDays],
+  );
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
         setError(null);
-        const [res1, res2] = await Promise.all([
+        const [res1, res2, res3] = await Promise.all([
           fetch(`/api/insights/summary?${qs}`, { cache: "no-store" }),
-          fetch(`/api/insights/sleep-debt-trend?window=${windowDays}&points=14`, { cache: "no-store" }),
+          fetch(`/api/insights/sleep-debt-trend?window=${windowDays}&points=14`, {
+            cache: "no-store",
+          }),
+          fetch(`/api/insights/best-days`, { cache: "no-store" }),
         ]);
 
-        const json1 = (await res1.json()) as { sleepDebt?: Insights["sleepDebt"]; streaks?: Insights["streaks"]; error?: string };
+        const json1 = (await res1.json()) as {
+          sleepDebt?: Insights["sleepDebt"];
+          streaks?: Insights["streaks"];
+          error?: string;
+        };
         if (!res1.ok) throw new Error(json1.error || "Kunne ikke hente indsigter");
 
-        const json2 = (await res2.json()) as { series?: SleepDebtTrend["series"]; error?: string };
+        const json2 = (await res2.json()) as {
+          series?: SleepDebtTrend["series"];
+          error?: string;
+        };
         if (!res2.ok) throw new Error(json2.error || "Kunne ikke hente søvngæld-trend");
+
+        const json3 = (await res3.json()) as { ok?: boolean; error?: string } & Partial<BestDays>;
+        if (!res3.ok) throw new Error(json3.error || "Kunne ikke hente best-days");
 
         if (!cancelled) {
           setData({ sleepDebt: json1.sleepDebt!, streaks: json1.streaks! });
           setTrend({ series: json2.series ?? [] });
+          setBest({
+            window: json3.window!,
+            counts: json3.counts!,
+            avg: json3.avg!,
+          });
         }
       } catch (e: unknown) {
         if (!cancelled) setError(e instanceof Error ? e.message : "Fejl");
@@ -54,10 +93,15 @@ export function InsightsCards() {
     <div className="grid gap-4 lg:grid-cols-12">
       <div className="lg:col-span-6">
         <Card>
-          <CardHeader title={`Søvngæld (${windowDays} dage)`} description="Hvor meget søvn du mangler ift. dit mål." />
+          <CardHeader
+            title={`Søvngæld (${windowDays} dage)`}
+            description="Hvor meget søvn du mangler ift. dit mål."
+          />
           <CardBody>
             <div className="mb-2 flex items-center justify-between gap-3">
-              <div className="text-sm text-neutral-600 dark:text-neutral-300">Trend (14 dage)</div>
+              <div className="text-sm text-neutral-600 dark:text-neutral-300">
+                Trend (14 dage)
+              </div>
               <div className="inline-flex overflow-hidden rounded-lg border border-black/10 dark:border-white/10">
                 <button
                   type="button"
@@ -85,12 +129,23 @@ export function InsightsCards() {
               <div className="text-sm text-neutral-600 dark:text-neutral-300">Henter…</div>
             ) : (
               <div className="space-y-2">
-                <div className="text-2xl font-semibold tracking-tight">{data.sleepDebt.debtHours} t</div>
-                <div className="text-sm text-neutral-600 dark:text-neutral-300">
-                  Mål: {data.sleepDebt.goalHours?.toFixed(1)}t/nat · Snit: {data.sleepDebt.avgSleepHours?.toFixed(1) ?? "—"}t
+                <div className="text-2xl font-semibold tracking-tight">
+                  {data.sleepDebt.debtHours} t
                 </div>
                 <div className="text-sm text-neutral-600 dark:text-neutral-300">
-                  Forslag i aften: sigt efter {Math.min(10, Math.max(7, (data.sleepDebt.goalHours ?? 7.5) + data.sleepDebt.debtHours / 3)).toFixed(1)}t søvn.
+                  Mål: {data.sleepDebt.goalHours?.toFixed(1)}t/nat · Snit:{" "}
+                  {data.sleepDebt.avgSleepHours?.toFixed(1) ?? "—"}t
+                </div>
+                <div className="text-sm text-neutral-600 dark:text-neutral-300">
+                  Forslag i aften: sigt efter{" "}
+                  {Math.min(
+                    10,
+                    Math.max(
+                      7,
+                      (data.sleepDebt.goalHours ?? 7.5) + data.sleepDebt.debtHours / 3,
+                    ),
+                  ).toFixed(1)}
+                  t søvn.
                 </div>
               </div>
             )}
@@ -108,18 +163,109 @@ export function InsightsCards() {
             ) : (
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-xl border border-black/10 p-3 dark:border-white/10">
-                  <div className="text-xs text-neutral-500 dark:text-neutral-400">Steps (mål {data.streaks.stepsGoal})</div>
-                  <div className="mt-1 text-2xl font-semibold tracking-tight">{data.streaks.stepsStreak}</div>
+                  <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                    Steps (mål {data.streaks.stepsGoal})
+                  </div>
+                  <div className="mt-1 text-2xl font-semibold tracking-tight">
+                    {data.streaks.stepsStreak}
+                  </div>
                 </div>
                 <div className="rounded-xl border border-black/10 p-3 dark:border-white/10">
-                  <div className="text-xs text-neutral-500 dark:text-neutral-400">Søvn (mål {data.streaks.sleepGoalHours.toFixed(1)}t)</div>
-                  <div className="mt-1 text-2xl font-semibold tracking-tight">{data.streaks.sleepStreak}</div>
+                  <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                    Søvn (mål {data.streaks.sleepGoalHours.toFixed(1)}t)
+                  </div>
+                  <div className="mt-1 text-2xl font-semibold tracking-tight">
+                    {data.streaks.sleepStreak}
+                  </div>
                 </div>
               </div>
             )}
           </CardBody>
         </Card>
       </div>
+
+      <div className="lg:col-span-12">
+        <Card>
+          <CardHeader
+            title="Best-days mønstre (LOW risk)"
+            description="En hurtig sammenligning af dine LOW-risk dage vs. resten (seneste ~30 dage)."
+          />
+          <CardBody>
+            {error && <div className="text-sm text-red-600">{error}</div>}
+
+            {!best ? (
+              <div className="text-sm text-neutral-600 dark:text-neutral-300">Henter…</div>
+            ) : best.counts.daysWithRisk === 0 ? (
+              <EmptyState
+                title="Ingen risikovurderinger endnu"
+                description="Når du har genereret AI brief for nogle dage, kan vi finde mønstre i dine bedste (LOW) dage."
+              />
+            ) : best.counts.lowDays === 0 ? (
+              <EmptyState
+                title="Ingen LOW-risk dage i vinduet"
+                description="Der er ikke nogen LOW-dage i de seneste ~30 dage. Når der kommer nogle, viser vi forskelle her."
+              />
+            ) : (
+              <div className="space-y-3">
+                <div className="text-sm text-neutral-600 dark:text-neutral-300">
+                  LOW dage: <span className="font-medium text-neutral-900 dark:text-neutral-100">{best.counts.lowDays}</span> /{" "}
+                  {best.counts.daysWithRisk}
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  <Metric label="Steps" diff={best.avg.diff.steps} fmt={(n) => `${fmtSigned(n, 0)} steps`} />
+                  <Metric label="Søvn" diff={best.avg.diff.sleepHours} fmt={(n) => `${fmtSigned(n, 1)} t`} />
+                  <Metric
+                    label="Stress (avg)"
+                    diff={best.avg.diff.stressAvg}
+                    fmt={(n) => `${fmtSigned(n, 0)}`}
+                    invertGood
+                  />
+                  <Metric
+                    label="BB low"
+                    diff={best.avg.diff.bodyBatteryLow}
+                    fmt={(n) => `${fmtSigned(n, 0)}`}
+                  />
+                </div>
+
+                <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                  *Dette er bare et simpelt gennemsnit (ikke statistik). Tænk “pegepind”, ikke sandhed.*
+                </div>
+              </div>
+            )}
+          </CardBody>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function Metric({
+  label,
+  diff,
+  fmt,
+  invertGood,
+}: {
+  label: string;
+  diff: number | null;
+  fmt: (n: number) => string;
+  invertGood?: boolean;
+}) {
+  const text = diff === null ? "—" : fmt(diff);
+  const positiveIsGood = invertGood ? false : true;
+  const isGood = diff === null ? null : positiveIsGood ? diff >= 0 : diff <= 0;
+
+  return (
+    <div className="rounded-xl border border-black/10 p-3 dark:border-white/10">
+      <div className="text-xs text-neutral-500 dark:text-neutral-400">{label}</div>
+      <div
+        className={`mt-1 text-lg font-semibold tracking-tight ${
+          isGood === null ? "text-neutral-900 dark:text-neutral-100" : isGood ? "text-emerald-700 dark:text-emerald-300" : "text-rose-700 dark:text-rose-300"
+        }`}
+      >
+        {text}
+      </div>
+      <div className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">(LOW vs. alle)</div>
     </div>
   );
 }
