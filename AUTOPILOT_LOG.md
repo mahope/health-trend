@@ -183,3 +183,8 @@ pm run build ?
 - Changed: Added basic CSS design tokens (radii/surfaces/borders/ring/muted text) in globals.css and rewired core UI components (Card/Button/Input/TogglePill) to use them.
 - Commit: a0a1c75
 - Tests: npm run lint ✅, npm run build ✅
+
+## 2026-02-10 03:54 (Europe/Copenhagen)
+- Changed: Added a reusable `Skeleton` UI component and wired skeleton loaders into Dashboard cards (Latest snapshot, Recovery, AI brief) for nicer mobile loading states.
+- Commit: dab1288
+- Tests: `npm run lint` ✅, `npm run build` ✅
