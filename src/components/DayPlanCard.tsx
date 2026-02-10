@@ -25,6 +25,7 @@ type AiPlan = {
 type PlanResp = {
   ok: true;
   day: string;
+  basedOnDay?: string;
   deterministic: Deterministic;
   ai: AiPlan | null;
 };
@@ -36,39 +37,88 @@ function intensityLabel(x: string) {
 }
 
 export function DayPlanCard() {
-  const [data, setData] = useState<PlanResp | null>(null);
+  const [today, setToday] = useState<PlanResp | null>(null);
+  const [tomorrow, setTomorrow] = useState<PlanResp | null>(null);
+  const [tab, setTab] = useState<"today" | "tomorrow">("today");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
+
+    async function fetchPlan(url: string, fallbackMsg: string) {
+      const res = await fetch(url, { cache: "no-store" });
+      const json = (await res.json()) as { error?: string } & Partial<PlanResp>;
+      if (!res.ok) throw new Error(json.error || fallbackMsg);
+      return json as PlanResp;
+    }
+
     (async () => {
       try {
-        const res = await fetch("/api/plan/today?ai=1", { cache: "no-store" });
-        const json = (await res.json()) as { error?: string } & Partial<PlanResp>;
-        if (!res.ok) throw new Error(json.error || "Kunne ikke hente dagsplan");
-        if (!cancelled) setData(json as PlanResp);
+        const [t, tm] = await Promise.all([
+          fetchPlan("/api/plan/today?ai=1", "Kunne ikke hente dagsplan"),
+          fetchPlan("/api/plan/tomorrow?ai=1", "Kunne ikke hente plan for i morgen"),
+        ]);
+        if (!cancelled) {
+          setToday(t);
+          setTomorrow(tm);
+        }
       } catch (e: unknown) {
         if (!cancelled) setError(e instanceof Error ? e.message : "Fejl");
       }
     })();
+
     return () => {
       cancelled = true;
     };
   }, []);
 
+  const data = tab === "today" ? today : tomorrow;
   const intensity = data?.ai?.intensity || data?.deterministic.intensity;
 
   return (
     <Card>
       <CardHeader
-        title="Plan i dag"
-        description="Konkrete forslag baseret på Garmin + din kontekst."
+        title={tab === "today" ? "Plan i dag" : "Plan i morgen"}
+        description={
+          tab === "today"
+            ? "Konkrete forslag baseret på Garmin + din kontekst."
+            : "En realistisk plan for i morgen — baseret på i dag."
+        }
         right={
-          intensity ? (
-            <Badge tone={intensity === "let" ? "low" : intensity === "hård" ? "med" : "neutral"}>
-              {intensityLabel(intensity)}
-            </Badge>
-          ) : undefined
+          <div className="flex items-center gap-2">
+            <div className="inline-flex rounded-lg border border-black/10 bg-white/50 p-0.5 text-xs dark:border-white/10 dark:bg-black/20">
+              <button
+                type="button"
+                onClick={() => setTab("today")}
+                className={
+                  "h-8 rounded-md px-2.5 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:focus-visible:ring-white/20 " +
+                  (tab === "today"
+                    ? "bg-black text-white dark:bg-white dark:text-black"
+                    : "text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-white/10")
+                }
+              >
+                I dag
+              </button>
+              <button
+                type="button"
+                onClick={() => setTab("tomorrow")}
+                className={
+                  "h-8 rounded-md px-2.5 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:focus-visible:ring-white/20 " +
+                  (tab === "tomorrow"
+                    ? "bg-black text-white dark:bg-white dark:text-black"
+                    : "text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-white/10")
+                }
+              >
+                I morgen
+              </button>
+            </div>
+
+            {intensity ? (
+              <Badge tone={intensity === "let" ? "low" : intensity === "hård" ? "med" : "neutral"}>
+                {intensityLabel(intensity)}
+              </Badge>
+            ) : null}
+          </div>
         }
       />
       <CardBody>

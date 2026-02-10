@@ -82,6 +82,66 @@ export async function computeDeterministicPlan(userId: string, day: string): Pro
   return { day, intensity, reason, suggestions, avoid, bedtimeHint };
 }
 
+export async function computeTomorrowDeterministicPlan(
+  userId: string,
+  today: string,
+): Promise<DeterministicPlan> {
+  // Start from today's signals and suggest a realistic plan for tomorrow.
+  // Heuristic: If you should go "hård" today, don't auto-suggest "hård" tomorrow.
+  const todayPlan = await computeDeterministicPlan(userId, today);
+
+  const tomorrow = addDaysYmd(today, 1);
+
+  let intensity: DeterministicPlan["intensity"] = todayPlan.intensity;
+  const reasons: string[] = [];
+
+  if (todayPlan.intensity === "hård") {
+    intensity = "moderat";
+    reasons.push("hård dag i dag → planlæg en mere balanceret dag i morgen");
+  }
+
+  if (todayPlan.intensity === "let") {
+    intensity = "moderat";
+    reasons.push("let dag i dag → du kan sigte efter en moderat dag i morgen");
+  }
+
+  // If today already indicates strain, keep tomorrow light.
+  if (todayPlan.intensity === "let" && todayPlan.reason.includes("belastning")) {
+    intensity = "let";
+    reasons.push("tegn på belastning i dag → hold i morgen let");
+  }
+
+  const reason = reasons.length ? reasons.join(", ") : "i morgen bygger videre på i dag (uden at overgøre det)";
+
+  const suggestions: string[] = [];
+  const avoid: string[] = [];
+
+  if (intensity === "let") {
+    suggestions.push("20-40 min rolig gåtur (zone 1-2)");
+    suggestions.push("Lav stimulation efter aftensmad + tidlig sengetid");
+    suggestions.push("Vælg 1 vigtig ting + 1 lille ting — og stop der");
+    avoid.push("At ‘kompensere’ med hård træning");
+    avoid.push("Sen koffein (efter kl. 14)");
+  }
+
+  if (intensity === "moderat") {
+    suggestions.push("30-60 min moderat aktivitet (gåtur/let styrke/cykel)");
+    suggestions.push("Planlæg et 30 min vindue, så det faktisk sker");
+    suggestions.push("Tænk restitution: vand + protein + ro om aftenen");
+    avoid.push("At lave planen for ambitiøs (så den ryger)");
+  }
+
+  if (intensity === "hård") {
+    suggestions.push("Hård træning kan være OK — men planlæg søvn og mad omkring det");
+    suggestions.push("Hold øje med stress: stop hvis det stikker af");
+    avoid.push("At presse igennem hvis kroppen føles off");
+  }
+
+  const bedtimeHint = intensity === "let" ? "Prioritér søvn: sigt efter en tidlig sengetid." : "Hold en stabil sengetid.";
+
+  return { day: tomorrow, intensity, reason, suggestions, avoid, bedtimeHint };
+}
+
 export type AiDayPlan = {
   intensity?: "let" | "moderat" | "hård";
   headline?: string;
