@@ -27,7 +27,7 @@
 6. [x] Performance: defer heavy sections below fold
 
 ### Garmin value
-7. Sleep debt trend chart (7/14d)
+7. [x] Sleep debt trend chart (7/14d)
 8. Recovery score widget (BB low + stress + sleep)
 9. Activity streaks by type (walk/run/strength)
 10. Best-days patterns: what correlates with LOW risk
