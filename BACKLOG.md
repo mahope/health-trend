@@ -47,7 +47,7 @@
 
 ### Design/system
 20. Design tokens (spacing/typography) pass
-21. Input/Button focus states (a11y)
+21. [x] Input/Button focus states (a11y)
 22. Skeleton loaders for cards
 
 ## Autopilot log
