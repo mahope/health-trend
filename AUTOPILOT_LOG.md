@@ -129,3 +129,8 @@ pm run build ?
 - Changed: Added a lightweight overstimulation heuristic (stress/BB trend + manual caffeine/symptom) into the AI daily brief payload and prompt instruction so the model can flag likely overstimulation patterns + suggest simple regulation actions. Marked backlog item as done.
 - Commit: 73daad5
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 02:10 (Europe/Copenhagen)
+- Changed: Added in-memory rate limiting for `/api/manual/upsert` (per-user+IP) and `/api/auth/*` (per-IP) with 429 + `Retry-After` and basic `X-RateLimit-*` headers. Marked backlog item as done.
+- Commit: aa4ab0b
+- Tests: `npm run lint` ✅, `npm run build` ✅
