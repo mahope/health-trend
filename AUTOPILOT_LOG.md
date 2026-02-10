@@ -114,3 +114,8 @@ pm run build ?
 - Changed: Added “Plan i morgen” alongside “Plan i dag” (toggle) in DayPlanCard. Implemented `/api/plan/tomorrow` endpoint + a simple deterministic tomorrow heuristic (based on today) + optional AI prompt.
 - Commit: dd246fd
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 01:42 (Europe/Copenhagen)
+- Changed: Added Copy/Share/Save actions to Ugereview. Formats the AI weekly review as shareable text, supports Web Share API, clipboard fallback, and download as `.md`.
+- Commit: 62088ef
+- Tests: `npm run lint` ✅, `npm run build` ✅
