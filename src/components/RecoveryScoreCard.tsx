@@ -153,16 +153,32 @@ export function RecoveryScoreCard({ day }: { day: string }) {
             title="Ingen snapshots endnu"
             description={
               <>
-                Tag et snapshot først — så kan vi beregne en enkel recovery-score ud fra dine Garmin-signaler.
+                Recovery kræver mindst ét snapshot.
+                <div className="mt-2">Kom i gang:</div>
+                <ol className="mt-2 list-decimal space-y-1 pl-4">
+                  <li>Tjek at Garmin-eksporten for i dag ligger klar.</li>
+                  <li>Tag dit første snapshot.</li>
+                </ol>
               </>
             }
             actions={
-              <Link
-                href="/snapshots"
-                className="inline-flex h-10 items-center justify-center rounded-lg bg-black px-4 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:bg-white dark:text-black dark:hover:bg-white/90 dark:focus-visible:ring-white/20"
-              >
-                Åbn Snapshots
-              </Link>
+              <div className="grid gap-2">
+                <Link
+                  href="/snapshots"
+                  className="inline-flex h-10 items-center justify-center rounded-[var(--radius-control)] bg-black px-4 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:bg-white dark:text-black dark:hover:bg-white/90 dark:focus-visible:ring-white/20"
+                >
+                  Tag første snapshot
+                </Link>
+                <Link
+                  href="/garmin"
+                  className="inline-flex h-10 items-center justify-center rounded-[var(--radius-control)] border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] px-4 text-sm font-medium text-neutral-900 transition-colors hover:bg-[color:var(--surface-control-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring-subtle)] dark:text-neutral-100"
+                >
+                  Tjek Garmin data
+                </Link>
+                <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                  Tip: tag typisk 2–3 snapshots om dagen (morgen/middag/aften).
+                </div>
+              </div>
             }
           />
         ) : (
