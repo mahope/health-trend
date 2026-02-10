@@ -104,3 +104,8 @@ pm run build ?
 - Changed: Improved first-snapshot empty states/CTAs on /snapshots (incl. nicer missing-garmin-file errors), and added a new Insights card that compares LOW-risk days vs. overall averages (last ~30 days).
 - Commit: b891633
 - Quick test: npm run lint ?, npm run build ?
+
+## 2026-02-10 01:21 (Europe/Copenhagen)
+- Changed: Added a 1-line "Coach" hint in the global header on Dashboard by showing the latest AI brief short text (if present).
+- Commit: 8b9b3e3
+- Tests: `npm run lint` ✅, `npm run build` ✅
