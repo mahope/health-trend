@@ -9,18 +9,17 @@ import { generateAiBriefForUser } from "@/lib/aiBrief";
 import { getClientIp, rateLimit } from "@/lib/rateLimit";
 import { detectEarlyWarning } from "@/lib/insights";
 
+function timingSafeCompare(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
+}
+
 function isAuthorized(req: Request): { ok: true } | { ok: false; reason: string } {
   const secret = process.env.CRON_SECRET;
   if (!secret) return { ok: false, reason: "missing_cron_secret" };
 
-  // Preferred: header
   const header = req.headers.get("x-cron-secret") || "";
-  if (header && header === secret) return { ok: true };
-
-  // Fallback: query param
-  const url = new URL(req.url);
-  const q = url.searchParams.get("secret") || "";
-  if (q && q === secret) return { ok: true };
+  if (header && timingSafeCompare(header, secret)) return { ok: true };
 
   return { ok: false, reason: "bad_secret" };
 }

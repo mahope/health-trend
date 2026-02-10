@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/serverAuth";
 import { prisma } from "@/lib/prisma";
+import { isValidDay } from "@/lib/date";
 
 export async function GET(req: Request) {
   const user = await requireUser();
@@ -8,6 +9,9 @@ export async function GET(req: Request) {
 
   const url = new URL(req.url);
   const day = url.searchParams.get("day");
+  if (day && !isValidDay(day)) {
+    return NextResponse.json({ error: "invalid_day" }, { status: 400 });
+  }
   const onlyUndelivered = (url.searchParams.get("undelivered") || "").toLowerCase() === "1";
 
   const items = await prisma.alert.findMany({

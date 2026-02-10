@@ -30,6 +30,7 @@ export async function POST(req: Request) {
   if (!body?.day) return NextResponse.json({ error: "missing_day" }, { status: 400 });
 
   const day = body.day;
+  const notes = body.notes ? body.notes.slice(0, 2000) : null;
 
   const item = await prisma.manualDaily.upsert({
     where: { userId_day: { userId: user.id, day } },
@@ -37,7 +38,7 @@ export async function POST(req: Request) {
       symptomScore: body.symptomScore ?? null,
       caffeineCups: body.caffeineCups ?? null,
       alcoholUnits: body.alcoholUnits ?? null,
-      notes: body.notes ?? null,
+      notes,
       trained: body.trained ?? null,
       meds: body.meds ?? null,
     },
@@ -47,7 +48,7 @@ export async function POST(req: Request) {
       symptomScore: body.symptomScore ?? null,
       caffeineCups: body.caffeineCups ?? null,
       alcoholUnits: body.alcoholUnits ?? null,
-      notes: body.notes ?? null,
+      notes,
       trained: body.trained ?? null,
       meds: body.meds ?? null,
     },

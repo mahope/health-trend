@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/serverAuth";
 import { getStore } from "@/lib/store";
+import { isValidDay } from "@/lib/date";
 
 export async function GET(req: Request) {
   const user = await requireUser();
@@ -12,6 +13,9 @@ export async function GET(req: Request) {
   const day = url.searchParams.get("day");
   if (!day) {
     return NextResponse.json({ error: "missing_day" }, { status: 400 });
+  }
+  if (!isValidDay(day)) {
+    return NextResponse.json({ error: "invalid_day" }, { status: 400 });
   }
 
   const store = await getStore();

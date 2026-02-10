@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/serverAuth";
-import { addDaysYmd, ymd } from "@/lib/date";
+import { addDaysYmd, isValidDay, ymd } from "@/lib/date";
 import { computeSleepDebt } from "@/lib/insights";
 
 function clampInt(n: number, min: number, max: number) {
@@ -13,7 +13,11 @@ export async function GET(req: Request) {
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   const url = new URL(req.url);
-  const day = url.searchParams.get("day") || ymd(new Date());
+  const dayParam = url.searchParams.get("day");
+  if (dayParam && !isValidDay(dayParam)) {
+    return NextResponse.json({ error: "invalid_day" }, { status: 400 });
+  }
+  const day = dayParam || ymd(new Date());
   const windowDays = clampInt(Number(url.searchParams.get("window") || 7), 1, 30);
   const points = clampInt(Number(url.searchParams.get("points") || 14), 3, 31);
 

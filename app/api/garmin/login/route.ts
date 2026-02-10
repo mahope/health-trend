@@ -40,11 +40,16 @@ function runPythonLogin({ email, password, tokenDir }: { email: string; password
     const child = spawn(PYTHON, [GARMIN_LOGIN_SCRIPT], {
       stdio: ["ignore", "pipe", "pipe"],
       env: {
-        ...process.env,
+        PATH: process.env.PATH,
+        HOME: process.env.HOME,
+        USERPROFILE: process.env.USERPROFILE,
+        LANG: process.env.LANG,
+        SystemRoot: process.env.SystemRoot,
+        COMSPEC: process.env.COMSPEC,
         GARMIN_EMAIL: email,
         GARMIN_PASSWORD: password,
         GARMINTOKENS: tokenDir,
-      },
+      } as unknown as NodeJS.ProcessEnv,
     });
 
     let out = "";

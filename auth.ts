@@ -4,13 +4,19 @@ import { nextCookies } from "better-auth/next-js";
 import { twoFactor } from "better-auth/plugins";
 import { prisma } from "./src/lib/prisma";
 
-if (!process.env.BETTER_AUTH_SECRET && !process.env.APP_SECRET) {
-  console.warn("WARNING: BETTER_AUTH_SECRET is not set. Sessions will use an insecure default secret.");
+const authSecret = process.env.BETTER_AUTH_SECRET || process.env.APP_SECRET;
+if (!authSecret) {
+  // next build sets NODE_ENV=production but NEXT_PHASE distinguishes build from runtime
+  const isBuilding = process.env.NEXT_PHASE === "phase-production-build";
+  if (process.env.NODE_ENV === "production" && !isBuilding) {
+    throw new Error("BETTER_AUTH_SECRET must be set in production");
+  }
+  console.warn("WARNING: BETTER_AUTH_SECRET is not set. Using insecure default for local dev only.");
 }
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_BASE_URL || process.env.APP_URL,
-  secret: process.env.BETTER_AUTH_SECRET || process.env.APP_SECRET || "insecure-dev-only-secret",
+  secret: authSecret || "insecure-dev-only-secret",
 
   database: prismaAdapter(prisma, {
     provider: "postgresql",
@@ -20,6 +26,8 @@ export const auth = betterAuth({
 
   emailAndPassword: {
     enabled: true,
+    minPasswordLength: 12,
+    maxPasswordLength: 128,
   },
 
   // 2FA routes are provided via the twoFactor() plugin below.

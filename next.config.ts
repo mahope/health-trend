@@ -32,7 +32,7 @@ const securityHeaders: Array<{ key: string; value: string }> = [
     ].join(", "),
   },
 
-  // CSP-lite: strong defaults, but avoid breaking Next/Convex/PWA assets.
+  // CSP: strong defaults, explicit allowlist for external APIs.
   // NOTE: If we later add external analytics/fonts, update the allowlist intentionally.
   {
     key: "Content-Security-Policy",
@@ -46,9 +46,9 @@ const securityHeaders: Array<{ key: string; value: string }> = [
       "font-src 'self' data:",
       "style-src 'self' 'unsafe-inline'",
       "script-src 'self' 'unsafe-inline'",
-      // Convex + any future HTTPS APIs; include ws/http for local dev.
-      "connect-src 'self' https: http: wss: ws:",
-      // Allow PWA manifest + other fetches; keep it same-origin by default.
+      process.env.NODE_ENV === "production"
+        ? "connect-src 'self' https://api.openai.com"
+        : "connect-src 'self' https://api.openai.com http://localhost:* ws://localhost:*",
     ].join("; "),
   },
 ];
