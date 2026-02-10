@@ -143,7 +143,13 @@ export default function GarminPage() {
                     body: JSON.stringify({ email, password }),
                   });
                   const json = await res.json().catch(() => ({}));
-                  if (!res.ok) throw new Error(json?.error || "Login fejlede");
+                  if (!res.ok) {
+                    const msg =
+                      (json?.message as string | undefined) ||
+                      (json?.error as string | undefined) ||
+                      "Login fejlede";
+                    throw new Error(msg);
+                  }
                   setPassword("");
                   await refresh();
                 } catch (e: unknown) {
@@ -157,7 +163,10 @@ export default function GarminPage() {
             </Button>
 
             <div className="text-xs text-neutral-500 dark:text-neutral-400">
-              Note: I prod kører dette via Python i Docker-image (repo-contained script). Lokalt kræver det at <code>python3</code> findes i PATH, eller at du sætter <code>HEALTH_TREND_PYTHON</code>.
+              Hvis login fejler pga. forkert password, viser vi en pæn fejl (401).
+              <span className="block mt-1">
+                Note: I prod kører dette via Python i Docker-image (repo-contained script). Lokalt kræver det at <code>python3</code> findes i PATH, eller at du sætter <code>HEALTH_TREND_PYTHON</code>.
+              </span>
             </div>
           </div>
         </div>

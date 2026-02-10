@@ -25,8 +25,18 @@ async function readJson(p: string) {
   return JSON.parse(s);
 }
 
+type GarminLoginFailKind = "AUTH" | "RATE_LIMIT" | "CONNECTION" | "UNKNOWN";
+
+function parsePythonError(stderr: string): { kind: GarminLoginFailKind; message: string } {
+  // Our python prints: HT_ERR:<KIND>:<MESSAGE>
+  const m = stderr.match(/HT_ERR:([A-Z_]+):([^\r\n]*)/);
+  const kind = (m?.[1] as GarminLoginFailKind | undefined) || "UNKNOWN";
+  const message = (m?.[2] || "Login fejlede").trim();
+  return { kind, message };
+}
+
 function runPythonLogin({ email, password, tokenDir }: { email: string; password: string; tokenDir: string }) {
-  return new Promise<void>((resolve, reject) => {
+  return new Promise<{ ok: true } | { ok: false; code: number; kind: GarminLoginFailKind; message: string; raw: string }>((resolve) => {
     const child = spawn(PYTHON, [GARMIN_LOGIN_SCRIPT], {
       stdio: ["ignore", "pipe", "pipe"],
       env: {
@@ -42,10 +52,13 @@ function runPythonLogin({ email, password, tokenDir }: { email: string; password
     child.stdout.on("data", (d) => (out += String(d)));
     child.stderr.on("data", (d) => (err += String(d)));
 
-    child.on("error", (e) => reject(e));
+    child.on("error", (e) => {
+      resolve({ ok: false, code: 1, kind: "UNKNOWN", message: String(e), raw: String(e) });
+    });
     child.on("close", (code) => {
-      if (code === 0) return resolve();
-      return reject(new Error(`garmin_login failed (code ${code}). ${err || out}`));
+      if (code === 0) return resolve({ ok: true });
+      const parsed = parsePythonError(err || out);
+      resolve({ ok: false, code: code ?? 1, kind: parsed.kind, message: parsed.message, raw: (err || out).slice(0, 4000) });
     });
   });
 }
@@ -70,7 +83,24 @@ export async function POST(req: Request) {
   const tokenDir = await fs.mkdtemp(path.join(os.tmpdir(), "health-trend-garmin-"));
 
   try {
-    await runPythonLogin({ email, password, tokenDir });
+    const res = await runPythonLogin({ email, password, tokenDir });
+    if (!res.ok) {
+      const status =
+        res.kind === "AUTH" ? 401 :
+        res.kind === "RATE_LIMIT" ? 429 :
+        res.kind === "CONNECTION" ? 502 :
+        500;
+      return NextResponse.json(
+        {
+          error: "garmin_login_failed",
+          kind: res.kind,
+          message: res.message,
+          // raw is useful during local dev; keep it, but truncated.
+          raw: res.raw,
+        },
+        { status },
+      );
+    }
 
     const oauth1Path = path.join(tokenDir, "oauth1_token.json");
     const oauth2Path = path.join(tokenDir, "oauth2_token.json");
@@ -89,7 +119,14 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ ok: true });
   } catch (e: unknown) {
-    return NextResponse.json({ error: e instanceof Error ? e.message : "login_failed" }, { status: 500 });
+    // Unexpected server-side failure (IO, JSON parse, store failure, etc.)
+    return NextResponse.json(
+      {
+        error: "garmin_login_server_error",
+        message: e instanceof Error ? e.message : "login_failed",
+      },
+      { status: 500 },
+    );
   } finally {
     // best-effort cleanup
     try {

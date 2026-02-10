@@ -13,7 +13,19 @@ Notes:
 """
 
 import os
-from garminconnect import Garmin
+import sys
+import traceback
+from garminconnect import (
+    Garmin,
+    GarminConnectAuthenticationError,
+    GarminConnectConnectionError,
+    GarminConnectTooManyRequestsError,
+)
+
+
+def _emit_err(kind: str, message: str):
+    # Machine-readable marker for the TS server.
+    sys.stderr.write(f"HT_ERR:{kind}:{message}\n")
 
 
 def main():
@@ -36,7 +48,29 @@ def main():
     # In our app we set GARMINTOKENS to the *output* dir, which on first run is empty.
     # So we MUST remove it from env for the actual credential login.
     os.environ.pop("GARMINTOKENS", None)
-    client.login(tokenstore="")
+
+    try:
+        client.login(tokenstore="")
+    except GarminConnectAuthenticationError as e:
+        _emit_err("AUTH", "Forkert email/password – eller kontoen kræver MFA")
+        if os.environ.get("HEALTH_TREND_DEBUG") == "1":
+            traceback.print_exc()
+        raise SystemExit(3)
+    except GarminConnectTooManyRequestsError:
+        _emit_err("RATE_LIMIT", "Garmin blokerer midlertidigt (rate limit). Prøv igen om lidt.")
+        if os.environ.get("HEALTH_TREND_DEBUG") == "1":
+            traceback.print_exc()
+        raise SystemExit(4)
+    except GarminConnectConnectionError:
+        _emit_err("CONNECTION", "Kunne ikke kontakte Garmin (netværk/timeout). Prøv igen.")
+        if os.environ.get("HEALTH_TREND_DEBUG") == "1":
+            traceback.print_exc()
+        raise SystemExit(5)
+    except Exception as e:
+        _emit_err("UNKNOWN", f"{type(e).__name__}: {e}")
+        if os.environ.get("HEALTH_TREND_DEBUG") == "1":
+            traceback.print_exc()
+        raise SystemExit(1)
 
     # Persist tokens
     client.garth.dump(token_dir)
