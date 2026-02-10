@@ -52,6 +52,17 @@ export default function SnapshotsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<TakeSnapshotError | null>(null);
 
+  const expectedPath = `C:/Users/mads_/Garmin/data/garmin-${day}.json`;
+
+  async function copyExpectedPath() {
+    try {
+      await navigator.clipboard.writeText(expectedPath);
+      toast({ title: "Filsti kopieret ✓", kind: "success", vibrateMs: 10 });
+    } catch {
+      toast({ title: "Kunne ikke kopiere filsti", kind: "error", vibrateMs: 20 });
+    }
+  }
+
   const pendingDelete = useRef<null | { id: string; handle: number }>(null);
 
   async function refresh() {
@@ -180,6 +191,20 @@ export default function SnapshotsPage() {
                   ) : null}
                 </div>
               )}
+
+              {error.code === "missing_garmin_file" ? (
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <Button size="sm" variant="ghost" disabled={loading} onClick={copyExpectedPath}>
+                    Kopiér filsti
+                  </Button>
+                  <Link
+                    href="/garmin"
+                    className="inline-flex h-9 items-center justify-center rounded-[var(--radius-control)] border border-white/20 bg-white/20 px-3 text-xs font-medium text-red-900/90 transition-colors hover:bg-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 dark:border-white/15 dark:bg-white/5 dark:text-red-100"
+                  >
+                    Åbn Garmin
+                  </Link>
+                </div>
+              ) : null}
             </div>
           ) : null}
         </CardBody>
@@ -204,8 +229,7 @@ export default function SnapshotsPage() {
                         <li>Tryk “Tag første snapshot”.</li>
                       </ol>
                       <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
-                        Snapshot læses lokalt fra{" "}
-                        <code className="break-all">C:/Users/mads_/Garmin/data/garmin-{day}.json</code>.
+                        Snapshot læses lokalt fra <code className="break-all">{expectedPath}</code>.
                       </div>
                       <div className="mt-2">
                         Tip: tag typisk 2–3 snapshots om dagen (morgen/middag/aften).
@@ -216,6 +240,9 @@ export default function SnapshotsPage() {
                     <div className="grid gap-2">
                       <Button className="w-full" variant="primary" disabled={loading} onClick={takeSnapshot}>
                         {loading ? "Arbejder…" : "Tag første snapshot"}
+                      </Button>
+                      <Button className="w-full" variant="ghost" disabled={loading} onClick={copyExpectedPath}>
+                        Kopiér filsti
                       </Button>
                       <Link
                         href="/garmin"
