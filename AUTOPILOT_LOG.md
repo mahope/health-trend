@@ -256,3 +256,8 @@ pm run build ?
 - Changed: Improved Garmin page empty state when not connected, with clearer CTA to import tokens + links to Snapshots (first snapshot flow). Standardized buttons to UI Button.
 - Commit: 67014a5
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 06:35 (Europe/Copenhagen)
+- Changed: Improved Recovery card empty state (no snapshots) with clearer 2-step setup instructions + primary “Tag første snapshot” CTA + secondary “Tjek Garmin data”.
+- Commit: 952e6b3
+- Tests: `npm run lint` ✅, `npm run build` ✅
