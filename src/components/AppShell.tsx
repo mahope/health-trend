@@ -69,7 +69,7 @@ export function AppShell({
         {/* Main */}
         <div className="min-w-0 flex-1">
           {/* Topbar */}
-          <div className="mb-4 flex items-center justify-between gap-4">
+          <div className="mb-3 flex items-center justify-between gap-4">
             <div className="flex items-start gap-3">
               <button
                 className="md:hidden mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-black/10 bg-white/60 text-neutral-900 shadow-sm dark:border-white/10 dark:bg-black/20 dark:text-neutral-100"
@@ -89,6 +89,9 @@ export function AppShell({
             </div>
 
             <div className="flex items-center gap-2">
+              <div className="hidden sm:block text-xs text-neutral-500 dark:text-neutral-400 max-w-[40vw] truncate">
+                {userEmail}
+              </div>
               <UserMenu userEmail={userEmail} />
             </div>
           </div>

@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  /* Base */
-  --background: #ffffff;
-  --foreground: #0a0a0a;
+  /* Base (lighter default) */
+  --background: #fbfbfc;
+  --foreground: #0b1220;
 
   /* Design tokens */
   --radius-card: 1rem; /* matches rounded-2xl */
@@ -12,8 +12,8 @@
   --border-subtle: rgba(0, 0, 0, 0.1);
   --ring-subtle: rgba(0, 0, 0, 0.2);
 
-  --surface-card: rgba(255, 255, 255, 0.7);
-  --surface-card-blur: rgba(255, 255, 255, 0.6);
+  --surface-card: rgba(255, 255, 255, 0.85);
+  --surface-card-blur: rgba(255, 255, 255, 0.78);
   --surface-control: rgba(255, 255, 255, 1);
   --surface-control-hover: rgb(250, 250, 250); /* neutral-50-ish */
 

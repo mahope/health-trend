@@ -42,6 +42,7 @@ function safeVibrate(ms: number) {
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<Toast[]>([]);
+  const [announce, setAnnounce] = useState<string>("");
   const timers = useRef(new Map<string, number>());
 
   const toast = useCallback(
@@ -72,6 +73,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         return [...sticky, ...keep, next];
       });
 
+      // Screen-reader announcement (single aria-live region)
+      setAnnounce(`${kind.toUpperCase()}: ${t.title}`);
+
       if (t.vibrateMs && t.vibrateMs > 0) safeVibrate(t.vibrateMs);
 
       const durationMs = t.durationMs ?? 2200;
@@ -91,6 +95,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={api}>
       {children}
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        {announce}
+      </div>
       <ToastViewport items={items} onDismiss={(id) => setItems((prev) => prev.filter((x) => x.id !== id))} />
     </ToastContext.Provider>
   );
@@ -117,7 +124,6 @@ function ToastViewport({
               t.kind === "error" && "border-red-500/30",
             )}
             role="status"
-            aria-live="polite"
           >
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0 flex-1" onClick={() => onDismiss(t.id)}>

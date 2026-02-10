@@ -15,6 +15,8 @@ const eslintConfig = defineConfig([
 
     // Local debug scripts
     "scripts/_inspect_*.js",
+    "scripts/_check_db.js",
+    "scripts/generate-pwa-icons.mjs",
   ]),
 ]);
 
