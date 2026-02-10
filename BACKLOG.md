@@ -57,5 +57,8 @@
 ### PWA / offline
 25. [x] Offline banner + “online igen” toast
 
+### A11y / UX polish (new)
+26. [ ] Toasts: add screen-reader friendly `aria-live` region (so feedback isn't silent)
+
 ## Autopilot log
 See `AUTOPILOT_LOG.md`
