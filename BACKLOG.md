@@ -52,5 +52,8 @@
 23. [x] Route-level loading skeleton for protected pages (Next.js loading.tsx)
 24. [x] Mobile: CardHeader actions stack below title on small screens (avoid cramped buttons)
 
+### PWA / offline
+25. [x] Offline banner + “online igen” toast
+
 ## Autopilot log
 See `AUTOPILOT_LOG.md`

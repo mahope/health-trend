@@ -8,6 +8,7 @@ import { MobileUiProvider } from "@/components/MobileUiContext";
 import { UserMenu } from "@/components/UserMenu";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { AiCoachLine } from "@/components/AiCoachLine";
+import { NetworkStatusBanner } from "@/components/NetworkStatusBanner";
 
 function titleForPath(path: string): { title: string; subtitle: string } {
   if (path === "/") return { title: "Dashboard", subtitle: "Din sundheds-stream, destilleret." };
@@ -92,6 +93,7 @@ export function AppShell({
             </div>
           </div>
 
+          <NetworkStatusBanner />
           <PullToRefresh>{children}</PullToRefresh>
         </div>
       </div>
