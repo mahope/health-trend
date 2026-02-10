@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { EmptyState, InlineEmptyLink } from "@/components/EmptyState";
 
 type Alert = {
   id: string;
@@ -64,9 +67,36 @@ export default function AlertsPage() {
           {error && <div className="text-sm text-red-600">{error}</div>}
 
           {items.length === 0 ? (
-            <div className="text-sm text-neutral-600 dark:text-neutral-300">
-              Ingen undelivered alerts lige nu.
-            </div>
+            <EmptyState
+              title="Ingen alerts lige nu"
+              description={
+                <>
+                  Alerts kommer typisk først efter du har taget snapshots og der er blevet genereret AI brief for nogle dage.
+                  <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+                    Start her: <InlineEmptyLink href="/snapshots">tag et snapshot</InlineEmptyLink> og kig på <InlineEmptyLink href="/">Dashboard</InlineEmptyLink>.
+                  </div>
+                </>
+              }
+              actions={
+                <div className="grid gap-2">
+                  <Link
+                    href="/snapshots"
+                    className="inline-flex h-10 w-full items-center justify-center rounded-[var(--radius-control)] bg-black px-4 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring-subtle)] dark:bg-white dark:text-black dark:hover:bg-white/90"
+                  >
+                    Gå til Snapshots
+                  </Link>
+                  <Link
+                    href="/"
+                    className="inline-flex h-10 w-full items-center justify-center rounded-[var(--radius-control)] border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] px-4 text-sm font-medium text-neutral-900 transition-colors hover:bg-[color:var(--surface-control-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring-subtle)] dark:text-neutral-100"
+                  >
+                    Åbn Dashboard
+                  </Link>
+                  <Button variant="ghost" className="w-full" disabled={loading} onClick={refresh}>
+                    {loading ? "Henter…" : "Refresh"}
+                  </Button>
+                </div>
+              }
+            />
           ) : (
             <div className="grid gap-3">
               {items.map((a) => (

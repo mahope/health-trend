@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { EmptyState, InlineEmptyLink } from "@/components/EmptyState";
 
 type Activity = {
   id: string;
@@ -108,9 +110,35 @@ export default function ActivitiesPage() {
         <CardHeader title="Liste" description={items.length ? `${items.length} aktiviteter` : "Ingen endnu"} />
         <CardBody>
           {items.length === 0 ? (
-            <div className="text-sm text-neutral-600 dark:text-neutral-300">
-              Ingen aktiviteter fundet (endnu). Tag et nyt snapshot efter du har trænet.
-            </div>
+            <EmptyState
+              title="Ingen aktiviteter endnu"
+              description={
+                <>
+                  Aktiviteter udledes fra dine snapshots. Når du har en Garmin eksport + tager et snapshot efter en træning,
+                  dukker de op her.
+                  <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+                    Tip: hvis du lige er startet, så gå til <InlineEmptyLink href="/snapshots">Snapshots</InlineEmptyLink> og
+                    tag dit første snapshot.
+                  </div>
+                </>
+              }
+              actions={
+                <div className="grid gap-2">
+                  <Link
+                    href="/snapshots"
+                    className="inline-flex h-10 w-full items-center justify-center rounded-[var(--radius-control)] bg-black px-4 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring-subtle)] dark:bg-white dark:text-black dark:hover:bg-white/90"
+                  >
+                    Gå til Snapshots
+                  </Link>
+                  <Link
+                    href="/garmin"
+                    className="inline-flex h-10 w-full items-center justify-center rounded-[var(--radius-control)] border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] px-4 text-sm font-medium text-neutral-900 transition-colors hover:bg-[color:var(--surface-control-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring-subtle)] dark:text-neutral-100"
+                  >
+                    Tjek Garmin data
+                  </Link>
+                </div>
+              }
+            />
           ) : (
             <div className="divide-y divide-black/5 dark:divide-white/10">
               {items.map((a) => (
