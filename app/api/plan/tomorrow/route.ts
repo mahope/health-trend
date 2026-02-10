@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/serverAuth";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { defaultDay, computeTomorrowDeterministicPlan } from "@/lib/plan";
 import { openaiJson } from "@/lib/openai";
 import { cyclePhaseFromDay } from "@/lib/aiBrief";
@@ -13,6 +14,7 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const basedOnDay = url.searchParams.get("day") || defaultDay();
   const ai = (url.searchParams.get("ai") || "1") !== "0";
+  const refresh = (url.searchParams.get("refresh") || "0") === "1";
 
   const day = addDaysYmd(basedOnDay, 1);
   const deterministic = await computeTomorrowDeterministicPlan(user.id, basedOnDay);
@@ -47,6 +49,17 @@ export async function GET(req: Request) {
 
   let aiPlan: unknown = null;
   if (ai) {
+    if (!refresh) {
+      const cached = await prisma.aiDayPlan.findUnique({
+        where: { userId_day_kind: { userId: user.id, day, kind: "tomorrow" } },
+        select: { payload: true },
+      });
+      if (cached?.payload) {
+        aiPlan = cached.payload;
+        return NextResponse.json({ ok: true, day, basedOnDay, deterministic, ai: aiPlan, cached: true });
+      }
+    }
+
     aiPlan = await openaiJson(
       JSON.stringify({
         instruction:
@@ -69,7 +82,19 @@ export async function GET(req: Request) {
         },
       }),
     );
+
+    await prisma.aiDayPlan.upsert({
+      where: { userId_day_kind: { userId: user.id, day, kind: "tomorrow" } },
+      update: { payload: aiPlan as Prisma.InputJsonValue },
+      create: {
+        userId: user.id,
+        day,
+        kind: "tomorrow",
+        payload: aiPlan as Prisma.InputJsonValue,
+        model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+      },
+    });
   }
 
-  return NextResponse.json({ ok: true, day, basedOnDay, deterministic, ai: aiPlan });
+  return NextResponse.json({ ok: true, day, basedOnDay, deterministic, ai: aiPlan, cached: false });
 }

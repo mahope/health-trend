@@ -24,6 +24,7 @@ model User {
   manualDays    ManualDaily[]
   snapshots     GarminSnapshot[]
   briefs        AiBrief[]
+  dayPlans      AiDayPlan[]
   alerts        Alert[]
   emailVerified    Boolean @default(false)
   twoFactorEnabled Boolean @default(false)
@@ -148,6 +149,23 @@ model AiBrief {
   createdAt DateTime @default(now())
 
   @@unique([userId, day])
+  @@index([userId, day])
+}
+
+model AiDayPlan {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  day  String // YYYY-MM-DD
+  kind String // today|tomorrow
+
+  payload Json
+  model   String?
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, day, kind])
   @@index([userId, day])
 }
 
