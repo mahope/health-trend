@@ -46,7 +46,7 @@
 19. [x] Security headers (CSP-lite, etc.)
 
 ### Design/system
-20. Design tokens (spacing/typography) pass
+20. [x] Design tokens (spacing/typography) pass
 21. [x] Input/Button focus states (a11y)
 22. Skeleton loaders for cards
 

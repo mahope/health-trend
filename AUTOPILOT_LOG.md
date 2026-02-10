@@ -178,3 +178,8 @@ pm run build ?
 - Tests: 
 pm run lint ?, 
 pm run build ?
+ 
+## 2026-02-10 03:42 (Europe/Copenhagen)
+- Changed: Added basic CSS design tokens (radii/surfaces/borders/ring/muted text) in globals.css and rewired core UI components (Card/Button/Input/TogglePill) to use them.
+- Commit: a0a1c75
+- Tests: npm run lint ✅, npm run build ✅
