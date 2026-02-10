@@ -228,7 +228,8 @@ pm run build ?
 - Changed: Improved empty trends CTA: the Trends empty state now links to /snapshots and /garmin (instead of #snapshots anchor), clearer mobile buttons. 
 - Commit: bda3539 
 - Tests: npm run lint OK, npm run build OK
-
+
+
 ## 2026-02-10 05:22 (Europe/Copenhagen)
 - Changed: Improved dashboard first-snapshot empty state (Latest Snapshot card): shows expected Garmin file path, one-tap copy, and quick links to Garmin/Snapshots.
 - Commit: f45b650
@@ -238,3 +239,8 @@ pm run build ?
 - Changed: Added build info in Settings (app version + git sha) with copy-to-clipboard button. Exposed NEXT_PUBLIC_APP_VERSION + NEXT_PUBLIC_GIT_SHA via next.config.ts.
 - Commit: 52cc6b4
 - Tests: npm run lint OK, npm run build OK
+
+## 2026-02-10 05:40 (Europe/Copenhagen)
+- Changed: Tweaked dashboard “Seneste snapshot” header CTA: button now says “Tag første snapshot” when none, otherwise “Tag nyt snapshot”. Subtitle now hints “Ingen endnu — tag dit første”.
+- Commit: fe43543
+- Tests: `npm run lint` ✅, `npm run build` ✅
