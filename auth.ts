@@ -4,9 +4,13 @@ import { nextCookies } from "better-auth/next-js";
 import { twoFactor } from "better-auth/plugins";
 import { prisma } from "./src/lib/prisma";
 
+if (!process.env.BETTER_AUTH_SECRET && !process.env.APP_SECRET) {
+  console.warn("WARNING: BETTER_AUTH_SECRET is not set. Sessions will use an insecure default secret.");
+}
+
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_BASE_URL || process.env.APP_URL,
-  secret: process.env.BETTER_AUTH_SECRET || process.env.APP_SECRET,
+  secret: process.env.BETTER_AUTH_SECRET || process.env.APP_SECRET || "insecure-dev-only-secret",
 
   database: prismaAdapter(prisma, {
     provider: "postgresql",

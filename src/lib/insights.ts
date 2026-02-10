@@ -117,7 +117,7 @@ export async function detectEarlyWarning(userId: string, day: string): Promise<A
   // Baseline: previous 14 days excluding today.
   const prevDay = addDaysYmd(day, -1);
   const base = await computeBaseline(userId, prevDay, 14);
-  if (!base.restingHrAvg || !base.stressAvg || !base.bodyBatteryLowAvg) {
+  if (base.restingHrAvg === undefined || base.stressAvg === undefined || base.bodyBatteryLowAvg === undefined) {
     return { ok: false, reason: "insufficient_baseline" };
   }
 

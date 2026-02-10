@@ -207,7 +207,7 @@ export default function GarminPage() {
         <div id="connect" className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-card)] p-4 space-y-3">
           <h2 className="font-semibold">Fallback: import local tokens</h2>
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Dette læser fra <code>C:/Users/mads_/Garmin/tokens/oauth1_token.json</code> + <code>oauth2_token.json</code> på serveren og gemmer krypteret.
+            Dette læser lokale Garmin tokens fra serveren og gemmer dem krypteret.
           </p>
 
           <Button

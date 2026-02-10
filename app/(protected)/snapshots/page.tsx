@@ -52,11 +52,11 @@ export default function SnapshotsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<TakeSnapshotError | null>(null);
 
-  const expectedPath = `C:/Users/mads_/Garmin/data/garmin-${day}.json`;
+  const expectedFile = `garmin-${day}.json`;
 
   async function copyExpectedPath() {
     try {
-      await navigator.clipboard.writeText(expectedPath);
+      await navigator.clipboard.writeText(expectedFile);
       toast({ title: "Filsti kopieret ✓", kind: "success", vibrateMs: 10 });
     } catch {
       toast({ title: "Kunne ikke kopiere filsti", kind: "error", vibrateMs: 20 });
@@ -174,7 +174,7 @@ export default function SnapshotsPage() {
             </div>
             <div className="text-xs text-neutral-500 dark:text-neutral-400 md:pt-6">
               Snapshot læses lokalt fra{" "}
-              <code>C:/Users/mads_/Garmin/data/garmin-YYYY-MM-DD.json</code>.
+              <code>garmin-YYYY-MM-DD.json</code> (Garmin data-mappe).
             </div>
           </div>
 
@@ -229,7 +229,7 @@ export default function SnapshotsPage() {
                         <li>Tryk “Tag første snapshot”.</li>
                       </ol>
                       <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
-                        Snapshot læses lokalt fra <code className="break-all">{expectedPath}</code>.
+                        Snapshot læses lokalt fra <code className="break-all">{expectedFile}</code>.
                       </div>
                       <div className="mt-2">
                         Tip: tag typisk 2–3 snapshots om dagen (morgen/middag/aften).

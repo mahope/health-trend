@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getStore } from "@/lib/store";
 import { pickMetrics, readGarminJsonForDay, todayCph } from "@/lib/garminLocal";
+import { isValidDay } from "@/lib/date";
 import { fetchGarminDailyFromTokens } from "@/lib/garminRemote";
 import { generateAiBriefForUser } from "@/lib/aiBrief";
 import { getClientIp, rateLimit } from "@/lib/rateLimit";
@@ -54,11 +55,14 @@ export async function POST(req: Request) {
   const idempotencyKey =
     req.headers.get("x-idempotency-key") || body.idempotencyKey || url.searchParams.get("idempotencyKey") || undefined;
 
-  const day = body.day || url.searchParams.get("day") || todayCph();
-  const mode =
-    body.mode ||
-    (url.searchParams.get("mode") as "snapshot_only" | "snapshot_and_brief" | null) ||
-    "snapshot_and_brief";
+  const dayRaw = body.day || url.searchParams.get("day");
+  if (dayRaw && !isValidDay(dayRaw)) {
+    return NextResponse.json({ error: "invalid_day" }, { status: 400 });
+  }
+  const day = dayRaw || todayCph();
+  const modeRaw = body.mode || url.searchParams.get("mode");
+  const mode: "snapshot_only" | "snapshot_and_brief" =
+    modeRaw === "snapshot_only" ? "snapshot_only" : "snapshot_and_brief";
 
   // Make cron snapshot writes idempotent (by takenAt). Retry-safe, and prevents duplicate daily entries.
   const cronTakenAtIso = `${day}T00:00:00.000Z`;

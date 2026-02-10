@@ -13,6 +13,13 @@ export function addDays(d: Date, deltaDays: number): Date {
   return x;
 }
 
+const DAY_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/** Returns true if the string matches YYYY-MM-DD format. */
+export function isValidDay(day: string): boolean {
+  return DAY_RE.test(day);
+}
+
 export function addDaysYmd(day: string, deltaDays: number, tz = "Europe/Copenhagen"): string {
   // Parse as local-ish date by anchoring at noon to avoid DST edges.
   const base = new Date(`${day}T12:00:00`);

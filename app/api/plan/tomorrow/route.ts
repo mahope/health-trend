@@ -5,14 +5,20 @@ import { Prisma } from "@prisma/client";
 import { defaultDay, computeTomorrowDeterministicPlan } from "@/lib/plan";
 import { openaiJson } from "@/lib/openai";
 import { cyclePhaseFromDay } from "@/lib/aiBrief";
-import { addDaysYmd } from "@/lib/date";
+import { addDaysYmd, isValidDay } from "@/lib/date";
+import { rateLimit } from "@/lib/rateLimit";
 
 export async function GET(req: Request) {
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
+  const rl = rateLimit(req, { name: "plan-tomorrow", limit: 10, windowMs: 60_000, keyParts: [user.id] });
+  if (!rl.ok) return rl.response;
+
   const url = new URL(req.url);
-  const basedOnDay = url.searchParams.get("day") || defaultDay();
+  const dayParam = url.searchParams.get("day");
+  if (dayParam && !isValidDay(dayParam)) return NextResponse.json({ error: "invalid_day" }, { status: 400 });
+  const basedOnDay = dayParam || defaultDay();
   const ai = (url.searchParams.get("ai") || "1") !== "0";
   const refresh = (url.searchParams.get("refresh") || "0") === "1";
 

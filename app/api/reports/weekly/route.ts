@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/serverAuth";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
-import { addDaysYmd, ymd } from "@/lib/date";
+import { addDaysYmd, ymd, isValidDay } from "@/lib/date";
 import { openaiJson } from "@/lib/openai";
+import { rateLimit } from "@/lib/rateLimit";
 import { cyclePhaseFromDay } from "@/lib/aiBrief";
 
 function avg(nums: Array<number | null | undefined>) {
@@ -16,8 +17,13 @@ export async function GET(req: Request) {
   const user = await requireUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
+  const rl = rateLimit(req, { name: "reports-weekly", limit: 5, windowMs: 60_000, keyParts: [user.id] });
+  if (!rl.ok) return rl.response;
+
   const url = new URL(req.url);
-  const endDay = url.searchParams.get("endDay") || ymd(new Date());
+  const endDayParam = url.searchParams.get("endDay");
+  if (endDayParam && !isValidDay(endDayParam)) return NextResponse.json({ error: "invalid_day" }, { status: 400 });
+  const endDay = endDayParam || ymd(new Date());
   const startDay = addDaysYmd(endDay, -6);
 
   const snaps = await prisma.garminSnapshot.findMany({

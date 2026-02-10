@@ -26,10 +26,12 @@ export async function POST(req: Request) {
     sleepGoalHours?: number;
   };
 
-  const stepsGoal = typeof body.stepsGoal === "number" && Number.isFinite(body.stepsGoal) ? Math.round(body.stepsGoal) : undefined;
+  const stepsGoal = typeof body.stepsGoal === "number" && Number.isFinite(body.stepsGoal)
+    ? Math.max(1000, Math.min(50000, Math.round(body.stepsGoal)))
+    : undefined;
   const sleepGoalHours =
     typeof body.sleepGoalHours === "number" && Number.isFinite(body.sleepGoalHours)
-      ? Math.round(body.sleepGoalHours * 10) / 10
+      ? Math.max(4, Math.min(12, Math.round(body.sleepGoalHours * 10) / 10))
       : undefined;
 
   await prisma.userProfile.upsert({

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/serverAuth";
 import { getStore } from "@/lib/store";
 import { pickMetrics, readGarminJsonForDay, todayCph } from "@/lib/garminLocal";
+import { isValidDay } from "@/lib/date";
 import { fetchGarminDailyFromTokens } from "@/lib/garminRemote";
 
 export async function POST(req: Request) {
@@ -15,6 +16,9 @@ export async function POST(req: Request) {
     takenAt?: string;
   };
 
+  if (body.day && !isValidDay(body.day)) {
+    return NextResponse.json({ error: "invalid_day" }, { status: 400 });
+  }
   const day = body.day || todayCph();
   const takenAt = body.takenAt || new Date().toISOString();
 
@@ -34,7 +38,7 @@ export async function POST(req: Request) {
       {
         error: "missing_garmin_file",
         file,
-        hint: "Connect Garmin (recommended) or run local export pipeline first (C:/Users/mads_/Garmin/data/garmin-YYYY-MM-DD.json)",
+        hint: "Connect Garmin (recommended) or place a local Garmin export (garmin-YYYY-MM-DD.json) in the configured data directory.",
       },
       { status: 400 },
     );

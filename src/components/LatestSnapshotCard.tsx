@@ -60,11 +60,11 @@ export function LatestSnapshotCard({ day }: { day: string }) {
   const [error, setError] = useState<TakeSnapshotError | null>(null);
   const [copyState, setCopyState] = useState<null | "ok" | "fail">(null);
 
-  const expectedPath = `C:/Users/mads_/Garmin/data/garmin-${day}.json`;
+  const expectedFile = `garmin-${day}.json`;
 
   async function copyExpectedPath() {
     try {
-      await navigator.clipboard.writeText(expectedPath);
+      await navigator.clipboard.writeText(expectedFile);
       setCopyState("ok");
       window.setTimeout(() => setCopyState(null), 2000);
     } catch {
@@ -86,15 +86,15 @@ export function LatestSnapshotCard({ day }: { day: string }) {
           fetch(`/api/snapshots/list?day=${encodeURIComponent(yday)}`, { cache: "no-store" }),
         ]);
 
-        const aJson = (await a.json()) as { snapshots?: Snapshot[]; error?: string };
-        const bJson = (await b.json()) as { snapshots?: Snapshot[]; error?: string };
+        const aJson = (await a.json()) as { items?: Snapshot[]; error?: string };
+        const bJson = (await b.json()) as { items?: Snapshot[]; error?: string };
 
         if (!a.ok) throw new Error(aJson.error || `Kunne ikke hente snapshots for ${day}`);
         if (!b.ok) throw new Error(bJson.error || `Kunne ikke hente snapshots for ${yday}`);
 
         if (!cancelled) {
-          setSnapsToday(aJson.snapshots ?? []);
-          setSnapsYesterday(bJson.snapshots ?? []);
+          setSnapsToday(aJson.items ?? []);
+          setSnapsYesterday(bJson.items ?? []);
         }
       } catch (e: unknown) {
         if (!cancelled)
@@ -151,10 +151,10 @@ export function LatestSnapshotCard({ day }: { day: string }) {
           cache: "no-store",
         }),
       ]);
-      const aJson = (await a.json()) as { snapshots?: Snapshot[] };
-      const bJson = (await b.json()) as { snapshots?: Snapshot[] };
-      setSnapsToday(aJson.snapshots ?? []);
-      setSnapsYesterday(bJson.snapshots ?? []);
+      const aJson = (await a.json()) as { items?: Snapshot[] };
+      const bJson = (await b.json()) as { items?: Snapshot[] };
+      setSnapsToday(aJson.items ?? []);
+      setSnapsYesterday(bJson.items ?? []);
     } catch (e: unknown) {
       setError({ message: e instanceof Error ? e.message : "Kunne ikke tage snapshot" });
     } finally {
@@ -233,7 +233,7 @@ export function LatestSnapshotCard({ day }: { day: string }) {
               </Button>
 
               <div className="text-xs text-neutral-500 dark:text-neutral-400">
-                Snapshot læses lokalt fra <code className="break-all">{expectedPath}</code>.
+                Snapshot læses lokalt fra <code className="break-all">{expectedFile}</code>.
               </div>
 
               {copyState ? (

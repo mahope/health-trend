@@ -43,6 +43,10 @@ export function decryptJSON<T = unknown>(payload: string): T {
   const tag = Buffer.from(tagB64, "base64");
   const enc = Buffer.from(encB64, "base64");
 
+  if (iv.length !== 12) throw new Error("Invalid IV length");
+  if (tag.length !== 16) throw new Error("Invalid auth tag length");
+  if (enc.length === 0) throw new Error("Empty ciphertext");
+
   const decipher = crypto.createDecipheriv("aes-256-gcm", key, iv);
   decipher.setAuthTag(tag);
 

@@ -44,7 +44,7 @@ export async function GET() {
     }),
   ]);
 
-  const riskByDay = new Map(briefs.map((b) => [b.day, b.risk] as const));
+  const riskByDay = new Map(briefs.map((b: { day: string; risk: string }) => [b.day, b.risk] as const));
 
   // pick latest snapshot per day
   const latestByDay = new Map<string, (typeof snapshots)[number]>();

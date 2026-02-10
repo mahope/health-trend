@@ -66,8 +66,8 @@ export async function GET(req: Request) {
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   const url = new URL(req.url);
-  const limit = clamp(Number(url.searchParams.get("limit") || 10), 1, 50);
-  const days = clamp(Number(url.searchParams.get("days") || 14), 1, 90);
+  const limit = clamp(parseInt(url.searchParams.get("limit") ?? "", 10) || 10, 1, 50);
+  const days = clamp(parseInt(url.searchParams.get("days") ?? "", 10) || 14, 1, 90);
 
   const today = ymd(new Date());
   const fromDay = addDaysYmd(today, -(days - 1));
