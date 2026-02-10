@@ -157,7 +157,7 @@ export default function GarminPage() {
             </Button>
 
             <div className="text-xs text-neutral-500 dark:text-neutral-400">
-              Note: På din laptop kører dette via et lokalt Python-helper script (samme setup som din Garmin pipeline).
+              Note: I prod kører dette via Python i Docker-image (repo-contained script). Lokalt kræver det at <code>python3</code> findes i PATH, eller at du sætter <code>HEALTH_TREND_PYTHON</code>.
             </div>
           </div>
         </div>

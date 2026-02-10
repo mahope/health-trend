@@ -4,6 +4,7 @@
 - Postgres available (managed DB or container)
 - Domain: `health.holstjensen.nu`
 - You have generated strong secrets
+- **Python 3 runtime is included in Docker image** (used for Garmin login helper)
 
 ## 1) Required environment variables
 Set these in Dokploy (do **not** commit real values):
@@ -43,7 +44,7 @@ Example payload:
 ## 4) After deploy: sanity checks
 - Can you login?
 - `/settings`: enable + verify TOTP
-- `/garmin`: import tokens
+- `/garmin`: login (recommended) or import tokens (fallback)
 - `/snapshots`: take snapshot
 - `/`: generate brief
 - `/alerts`: see alerts (if MED/HIGH happens)

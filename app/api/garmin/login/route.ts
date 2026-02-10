@@ -7,8 +7,8 @@ import { requireUser } from "@/lib/serverAuth";
 import { getStore } from "@/lib/store";
 import type { GarminTokens } from "@/lib/garminTokens";
 
-const PYTHON = "C:/Users/mads_/Garmin/.venv/Scripts/python.exe";
-const GARMIN_LOGIN_SCRIPT = "C:/Users/mads_/Garmin/scripts/garmin_login.py";
+const PYTHON = process.env.HEALTH_TREND_PYTHON || "python3";
+const GARMIN_LOGIN_SCRIPT = path.join(process.cwd(), "garmin", "garmin_login.py");
 
 async function exists(p: string) {
   try {
@@ -61,9 +61,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "missing_email_or_password" }, { status: 400 });
   }
 
-  if (!(await exists(PYTHON))) {
-    return NextResponse.json({ error: "missing_python", detail: PYTHON }, { status: 500 });
-  }
+  // Script must exist; python must be available in PATH or configured via HEALTH_TREND_PYTHON.
   if (!(await exists(GARMIN_LOGIN_SCRIPT))) {
     return NextResponse.json({ error: "missing_garmin_login_script", detail: GARMIN_LOGIN_SCRIPT }, { status: 500 });
   }
