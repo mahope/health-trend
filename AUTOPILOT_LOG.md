@@ -198,3 +198,8 @@ pm run build ?
 - Changed: Made `CardHeader` mobile-first by stacking actions below title/description on small screens (avoids cramped button rows).
 - Commit: 420199b
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 04:22 (Europe/Copenhagen)
+- Changed: Improved the “first snapshot” empty state on /snapshots with step-by-step guidance, expected filename/path for the selected day, and full-width mobile CTAs.
+- Commit: d932085
+- Tests: `npm run lint` ✅, `npm run build` ✅
