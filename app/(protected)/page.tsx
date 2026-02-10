@@ -11,6 +11,7 @@ import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { PageHeader } from "@/components/PageHeader";
 import { DashboardActions } from "@/components/DashboardActions";
 import { RiskHero } from "@/components/RiskHero";
+import { RecoveryScoreCard } from "@/components/RecoveryScoreCard";
 import { EmptyState, InlineEmptyLink } from "@/components/EmptyState";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
@@ -48,20 +49,30 @@ export default async function DashboardPage() {
           title="Start her: tag dit første snapshot"
           description={
             <>
-              Et snapshot er en lille opsamling af dine Garmin-signaler (søvn, stress, steps, Body Battery osv.). Når du har
-              taget ét, kan du begynde at se trends og få AI-brief.
-              <div className="mt-2">
-                Mangler du data, så tjek at dagens fil findes (fx <code>garmin-YYYY-MM-DD.json</code>). Se: <InlineEmptyLink href="/garmin">Garmin</InlineEmptyLink>
-              </div>
+              Første gang kræver kun 2 ting:
+              <ol className="mt-2 list-decimal space-y-1 pl-4">
+                <li>
+                  Der ligger en Garmin eksport for i dag (fx <code>garmin-YYYY-MM-DD.json</code>) — se{" "}
+                  <InlineEmptyLink href="/garmin">Garmin</InlineEmptyLink>
+                </li>
+                <li>Du tager dit første snapshot.</li>
+              </ol>
+              <div className="mt-2">Når du har taget ét snapshot, kan dashboardet begynde at vise trends og lave AI-brief.</div>
             </>
           }
           actions={
             <div className="flex flex-wrap items-center gap-2">
               <Link
-                href="#snapshots"
+                href="/snapshots"
                 className="inline-flex h-10 items-center justify-center rounded-lg bg-black px-4 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:bg-white dark:text-black dark:hover:bg-white/90 dark:focus-visible:ring-white/20"
               >
-                Gå til Snapshots
+                Tag første snapshot
+              </Link>
+              <Link
+                href="/garmin"
+                className="inline-flex h-10 items-center justify-center rounded-lg border border-black/10 bg-white px-4 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:border-white/10 dark:bg-black/30 dark:text-neutral-100 dark:hover:bg-black/45 dark:focus-visible:ring-white/20"
+              >
+                Tjek Garmin data
               </Link>
               <Link
                 href="#manual"
@@ -74,12 +85,19 @@ export default async function DashboardPage() {
         />
       ) : null}
 
-      <RiskHero
-        day={day}
-        risk={(brief?.risk as "OK" | "LOW" | "MED" | "HIGH" | undefined) ?? null}
-        short={brief?.short ?? null}
-        createdAt={brief?.createdAt ?? null}
-      />
+      <section className="grid gap-4 lg:grid-cols-12">
+        <div className="lg:col-span-8">
+          <RiskHero
+            day={day}
+            risk={(brief?.risk as "OK" | "LOW" | "MED" | "HIGH" | undefined) ?? null}
+            short={brief?.short ?? null}
+            createdAt={brief?.createdAt ?? null}
+          />
+        </div>
+        <div className="lg:col-span-4">
+          <RecoveryScoreCard day={day} />
+        </div>
+      </section>
 
       <section className="grid gap-4 lg:grid-cols-12">
         <div id="snapshots" className="lg:col-span-5">
