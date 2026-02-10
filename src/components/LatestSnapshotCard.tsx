@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { addDaysYmd } from "@/lib/date";
 import { Button } from "@/components/ui/Button";
 import { MetricGrid, MetricTile } from "@/components/MetricGrid";
+import { EmptyState, InlineEmptyLink } from "@/components/EmptyState";
 import { fmtDelta, fmtDeltaFloat, fmtFloat, fmtNumber } from "@/lib/format";
 
 type Snapshot = {
@@ -179,21 +181,31 @@ export function LatestSnapshotCard({ day }: { day: string }) {
       )}
 
       {!latest && !loading && (
-        <div className="rounded-2xl border border-dashed border-black/15 bg-white/40 p-5 text-sm text-neutral-700 dark:border-white/15 dark:bg-black/15 dark:text-neutral-200">
-          <div className="font-medium">Ingen snapshots endnu</div>
-          <div className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
-            For at komme i gang skal der ligge en Garmin eksport for i dag (fx <code>garmin-YYYY-MM-DD.json</code>).
-          </div>
-
-          <div className="mt-4 grid gap-2">
-            <Button variant="primary" disabled={loading} onClick={takeSnapshot}>
-              {loading ? "Arbejder…" : "Tag første snapshot"}
-            </Button>
-            <div className="text-xs text-neutral-500 dark:text-neutral-400">
-              Tip: Hvis den fejler, får du en sti/hint herover (manglende fil).
+        <EmptyState
+          title="Ingen snapshots endnu"
+          description={
+            <>
+              For at komme i gang skal der ligge en Garmin eksport for i dag (fx{" "}
+              <code>garmin-YYYY-MM-DD.json</code>). Når du har taget det første snapshot, kan du begynde at se trends og få AI-brief.
+            </>
+          }
+          actions={
+            <div className="grid gap-2">
+              <Button variant="primary" disabled={loading} onClick={takeSnapshot}>
+                {loading ? "Arbejder…" : "Tag første snapshot"}
+              </Button>
+              <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                Hvis den fejler, får du en sti/hint herover. Se også: <InlineEmptyLink href="/garmin">Garmin</InlineEmptyLink>
+              </div>
+              <Link
+                href="/snapshots"
+                className="text-xs text-neutral-500 underline decoration-neutral-400 underline-offset-2 hover:decoration-neutral-700 dark:text-neutral-400 dark:decoration-neutral-600 dark:hover:decoration-neutral-300"
+              >
+                Åbn Snapshots-siden
+              </Link>
             </div>
-          </div>
-        </div>
+          }
+        />
       )}
 
       {latest && (
