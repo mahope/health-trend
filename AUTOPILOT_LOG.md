@@ -261,3 +261,4 @@ pm run build ?
 - Changed: Improved Recovery card empty state (no snapshots) with clearer 2-step setup instructions + primary “Tag første snapshot” CTA + secondary “Tjek Garmin data”. Added a new backlog idea: toast `aria-live` for a11y.
 - Commits: 952e6b3 (UI), 77454d5 (log), 434f5d2 (backlog)
 - Tests: `npm run lint` ✅, `npm run build` ✅
+\n## 2026-02-10 07:30 (Europe/Copenhagen)\n- Changed: aria-live region for toasts; header polish (email+avatar); lighter default surfaces; PWA PNG icons + apple-touch-icon; updated manifest + meta tags.\n- Commit: 838373d\n- Tests: npm run lint ?, npm run build ?\n
