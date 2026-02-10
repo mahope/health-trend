@@ -15,9 +15,13 @@ Health Trend is a small self-hosted health dashboard:
 
 ## Local dev
 1) Create a Postgres DB and set `DATABASE_URL` (see `.env.example`).
-2) Install deps: `npm install`
-3) Run migrations: `npx prisma migrate dev`
-4) Run dev server: `npm run dev`
+2) Install Node deps: `npm install`
+3) Install Python deps (required for Garmin login + token-based snapshots):
+   ```bash
+   python -m pip install -r garmin/requirements.txt
+   ```
+4) Run migrations: `npx prisma migrate dev`
+5) Run dev server: `npm run dev`
 
 ## Env
 Copy `.env.example` to `.env` and fill:
