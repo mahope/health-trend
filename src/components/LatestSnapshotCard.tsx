@@ -58,6 +58,20 @@ export function LatestSnapshotCard({ day }: { day: string }) {
   const [snapsYesterday, setSnapsYesterday] = useState<Snapshot[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<TakeSnapshotError | null>(null);
+  const [copyState, setCopyState] = useState<null | "ok" | "fail">(null);
+
+  const expectedPath = `C:/Users/mads_/Garmin/data/garmin-${day}.json`;
+
+  async function copyExpectedPath() {
+    try {
+      await navigator.clipboard.writeText(expectedPath);
+      setCopyState("ok");
+      window.setTimeout(() => setCopyState(null), 2000);
+    } catch {
+      setCopyState("fail");
+      window.setTimeout(() => setCopyState(null), 2500);
+    }
+  }
 
   const yday = useMemo(() => addDaysYmd(day, -1), [day]);
 
@@ -213,15 +227,46 @@ export function LatestSnapshotCard({ day }: { day: string }) {
               <Button variant="primary" disabled={loading} onClick={takeSnapshot}>
                 {loading ? "Arbejder…" : "Tag første snapshot"}
               </Button>
+
+              <Button variant="ghost" disabled={loading} onClick={copyExpectedPath}>
+                Kopiér filsti
+              </Button>
+
+              <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                Snapshot læses lokalt fra <code className="break-all">{expectedPath}</code>.
+              </div>
+
+              {copyState ? (
+                <div
+                  className={
+                    copyState === "ok"
+                      ? "text-xs text-emerald-700 dark:text-emerald-300"
+                      : "text-xs text-rose-700 dark:text-rose-300"
+                  }
+                >
+                  {copyState === "ok" ? "Filsti kopieret ✓" : "Kunne ikke kopiere filsti"}
+                </div>
+              ) : null}
+
               <div className="text-xs text-neutral-500 dark:text-neutral-400">
                 Hvis den fejler, får du en sti/hint herover. Se også: <InlineEmptyLink href="/garmin">Garmin</InlineEmptyLink>
               </div>
-              <Link
-                href="/snapshots"
-                className="text-xs text-neutral-500 underline decoration-neutral-400 underline-offset-2 hover:decoration-neutral-700 dark:text-neutral-400 dark:decoration-neutral-600 dark:hover:decoration-neutral-300"
-              >
-                Åbn Snapshots-siden
-              </Link>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <Link
+                  href="/garmin"
+                  className="text-xs text-neutral-600 underline decoration-neutral-400 underline-offset-2 hover:decoration-neutral-700 dark:text-neutral-400 dark:decoration-neutral-600 dark:hover:decoration-neutral-300"
+                >
+                  Åbn Garmin
+                </Link>
+                <span className="text-xs text-neutral-400 dark:text-neutral-500">·</span>
+                <Link
+                  href="/snapshots"
+                  className="text-xs text-neutral-600 underline decoration-neutral-400 underline-offset-2 hover:decoration-neutral-700 dark:text-neutral-400 dark:decoration-neutral-600 dark:hover:decoration-neutral-300"
+                >
+                  Åbn Snapshots
+                </Link>
+              </div>
             </div>
           }
         />
