@@ -124,3 +124,8 @@ pm run build ?
 - Changed: Extended AI daily brief prompt to optionally suggest what to track manually next (0-3 fields). When present, we prepend a “Track i manual (i morgen)” suggestion for quick guidance. Marked backlog items (weekly save/share + track-next) as done.
 - Commit: 5c2d264
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 02:00 (Europe/Copenhagen)
+- Changed: Added a lightweight overstimulation heuristic (stress/BB trend + manual caffeine/symptom) into the AI daily brief payload and prompt instruction so the model can flag likely overstimulation patterns + suggest simple regulation actions. Marked backlog item as done.
+- Commit: 73daad5
+- Tests: `npm run lint` ✅, `npm run build` ✅
