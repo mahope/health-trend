@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Sparkline } from "@/components/Sparkline";
 import { EmptyState } from "@/components/EmptyState";
@@ -198,12 +199,58 @@ export function InsightsCards() {
             ) : best.counts.daysWithRisk === 0 ? (
               <EmptyState
                 title="Ingen risikovurderinger endnu"
-                description="Når du har genereret AI brief for nogle dage, kan vi finde mønstre i dine bedste (LOW) dage."
+                description={
+                  <>
+                    Når du har genereret AI brief for nogle dage, kan vi finde mønstre i dine bedste (LOW) dage.
+                    <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+                      Tip: tag 2–3 snapshots om dagen i et par dage — så begynder der at komme vurderinger.
+                    </div>
+                  </>
+                }
+                actions={
+                  <div className="grid gap-2 sm:flex sm:flex-wrap">
+                    <Link
+                      href="/"
+                      className="inline-flex h-10 items-center justify-center rounded-lg bg-black px-4 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:bg-white dark:text-black dark:hover:bg-white/90 dark:focus-visible:ring-white/20"
+                    >
+                      Åbn Dashboard
+                    </Link>
+                    <Link
+                      href="/snapshots"
+                      className="inline-flex h-10 items-center justify-center rounded-lg border border-black/10 bg-white px-4 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:border-white/10 dark:bg-black/30 dark:text-neutral-100 dark:hover:bg-black/45 dark:focus-visible:ring-white/20"
+                    >
+                      Tag snapshot
+                    </Link>
+                  </div>
+                }
               />
             ) : best.counts.lowDays === 0 ? (
               <EmptyState
                 title="Ingen LOW-risk dage i vinduet"
-                description="Der er ikke nogen LOW-dage i de seneste ~30 dage. Når der kommer nogle, viser vi forskelle her."
+                description={
+                  <>
+                    Der er ikke nogen LOW-dage i de seneste ~30 dage. Når der kommer nogle, viser vi forskelle her.
+                    <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+                      Du kan stadig bruge dashboardet dagligt til at få forslag og se trends.
+                    </div>
+                  </>
+                }
+                actions={
+                  <div className="grid gap-2 sm:flex sm:flex-wrap">
+                    <Link
+                      href="/"
+                      className="inline-flex h-10 items-center justify-center rounded-lg bg-black px-4 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:bg-white dark:text-black dark:hover:bg-white/90 dark:focus-visible:ring-white/20"
+                    >
+                      Åbn Dashboard
+                    </Link>
+                    <Link
+                      href="/trends"
+                      className="inline-flex h-10 items-center justify-center rounded-lg border border-black/10 bg-white px-4 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:border-white/10 dark:bg-black/30 dark:text-neutral-100 dark:hover:bg-black/45 dark:focus-visible:ring-white/20"
+                    >
+                      Se trends
+                    </Link>
+                  </div>
+                }
               />
             ) : (
               <div className="space-y-3">
