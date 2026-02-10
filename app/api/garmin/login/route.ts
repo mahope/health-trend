@@ -7,7 +7,8 @@ import { requireUser } from "@/lib/serverAuth";
 import { getStore } from "@/lib/store";
 import type { GarminTokens } from "@/lib/garminTokens";
 
-const PYTHON = process.env.HEALTH_TREND_PYTHON || "python3";
+const defaultPython = process.platform === "win32" ? "python" : "python3";
+const PYTHON = process.env.HEALTH_TREND_PYTHON || defaultPython;
 const GARMIN_LOGIN_SCRIPT = path.join(process.cwd(), "garmin", "garmin_login.py");
 
 async function exists(p: string) {
