@@ -119,3 +119,8 @@ pm run build ?
 - Changed: Added Copy/Share/Save actions to Ugereview. Formats the AI weekly review as shareable text, supports Web Share API, clipboard fallback, and download as `.md`.
 - Commit: 62088ef
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 01:53 (Europe/Copenhagen)
+- Changed: Extended AI daily brief prompt to optionally suggest what to track manually next (0-3 fields). When present, we prepend a “Track i manual (i morgen)” suggestion for quick guidance. Marked backlog items (weekly save/share + track-next) as done.
+- Commit: 5c2d264
+- Tests: `npm run lint` ✅, `npm run build` ✅
