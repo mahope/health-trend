@@ -6,6 +6,7 @@ import { ManualForm } from "@/components/ManualForm";
 import { AiBriefCard } from "@/components/AiBriefCard";
 import { LatestSnapshotCard } from "@/components/LatestSnapshotCard";
 import { DashboardBelowFold } from "@/components/DashboardBelowFold";
+import { DeferredMount } from "@/components/DeferredMount";
 import { MobileActionBar } from "@/components/MobileActionBar";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { PageHeader } from "@/components/PageHeader";
@@ -153,7 +154,18 @@ export default async function DashboardPage() {
 
           <div id="manual" />
 
-          <DashboardBelowFold days={14} />
+          <DeferredMount
+            placeholder={
+              <Card>
+                <CardHeader title="Trends" description="Indlæser de tunge sektioner…" />
+                <CardBody>
+                  <div className="h-24 rounded-xl border border-dashed border-black/10 bg-black/5 dark:border-white/10 dark:bg-white/5" />
+                </CardBody>
+              </Card>
+            }
+          >
+            <DashboardBelowFold days={14} />
+          </DeferredMount>
         </>
       )}
     </div>
