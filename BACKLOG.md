@@ -49,6 +49,7 @@
 20. [x] Design tokens (spacing/typography) pass
 21. [x] Input/Button focus states (a11y)
 22. [x] Skeleton loaders for cards
+23. [x] Route-level loading skeleton for protected pages (Next.js loading.tsx)
 
 ## Autopilot log
 See `AUTOPILOT_LOG.md`
