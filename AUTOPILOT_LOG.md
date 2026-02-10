@@ -134,3 +134,8 @@ pm run build ?
 - Changed: Added in-memory rate limiting for `/api/manual/upsert` (per-user+IP) and `/api/auth/*` (per-IP) with 429 + `Retry-After` and basic `X-RateLimit-*` headers. Marked backlog item as done.
 - Commit: aa4ab0b
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 02:22 (Europe/Copenhagen)
+- Changed: Added `/api/health` endpoint (JSON + db ping) + a minimal `/uptime` page for quick mobile status checks. Also fixed a lingering eslint `no-explicit-any` issue in `rateLimit` helper.
+- Commit: 39a7f8c
+- Tests: `npm run lint` ✅, `npm run build` ✅
