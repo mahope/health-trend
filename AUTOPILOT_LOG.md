@@ -168,3 +168,8 @@ pm run build ?
 pm run lint ?, 
 pm run build ?
 
+ 
+## 2026-02-10 03:20 (Europe/Copenhagen) 
+- Changed: Added app-wide security headers via Next.js headers() (CSP-lite, Permissions-Policy, frame protections, nosniff, referrer-policy; HSTS in prod). Marked backlog item as done. 
+- Commit: 912f067 
+- Tests: npm run lint OK, npm run build OK
