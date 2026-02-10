@@ -25,6 +25,7 @@ model User {
   snapshots     GarminSnapshot[]
   briefs        AiBrief[]
   dayPlans      AiDayPlan[]
+  weeklyReports AiWeeklyReport[]
   alerts        Alert[]
   emailVerified    Boolean @default(false)
   twoFactorEnabled Boolean @default(false)
@@ -167,6 +168,23 @@ model AiDayPlan {
 
   @@unique([userId, day, kind])
   @@index([userId, day])
+}
+
+model AiWeeklyReport {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  startDay String // YYYY-MM-DD
+  endDay   String // YYYY-MM-DD
+
+  payload Json
+  model   String?
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, startDay, endDay])
+  @@index([userId, endDay])
 }
 
 model Alert {

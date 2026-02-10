@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/serverAuth";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { addDaysYmd, ymd } from "@/lib/date";
 import { openaiJson } from "@/lib/openai";
 import { cyclePhaseFromDay } from "@/lib/aiBrief";
@@ -63,9 +64,20 @@ export async function GET(req: Request) {
   };
 
   const wantsAi = (url.searchParams.get("ai") || "1") !== "0";
+  const refresh = (url.searchParams.get("refresh") || "0") === "1";
 
   let ai: unknown = null;
   if (wantsAi) {
+    if (!refresh) {
+      const cached = await prisma.aiWeeklyReport.findUnique({
+        where: { userId_startDay_endDay: { userId: user.id, startDay, endDay } },
+        select: { payload: true },
+      });
+      if (cached?.payload) {
+        return NextResponse.json({ ok: true, summary, ai: cached.payload, cached: true });
+      }
+    }
+
     ai = await openaiJson(
       JSON.stringify({
         instruction:
@@ -82,8 +94,24 @@ export async function GET(req: Request) {
             : null,
         },
       }),
+      {
+        // Use a better model for weekly (configurable)
+        model: process.env.OPENAI_MODEL_WEEKLY || process.env.OPENAI_MODEL || "gpt-4o-mini",
+      },
     );
+
+    await prisma.aiWeeklyReport.upsert({
+      where: { userId_startDay_endDay: { userId: user.id, startDay, endDay } },
+      update: { payload: ai as Prisma.InputJsonValue, model: process.env.OPENAI_MODEL_WEEKLY || process.env.OPENAI_MODEL || "gpt-4o-mini" },
+      create: {
+        userId: user.id,
+        startDay,
+        endDay,
+        payload: ai as Prisma.InputJsonValue,
+        model: process.env.OPENAI_MODEL_WEEKLY || process.env.OPENAI_MODEL || "gpt-4o-mini",
+      },
+    });
   }
 
-  return NextResponse.json({ ok: true, summary, ai });
+  return NextResponse.json({ ok: true, summary, ai, cached: false });
 }

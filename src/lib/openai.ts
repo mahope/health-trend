@@ -1,6 +1,9 @@
 type JsonObject = Record<string, unknown>;
 
-export async function openaiJson(prompt: string): Promise<JsonObject> {
+export async function openaiJson(
+  prompt: string,
+  opts?: { model?: string; temperature?: number },
+): Promise<JsonObject> {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error("Missing OPENAI_API_KEY");
 
@@ -11,8 +14,8 @@ export async function openaiJson(prompt: string): Promise<JsonObject> {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: process.env.OPENAI_MODEL || "gpt-4o-mini",
-      temperature: 0.2,
+      model: opts?.model || process.env.OPENAI_MODEL || "gpt-4o-mini",
+      temperature: opts?.temperature ?? 0.2,
       response_format: { type: "json_object" },
       messages: [
         {
