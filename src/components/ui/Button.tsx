@@ -16,13 +16,13 @@ export function Button({
   ...props
 }: Props) {
   const base =
-    "inline-flex items-center justify-center rounded-lg font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:focus-visible:ring-white/20";
+    "inline-flex items-center justify-center rounded-[var(--radius-control)] font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring-subtle)]";
 
   const variants: Record<Variant, string> = {
     primary:
       "bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90",
     secondary:
-      "border border-black/10 bg-white hover:bg-neutral-50 text-neutral-900 dark:border-white/10 dark:bg-black/30 dark:hover:bg-black/45 dark:text-neutral-100",
+      "border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] hover:bg-[color:var(--surface-control-hover)] text-neutral-900 dark:text-neutral-100",
     ghost:
       "hover:bg-black/5 text-neutral-800 dark:hover:bg-white/10 dark:text-neutral-100",
   };

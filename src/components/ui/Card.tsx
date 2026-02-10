@@ -10,7 +10,8 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-black/10 bg-white/70 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:border-white/10 dark:bg-black/40",
+        "rounded-[var(--radius-card)] border shadow-sm backdrop-blur supports-[backdrop-filter]:bg-[color:var(--surface-card-blur)]",
+        "border-[color:var(--border-subtle)] bg-[color:var(--surface-card)]",
         className,
       )}
     >
@@ -35,7 +36,7 @@ export function CardHeader({
       <div>
         <div className="text-sm font-semibold tracking-tight">{title}</div>
         {description && (
-          <div className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
+          <div className="mt-1 text-sm text-[color:var(--text-muted)] dark:text-[color:var(--text-muted-dark)]">
             {description}
           </div>
         )}
