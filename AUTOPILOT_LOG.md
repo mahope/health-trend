@@ -218,3 +218,8 @@ pm run build ?
 - Changed: Improved first-snapshot empty state on /snapshots: added a Copy path CTA + reuse expected path string; missing_garmin_file error now offers copy-path + Garmin link.
 - Commit: cdcb81f
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 05:00 (Europe/Copenhagen)
+- Changed: Added an offline banner (mobile-friendly) when the PWA loses connection, plus a small “Online igen ✓” success toast when connectivity returns.
+- Commit: a726917
+- Tests: `npm run lint` ✅, `npm run build` ✅
