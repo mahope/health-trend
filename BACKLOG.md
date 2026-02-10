@@ -43,7 +43,7 @@
 - [x] Rate limiting on manual upsert + auth endpoints
 17. [x] Health endpoint + basic uptime page
 18. [x] Better cron logging + idempotency key
-19. Security headers (CSP-lite, etc.)
+19. [x] Security headers (CSP-lite, etc.)
 
 ### Design/system
 20. Design tokens (spacing/typography) pass
