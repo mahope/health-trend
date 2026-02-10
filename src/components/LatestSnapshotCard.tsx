@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { addDaysYmd } from "@/lib/date";
+import { addDaysYmd, formatDateTime } from "@/lib/date";
 import { Button } from "@/components/ui/Button";
 import { MetricGrid, MetricTile } from "@/components/MetricGrid";
 import { EmptyState, InlineEmptyLink } from "@/components/EmptyState";
@@ -169,7 +169,7 @@ export function LatestSnapshotCard({ day }: { day: string }) {
           <div className="font-semibold">Seneste snapshot</div>
           <div className="text-sm text-neutral-600 dark:text-neutral-300">
             {latest
-              ? new Date(latest.takenAt).toLocaleString("da-DK", { hour12: false })
+              ? formatDateTime(latest.takenAt)
               : "Ingen endnu — tag dit første"}
           </div>
         </div>
@@ -201,7 +201,7 @@ export function LatestSnapshotCard({ day }: { day: string }) {
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="rounded-xl border border-black/10 bg-white/60 p-3 dark:border-white/10 dark:bg-black/20"
+                className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] p-3"
               >
                 <Skeleton className="h-3 w-16" />
                 <div className="mt-2 flex items-baseline justify-between gap-3">
@@ -314,7 +314,7 @@ export function LatestSnapshotCard({ day }: { day: string }) {
 
           {prev && (
             <div className="text-xs text-neutral-500 dark:text-neutral-400">
-              Delta er ift. forrige snapshot ({new Date(prev.takenAt).toLocaleString("da-DK", { hour12: false })}).
+              Delta er ift. forrige snapshot ({formatDateTime(prev.takenAt)}).
             </div>
           )}
         </div>

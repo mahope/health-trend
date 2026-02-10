@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -15,19 +15,51 @@ function initials(email: string) {
 export function UserMenu({ userEmail }: { userEmail: string }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
   const initialsText = useMemo(() => initials(userEmail), [userEmail]);
+
+  const close = useCallback(() => {
+    setOpen(false);
+    triggerRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     if (!open) return;
 
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        e.preventDefault();
+        close();
+        return;
+      }
+
+      // Arrow key navigation within menu items
+      const menu = menuRef.current;
+      if (!menu) return;
+
+      const items = Array.from(
+        menu.querySelectorAll<HTMLElement>("[role='menuitem']"),
+      );
+      if (!items.length) return;
+
+      const currentIdx = items.findIndex((el) => el === document.activeElement);
+
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        const next = currentIdx < items.length - 1 ? currentIdx + 1 : 0;
+        items[next]?.focus();
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        const prev = currentIdx > 0 ? currentIdx - 1 : items.length - 1;
+        items[prev]?.focus();
+      }
     }
 
     function onPointerDown(e: PointerEvent) {
       const el = rootRef.current;
       if (!el) return;
-      if (!el.contains(e.target as Node)) setOpen(false);
+      if (!el.contains(e.target as Node)) close();
     }
 
     window.addEventListener("keydown", onKeyDown);
@@ -36,21 +68,37 @@ export function UserMenu({ userEmail }: { userEmail: string }) {
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("pointerdown", onPointerDown);
     };
+  }, [open, close]);
+
+  // Focus first menu item on open
+  useEffect(() => {
+    if (!open) return;
+    const menu = menuRef.current;
+    if (!menu) return;
+    const first = menu.querySelector<HTMLElement>("[role='menuitem']");
+    first?.focus();
   }, [open]);
 
   return (
     <div ref={rootRef} className="relative">
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-white/70 text-sm font-semibold text-neutral-900 shadow-sm backdrop-blur hover:bg-white/90 dark:border-white/10 dark:bg-black/20 dark:text-neutral-100 dark:hover:bg-black/30"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[color:var(--border-subtle)] bg-[color:var(--surface-card)] text-sm font-semibold text-neutral-900 shadow-sm backdrop-blur hover:bg-[color:var(--surface-control-hover)] dark:text-neutral-100"
         aria-label="Åbn bruger-menu"
+        aria-haspopup="menu"
+        aria-expanded={open}
       >
         {initialsText}
       </button>
 
       {open ? (
-        <div className="absolute right-0 mt-2 w-56 rounded-xl border border-black/10 bg-white/95 p-2 shadow-lg backdrop-blur dark:border-white/10 dark:bg-black/70">
+        <div
+          ref={menuRef}
+          role="menu"
+          className="absolute right-0 mt-2 w-56 rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-card)] p-2 shadow-lg backdrop-blur"
+        >
           <div className="px-2 py-2">
             <div className="text-xs text-neutral-500 dark:text-neutral-400">Logget ind som</div>
             <div className="text-sm font-medium truncate text-neutral-900 dark:text-neutral-100">{userEmail}</div>
@@ -62,7 +110,9 @@ export function UserMenu({ userEmail }: { userEmail: string }) {
 
           <a
             href="/settings"
-            className="block rounded-lg px-2 py-2 text-sm text-neutral-800 hover:bg-black/5 dark:text-neutral-100 dark:hover:bg-white/10"
+            role="menuitem"
+            tabIndex={-1}
+            className="block rounded-lg px-2 py-2 text-sm text-neutral-800 hover:bg-black/5 focus:bg-black/5 focus:outline-none dark:text-neutral-100 dark:hover:bg-white/10 dark:focus:bg-white/10"
             onClick={() => setOpen(false)}
           >
             Settings
@@ -70,7 +120,9 @@ export function UserMenu({ userEmail }: { userEmail: string }) {
 
           <button
             type="button"
-            className="mt-1 w-full rounded-lg px-2 py-2 text-left text-sm text-neutral-800 hover:bg-black/5 dark:text-neutral-100 dark:hover:bg-white/10"
+            role="menuitem"
+            tabIndex={-1}
+            className="mt-1 w-full rounded-lg px-2 py-2 text-left text-sm text-neutral-800 hover:bg-black/5 focus:bg-black/5 focus:outline-none dark:text-neutral-100 dark:hover:bg-white/10 dark:focus:bg-white/10"
             onClick={async () => {
               await authClient.signOut();
               window.location.href = "/login";

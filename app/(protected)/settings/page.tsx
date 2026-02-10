@@ -1,21 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import QRCode from "qrcode";
 import { QrImage } from "@/components/QrImage";
 import { authClient } from "@/lib/auth-client";
-import { useToast } from "@/components/ToastProvider";
+import { useRateLimitedToast } from "@/hooks/useRateLimitedToast";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Button } from "@/components/ui/Button";
+import { FormField } from "@/components/ui/FormField";
+import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 
 export default function SettingsPage() {
-  const { toast } = useToast();
-  const lastToastAt = useRef(0);
-
-  function rateLimitedToast(next: Parameters<typeof toast>[0]) {
-    const now = Date.now();
-    if (now - lastToastAt.current < 1200) return;
-    lastToastAt.current = now;
-    toast(next);
-  }
+  const { rateLimitedToast } = useRateLimitedToast(1200);
 
   const [password, setPassword] = useState("");
   const [issuer, setIssuer] = useState("Health Trend");
@@ -144,34 +141,30 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      <section className="rounded-xl border p-4 space-y-3">
-        <h2 className="font-semibold">Mål</h2>
-
+      <Card>
+        <CardHeader title="Mål" description="Bruges i streaks + søvngæld på &quot;Indsigter&quot;." />
+        <CardBody>
         <div className="grid gap-3 max-w-md">
-          <div>
-            <div className="text-xs text-neutral-500">Dagligt step-mål</div>
-            <input
-              className="w-full rounded-md border px-3 py-2"
+          <FormField label="Dagligt step-mål">
+            <Input
               inputMode="numeric"
               value={stepsGoal}
               onChange={(e) => setStepsGoal(e.target.value)}
               disabled={goalsLoading || goalsSaving}
             />
-          </div>
+          </FormField>
 
-          <div>
-            <div className="text-xs text-neutral-500">Søvn-mål (timer pr. nat)</div>
-            <input
-              className="w-full rounded-md border px-3 py-2"
+          <FormField label="Søvn-mål (timer pr. nat)">
+            <Input
               inputMode="decimal"
               value={sleepGoalHours}
               onChange={(e) => setSleepGoalHours(e.target.value)}
               disabled={goalsLoading || goalsSaving}
             />
-          </div>
+          </FormField>
 
-          <button
-            className="rounded-md bg-black text-white py-2 disabled:opacity-50"
+          <Button
+            variant="primary"
             disabled={goalsLoading || goalsSaving}
             onClick={async () => {
               setGoalsSaving(true);
@@ -200,33 +193,25 @@ export default function SettingsPage() {
             }}
           >
             {goalsSaving ? "Gemmer…" : "Gem"}
-          </button>
-
-          <div className="text-xs text-neutral-500">
-            Bruges i streaks + søvngæld på “Indsigter”.
-          </div>
+          </Button>
         </div>
-      </section>
+        </CardBody>
+      </Card>
 
-      <section className="rounded-xl border p-4 space-y-3">
-        <h2 className="font-semibold">Krop & kontekst</h2>
-        <p className="text-sm text-neutral-500">
-          Bruges til mere præcise indsigter (fx cyklus/menstruation).
-        </p>
-
+      <Card>
+        <CardHeader title="Krop & kontekst" description="Bruges til mere præcise indsigter (fx cyklus/menstruation)." />
+        <CardBody>
         <div className="grid gap-3 max-w-md">
-          <label className="text-sm">
-            <div className="text-xs text-neutral-500">Køn</div>
-            <select
-              className="w-full rounded-md border px-3 py-2"
+          <FormField label="Køn">
+            <Select
               value={sex}
               disabled={contextLoading || contextSaving}
               onChange={(e) => setSex(e.target.value === "female" ? "female" : "male")}
             >
               <option value="male">Mand</option>
               <option value="female">Kvinde</option>
-            </select>
-          </label>
+            </Select>
+          </FormField>
 
           {sex === "female" ? (
             <>
@@ -240,45 +225,34 @@ export default function SettingsPage() {
                 Gravid
               </label>
 
-              <label className="text-sm">
-                <div className="text-xs text-neutral-500">Cyklusdag (valgfri)</div>
-                <input
-                  className="w-full rounded-md border px-3 py-2"
+              <FormField label="Cyklusdag (valgfri)" description={`1–40. Tom = ukendt.${computedCycleDay ? ` (beregnet: dag ${computedCycleDay})` : ""}`}>
+                <Input
                   inputMode="numeric"
                   placeholder="fx 12"
                   value={cycleDay}
                   disabled={contextLoading || contextSaving}
                   onChange={(e) => setCycleDay(e.target.value.replace(/\D/g, ""))}
                 />
-                <div className="mt-1 text-xs text-neutral-500">
-                  1–40. Tom = ukendt.
-                  {computedCycleDay ? ` (beregnet: dag ${computedCycleDay})` : ""}
-                </div>
-              </label>
+              </FormField>
 
-              <label className="text-sm">
-                <div className="text-xs text-neutral-500">Sidste menstruationsstart (valgfri)</div>
-                <input
-                  className="w-full rounded-md border px-3 py-2"
+              <FormField label="Sidste menstruationsstart (valgfri)">
+                <Input
                   type="date"
                   value={lastPeriodStart}
                   disabled={contextLoading || contextSaving}
                   onChange={(e) => setLastPeriodStart(e.target.value)}
                 />
-              </label>
+              </FormField>
 
-              <label className="text-sm">
-                <div className="text-xs text-neutral-500">Cykellængde (dage, estimat)</div>
-                <input
-                  className="w-full rounded-md border px-3 py-2"
+              <FormField label="Cykellængde (dage, estimat)" description="20–45. Bruges til beregning hvis cyklusdag er tom.">
+                <Input
                   inputMode="numeric"
                   placeholder="fx 28"
                   value={cycleLengthDays}
                   disabled={contextLoading || contextSaving}
                   onChange={(e) => setCycleLengthDays(e.target.value.replace(/\D/g, ""))}
                 />
-                <div className="mt-1 text-xs text-neutral-500">20–45. Bruges til beregning hvis cyklusdag er tom.</div>
-              </label>
+              </FormField>
 
               <div className="space-y-2">
                 <div className="text-xs text-neutral-500">Typiske symptomer (valgfri)</div>
@@ -314,8 +288,8 @@ export default function SettingsPage() {
             </>
           ) : null}
 
-          <button
-            className="rounded-md bg-black text-white py-2 disabled:opacity-50"
+          <Button
+            variant="primary"
             disabled={contextLoading || contextSaving}
             onClick={async () => {
               setContextSaving(true);
@@ -350,33 +324,32 @@ export default function SettingsPage() {
             }}
           >
             {contextSaving ? "Gemmer…" : "Gem"}
-          </button>
+          </Button>
         </div>
-      </section>
+        </CardBody>
+      </Card>
 
-      <section className="rounded-xl border p-4 space-y-3">
-        <h2 className="font-semibold">Aktivér 2FA (TOTP)</h2>
-
+      <Card>
+        <CardHeader title="Aktivér 2FA (TOTP)" />
+        <CardBody>
         <div className="grid gap-3 max-w-md">
-          <input
-            className="w-full rounded-md border px-3 py-2"
+          <Input
             placeholder="Dit password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
           />
-          <input
-            className="w-full rounded-md border px-3 py-2"
+          <Input
             placeholder="Issuer (navn i authenticator app)"
             value={issuer}
             onChange={(e) => setIssuer(e.target.value)}
           />
 
-          {error && <div className="text-sm text-red-600">{error}</div>}
+          {error && <div className="text-sm text-[color:var(--text-error)]">{error}</div>}
 
-          <button
-            className="rounded-md bg-black text-white py-2 disabled:opacity-50"
+          <Button
+            variant="primary"
             disabled={loading}
             onClick={async () => {
               setLoading(true);
@@ -405,7 +378,7 @@ export default function SettingsPage() {
             }}
           >
             {loading ? "Aktiverer…" : "Aktivér"}
-          </button>
+          </Button>
         </div>
 
         {safeTotpURI && (
@@ -437,16 +410,16 @@ export default function SettingsPage() {
             )}
 
             <div className="grid gap-3 max-w-md">
-              <input
-                className="w-full rounded-md border px-3 py-2 tracking-widest"
+              <Input
+                className="tracking-widest"
                 placeholder="TOTP kode (123456)"
                 value={verifyCode}
                 onChange={(e) => setVerifyCode(e.target.value.replace(/\s/g, ""))}
                 inputMode="numeric"
               />
 
-              <button
-                className="rounded-md border py-2 disabled:opacity-50"
+              <Button
+                variant="secondary"
                 disabled={verifying}
                 onClick={async () => {
                   setVerifying(true);
@@ -470,19 +443,22 @@ export default function SettingsPage() {
                 }}
               >
                 {verifying ? "Verificerer…" : "Verificér og slå til"}
-              </button>
+              </Button>
             </div>
           </div>
         )}
-      </section>
+        </CardBody>
+      </Card>
 
-      <section className="rounded-xl border p-4 space-y-3">
-        <h2 className="font-semibold">Om appen</h2>
-        <div className="text-sm text-neutral-600">
+      <Card>
+        <CardHeader title="Om appen" description="Praktisk hvis du rapporterer bugs eller tester deploys." />
+        <CardBody>
+        <div className="text-sm text-neutral-600 dark:text-neutral-300">
           Version {process.env.NEXT_PUBLIC_APP_VERSION} ({process.env.NEXT_PUBLIC_GIT_SHA})
         </div>
-        <button
-          className="rounded-md border px-3 py-2"
+        <Button
+          variant="secondary"
+          className="mt-3"
           onClick={async () => {
             const text = `Health Trend v${process.env.NEXT_PUBLIC_APP_VERSION} (${process.env.NEXT_PUBLIC_GIT_SHA})`;
             try {
@@ -494,24 +470,24 @@ export default function SettingsPage() {
           }}
         >
           Kopiér build-info
-        </button>
-        <div className="text-xs text-neutral-500">
-          Praktisk hvis du rapporterer bugs eller tester deploys.
-        </div>
-      </section>
+        </Button>
+        </CardBody>
+      </Card>
 
-      <section className="rounded-xl border p-4 space-y-3">
-        <h2 className="font-semibold">Log ud</h2>
-        <button
-          className="rounded-md border px-3 py-2"
+      <Card>
+        <CardHeader title="Log ud" />
+        <CardBody>
+        <Button
+          variant="secondary"
           onClick={async () => {
             await authClient.signOut();
             window.location.href = "/login";
           }}
         >
           Log ud
-        </button>
-      </section>
+        </Button>
+        </CardBody>
+      </Card>
     </div>
   );
 }

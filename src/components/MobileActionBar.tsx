@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { useMobileUi } from "@/components/MobileUiContext";
-import { useToast } from "@/components/ToastProvider";
+import { useRateLimitedToast } from "@/hooks/useRateLimitedToast";
 
 function cphYmd() {
   // Get YYYY-MM-DD in Europe/Copenhagen without pulling deps.
@@ -13,16 +13,8 @@ function cphYmd() {
 
 export function MobileActionBar({ manualAnchorId = "manual" }: { manualAnchorId?: string }) {
   const { openMenu } = useMobileUi();
-  const { toast } = useToast();
-  const lastToastAt = useRef(0);
+  const { rateLimitedToast } = useRateLimitedToast(1200);
   const [busy, setBusy] = useState<null | "snapshot" | "brief">(null);
-
-  function rateLimitedToast(next: Parameters<typeof toast>[0]) {
-    const now = Date.now();
-    if (now - lastToastAt.current < 1200) return;
-    lastToastAt.current = now;
-    toast(next);
-  }
 
   async function call(kind: "snapshot" | "brief") {
     const day = cphYmd();
@@ -62,7 +54,7 @@ export function MobileActionBar({ manualAnchorId = "manual" }: { manualAnchorId?
   }
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-black/10 bg-white/85 backdrop-blur dark:border-white/10 dark:bg-black/60">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-[color:var(--border-subtle)] bg-[color:var(--surface-card)] backdrop-blur">
       <div className="mx-auto max-w-6xl px-3 pb-[calc(env(safe-area-inset-bottom,0px)+10px)] pt-2">
         <div className="grid grid-cols-4 gap-2">
           <Button

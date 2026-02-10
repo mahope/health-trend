@@ -193,7 +193,7 @@ export default function WeeklyReportPage() {
           }
         />
         <CardBody>
-          {error && <div className="text-sm text-red-600">{error}</div>}
+          {error && <div className="text-sm text-[color:var(--text-error)]">{error}</div>}
           {!data ? (
             <div className="text-sm text-neutral-600 dark:text-neutral-300">Henter…</div>
           ) : (
@@ -230,7 +230,7 @@ export default function WeeklyReportPage() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-black/10 p-3 dark:border-white/10">
+              <div className="rounded-xl border border-[color:var(--border-subtle)] p-3">
                 <div className="text-sm font-medium">Én lille vane</div>
                 <div className="mt-1 text-sm text-neutral-700 dark:text-neutral-200">
                   {data.ai?.oneSmallHabit || "—"}

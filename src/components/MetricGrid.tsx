@@ -20,7 +20,7 @@ export function MetricTile({
   delta?: string;
 }) {
   return (
-    <div className="rounded-xl border border-black/10 bg-white/60 p-3 dark:border-white/10 dark:bg-black/20">
+    <div className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] p-3">
       <div className="text-xs text-neutral-500 dark:text-neutral-400">{label}</div>
       <div className="mt-1 flex items-baseline justify-between gap-3">
         <div className="text-sm font-medium text-neutral-900 dark:text-neutral-100">

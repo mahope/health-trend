@@ -115,7 +115,7 @@ export function PullToRefresh({ children }: { children: React.ReactNode }) {
         }}
         aria-hidden
       >
-        <div className="mt-3 rounded-full border border-black/10 bg-white/80 px-3 py-1 text-xs text-neutral-700 shadow-sm backdrop-blur dark:border-white/10 dark:bg-black/60 dark:text-neutral-200">
+        <div className="mt-3 rounded-full border border-[color:var(--border-subtle)] bg-[color:var(--surface-card)] px-3 py-1 text-xs text-neutral-700 shadow-sm backdrop-blur dark:text-neutral-200">
           {isPending ? "Opdaterer…" : armed ? "Slip for at opdatere" : "Træk for at opdatere"}
         </div>
       </div>

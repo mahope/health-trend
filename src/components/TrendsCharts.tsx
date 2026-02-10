@@ -10,8 +10,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import Link from "next/link";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { EmptyState } from "@/components/EmptyState";
 
 type Item = {
@@ -47,18 +47,12 @@ function EmptyTrends({ days }: { days: number }) {
       }
       actions={
         <div className="grid gap-2 sm:flex sm:flex-wrap">
-          <Link
-            href="/snapshots"
-            className="inline-flex h-10 items-center justify-center rounded-lg bg-black px-4 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:bg-white dark:text-black dark:hover:bg-white/90 dark:focus-visible:ring-white/20"
-          >
+          <LinkButton href="/snapshots" variant="primary">
             Tag dit første snapshot
-          </Link>
-          <Link
-            href="/garmin"
-            className="inline-flex h-10 items-center justify-center rounded-lg border border-black/10 bg-white px-4 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:border-white/10 dark:bg-black/30 dark:text-neutral-100 dark:hover:bg-black/45 dark:focus-visible:ring-white/20"
-          >
+          </LinkButton>
+          <LinkButton href="/garmin" variant="secondary">
             Tjek Garmin data
-          </Link>
+          </LinkButton>
         </div>
       }
     />
@@ -144,7 +138,7 @@ export function TrendsCharts({ days = 14 }: { days?: number }) {
           }
         />
         <CardBody>
-          {error ? <div className="text-sm text-red-600">{error}</div> : null}
+          {error ? <div className="text-sm text-[color:var(--text-error)]">{error}</div> : null}
 
           {!error && items.length === 0 ? (
             <EmptyTrends days={days} />
@@ -209,7 +203,7 @@ export function TrendsCharts({ days = 14 }: { days?: number }) {
           description="Steps, stress og søvn (seneste snapshot pr. dag)."
         />
         <CardBody>
-          {error ? <div className="text-sm text-red-600">{error}</div> : null}
+          {error ? <div className="text-sm text-[color:var(--text-error)]">{error}</div> : null}
 
           {!error && items.length === 0 ? (
             <EmptyTrends days={days} />

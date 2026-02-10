@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { TabGroup } from "@/components/ui/TabGroup";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 type Deterministic = {
   intensity: "let" | "moderat" | "hård";
@@ -86,32 +88,14 @@ export function DayPlanCard() {
         }
         right={
           <div className="flex items-center gap-2">
-            <div className="inline-flex rounded-lg border border-black/10 bg-white/50 p-0.5 text-xs dark:border-white/10 dark:bg-black/20">
-              <button
-                type="button"
-                onClick={() => setTab("today")}
-                className={
-                  "h-8 rounded-md px-2.5 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:focus-visible:ring-white/20 " +
-                  (tab === "today"
-                    ? "bg-black text-white dark:bg-white dark:text-black"
-                    : "text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-white/10")
-                }
-              >
-                I dag
-              </button>
-              <button
-                type="button"
-                onClick={() => setTab("tomorrow")}
-                className={
-                  "h-8 rounded-md px-2.5 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:focus-visible:ring-white/20 " +
-                  (tab === "tomorrow"
-                    ? "bg-black text-white dark:bg-white dark:text-black"
-                    : "text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-white/10")
-                }
-              >
-                I morgen
-              </button>
-            </div>
+            <TabGroup
+              tabs={[
+                { id: "today", label: "I dag" },
+                { id: "tomorrow", label: "I morgen" },
+              ]}
+              active={tab}
+              onChange={(id) => setTab(id as "today" | "tomorrow")}
+            />
 
             {intensity ? (
               <Badge tone={intensity === "let" ? "low" : intensity === "hård" ? "med" : "neutral"}>
@@ -122,9 +106,13 @@ export function DayPlanCard() {
         }
       />
       <CardBody>
-        {error && <div className="text-sm text-red-600">{error}</div>}
+        {error && <div className="text-sm text-[color:var(--text-error)]">{error}</div>}
         {!data ? (
-          <div className="text-sm text-neutral-600 dark:text-neutral-300">Henter…</div>
+          <div className="space-y-3">
+            <Skeleton className="h-4 w-48" />
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-5/6" />
+          </div>
         ) : (
           <div className="space-y-3">
             <div className="text-sm text-neutral-700 dark:text-neutral-200">
@@ -135,7 +123,7 @@ export function DayPlanCard() {
             </div>
 
             {/* Mobile: compact + expand */}
-            <details className="md:hidden rounded-xl border border-black/10 bg-white/40 p-3 dark:border-white/10 dark:bg-black/15">
+            <details className="md:hidden rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] p-3">
               <summary className="cursor-pointer list-none">
                 <div className="flex items-center justify-between gap-3">
                   <div className="text-sm font-semibold">Gør i dag + undgå</div>
@@ -204,13 +192,13 @@ export function DayPlanCard() {
             </div>
 
             <div className="grid gap-3 md:grid-cols-2">
-              <div className="rounded-xl border border-black/10 p-3 text-sm dark:border-white/10">
+              <div className="rounded-xl border border-[color:var(--border-subtle)] p-3 text-sm">
                 <div className="text-xs text-neutral-500 dark:text-neutral-400">Koffein</div>
                 <div className="mt-1 text-neutral-700 dark:text-neutral-200">
                   {data.ai?.caffeine || "Hold koffein tidligere på dagen (helst før kl. 14)."}
                 </div>
               </div>
-              <div className="rounded-xl border border-black/10 p-3 text-sm dark:border-white/10">
+              <div className="rounded-xl border border-[color:var(--border-subtle)] p-3 text-sm">
                 <div className="text-xs text-neutral-500 dark:text-neutral-400">Sengetid</div>
                 <div className="mt-1 text-neutral-700 dark:text-neutral-200">
                   {data.ai?.bedtime || data.deterministic.bedtimeHint}

@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { Card, CardBody, CardHeader } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 
 export default function TwoFactorPage() {
   const [code, setCode] = useState("");
@@ -11,15 +14,15 @@ export default function TwoFactorPage() {
 
   return (
     <main className="min-h-screen flex items-center justify-center p-6">
-      <div className="w-full max-w-sm rounded-xl border p-6">
-        <h1 className="text-xl font-semibold">2-trinsbekræftelse</h1>
-        <p className="text-sm text-neutral-500 mt-1">
-          Indtast koden fra din authenticator-app.
-        </p>
-
-        <div className="mt-6 space-y-3">
-          <input
-            className="w-full rounded-md border px-3 py-2 tracking-widest"
+      <Card className="w-full max-w-sm">
+        <CardHeader
+          title="2-trinsbekræftelse"
+          description="Indtast koden fra din authenticator-app."
+        />
+        <CardBody>
+        <div className="space-y-3">
+          <Input
+            className="tracking-widest"
             placeholder="123456"
             value={code}
             onChange={(e) => setCode(e.target.value.replace(/\s/g, ""))}
@@ -27,7 +30,7 @@ export default function TwoFactorPage() {
             autoComplete="one-time-code"
           />
 
-          <label className="flex items-center gap-2 text-sm text-neutral-700">
+          <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
             <input
               type="checkbox"
               checked={trustDevice}
@@ -36,10 +39,11 @@ export default function TwoFactorPage() {
             Husk denne enhed (30 dage)
           </label>
 
-          {error && <div className="text-sm text-red-600">{error}</div>}
+          {error && <div className="text-sm text-[color:var(--text-error)]">{error}</div>}
 
-          <button
-            className="w-full rounded-md bg-black text-white py-2 disabled:opacity-50"
+          <Button
+            variant="primary"
+            className="w-full"
             disabled={loading}
             onClick={async () => {
               setLoading(true);
@@ -63,19 +67,21 @@ export default function TwoFactorPage() {
             }}
           >
             {loading ? "Verificerer…" : "Bekræft"}
-          </button>
+          </Button>
 
-          <button
-            className="w-full rounded-md border py-2"
+          <Button
+            variant="secondary"
+            className="w-full"
             onClick={async () => {
               await authClient.signOut();
               window.location.href = "/login";
             }}
           >
             Log ud
-          </button>
+          </Button>
         </div>
-      </div>
+        </CardBody>
+      </Card>
     </main>
   );
 }

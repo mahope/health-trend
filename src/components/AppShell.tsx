@@ -74,7 +74,7 @@ export function AppShell({
         {/* Sidebar */}
         <aside className="hidden w-64 shrink-0 md:block">
           <div className="sticky top-6">
-            <div className="rounded-2xl border border-black/10 bg-white/70 p-4 shadow-sm backdrop-blur dark:border-white/10 dark:bg-black/40">
+            <div className="rounded-2xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-card)] p-4 shadow-sm backdrop-blur">
               <div className="text-sm font-semibold tracking-tight">Health Trend</div>
               <div className="mt-1 text-xs text-neutral-600 dark:text-neutral-300">{userEmail}</div>
 
@@ -93,7 +93,7 @@ export function AppShell({
           <div className="mb-3 flex items-center justify-between gap-4">
             <div className="flex items-start gap-3">
               <button
-                className="md:hidden mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-black/10 bg-white/60 text-neutral-900 shadow-sm dark:border-white/10 dark:bg-black/20 dark:text-neutral-100"
+                className="md:hidden mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] text-neutral-900 shadow-sm dark:text-neutral-100"
                 aria-label="Åbn menu"
                 onClick={() => setMenuOpen(true)}
               >

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
+import { LinkButton } from "@/components/ui/LinkButton";
 
 type Activity = {
   id: string;
@@ -97,7 +98,7 @@ export function ActivitiesCard({ limit = 10 }: { limit?: number }) {
               return (
                 <div
                   key={key}
-                  className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-3 py-1.5 text-xs text-neutral-700 dark:border-white/10 dark:bg-black/20 dark:text-neutral-200"
+                  className="inline-flex items-center gap-2 rounded-full border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] px-3 py-1.5 text-xs text-neutral-700 dark:text-neutral-200"
                   title={max > 0 ? `${label}: ${cur} dage i træk (max ${max})` : `${label}: ingen streak endnu`}
                 >
                   <span className="font-medium">{label}</span>
@@ -108,20 +109,17 @@ export function ActivitiesCard({ limit = 10 }: { limit?: number }) {
           </div>
         ) : null}
 
-        {error && <div className="text-sm text-red-600">{error}</div>}
+        {error && <div className="text-sm text-[color:var(--text-error)]">{error}</div>}
         {items.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-black/15 bg-white/40 p-5 text-sm text-neutral-700 dark:border-white/15 dark:bg-black/15 dark:text-neutral-200">
+          <div className="rounded-2xl border border-dashed border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] p-5 text-sm text-neutral-700 dark:text-neutral-200">
             <div className="font-medium">Ingen aktiviteter endnu</div>
             <div className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
               Aktiviteter kommer fra dine snapshots (Garmin eksport). Tag dit første snapshot for at begynde at se dem.
             </div>
             <div className="mt-4">
-              <Link
-                href="#snapshots"
-                className="inline-flex h-9 items-center justify-center rounded-lg bg-black px-3 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:bg-white dark:text-black dark:hover:bg-white/90 dark:focus-visible:ring-white/20"
-              >
+              <LinkButton href="#snapshots" variant="primary" size="sm">
                 Tag snapshot
-              </Link>
+              </LinkButton>
             </div>
           </div>
         ) : (

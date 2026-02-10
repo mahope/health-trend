@@ -21,7 +21,7 @@ export function ThemeToggle() {
   return (
     <button
       type="button"
-      className="inline-flex h-9 items-center justify-center rounded-lg border border-black/10 bg-white/60 px-3 text-sm text-neutral-900 shadow-sm backdrop-blur hover:bg-white/80 dark:border-white/10 dark:bg-black/20 dark:text-neutral-100 dark:hover:bg-black/30"
+      className="inline-flex h-9 items-center justify-center rounded-lg border border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] px-3 text-sm text-neutral-900 shadow-sm backdrop-blur hover:bg-[color:var(--surface-control-hover)] dark:text-neutral-100"
       onClick={() => {
         const current = getTheme();
         const next = current === "dark" ? "light" : "dark";

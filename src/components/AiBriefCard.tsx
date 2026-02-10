@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { useToast } from "@/components/ToastProvider";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/EmptyState";
 import { cn } from "@/lib/cn";
+import { formatDateTime } from "@/lib/date";
+import { ResponsiveSection } from "@/components/ui/ResponsiveSection";
 
 type Brief = {
   day: string;
@@ -91,11 +93,11 @@ export function AiBriefCard({ day }: { day: string }) {
       </div>
 
       {item ? (
-        <div className="rounded-2xl border border-black/10 bg-white/50 p-5 shadow-sm dark:border-white/10 dark:bg-black/20 space-y-5">
+        <div className="rounded-2xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] p-5 shadow-sm space-y-5">
           <div className="flex items-center justify-between gap-3">
             <div className="text-sm font-semibold tracking-tight">Overblik</div>
             <div className="text-xs text-neutral-500 dark:text-neutral-400">
-              {new Date(item.createdAt).toLocaleString("da-DK", { hour12: false })}
+              {formatDateTime(item.createdAt)}
             </div>
           </div>
 
@@ -104,113 +106,50 @@ export function AiBriefCard({ day }: { day: string }) {
           </div>
 
           {item.signals?.length ? (
-            <>
-              {/* Mobile: accordion */}
-              <details className="md:hidden rounded-xl border border-black/10 bg-white/40 p-3 dark:border-white/10 dark:bg-black/15">
-                <summary className="cursor-pointer list-none">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm font-semibold">Signaler</div>
-                    <div className="text-xs text-neutral-500 dark:text-neutral-400">
-                      {item.signals.length} stk.
+            <ResponsiveSection
+              title="Signaler"
+              badge={<div className="text-xs text-neutral-500 dark:text-neutral-400">{item.signals.length} stk.</div>}
+              hint="Tryk for at åbne"
+            >
+              <ul className="grid gap-2 md:grid-cols-2">
+                {item.signals.map((s, idx) => (
+                  <li
+                    key={idx}
+                    className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] p-3"
+                  >
+                    <div className="flex items-baseline justify-between gap-3">
+                      <div className="text-sm font-medium">{s.name}</div>
+                      <div className="text-xs text-neutral-500 dark:text-neutral-400">{s.value}</div>
                     </div>
-                  </div>
-                  <div className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">Tryk for at åbne</div>
-                </summary>
-                <ul className="mt-3 grid gap-2">
-                  {item.signals.map((s, idx) => (
-                    <li
-                      key={idx}
-                      className="rounded-xl border border-black/10 bg-white/60 p-3 dark:border-white/10 dark:bg-black/20"
-                    >
-                      <div className="flex items-baseline justify-between gap-3">
-                        <div className="text-sm font-medium">{s.name}</div>
-                        <div className="text-xs text-neutral-500 dark:text-neutral-400">{s.value}</div>
-                      </div>
-                      <div className="mt-1 text-xs text-neutral-600 dark:text-neutral-300">{s.why}</div>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-
-              {/* Desktop: always expanded */}
-              <div className="hidden md:block space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm font-semibold">Signaler</div>
-                  <div className="text-xs text-neutral-500 dark:text-neutral-400">
-                    {item.signals.length} stk.
-                  </div>
-                </div>
-
-                <ul className="grid gap-2 md:grid-cols-2">
-                  {item.signals.map((s, idx) => (
-                    <li
-                      key={idx}
-                      className="rounded-xl border border-black/10 bg-white/60 p-3 dark:border-white/10 dark:bg-black/20"
-                    >
-                      <div className="flex items-baseline justify-between gap-3">
-                        <div className="text-sm font-medium">{s.name}</div>
-                        <div className="text-xs text-neutral-500 dark:text-neutral-400">{s.value}</div>
-                      </div>
-                      <div className="mt-1 text-xs text-neutral-600 dark:text-neutral-300">{s.why}</div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </>
+                    <div className="mt-1 text-xs text-neutral-600 dark:text-neutral-300">{s.why}</div>
+                  </li>
+                ))}
+              </ul>
+            </ResponsiveSection>
           ) : null}
 
           {item.suggestions?.length ? (
-            <>
-              {/* Mobile: accordion */}
-              <details className="md:hidden rounded-xl border border-black/10 bg-white/40 p-3 dark:border-white/10 dark:bg-black/15">
-                <summary className="cursor-pointer list-none">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm font-semibold">Forslag</div>
-                    <div className="text-xs text-neutral-500 dark:text-neutral-400">
-                      {item.suggestions.length} stk.
-                    </div>
-                  </div>
-                  <div className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">Tryk for at åbne</div>
-                </summary>
-                <ul className="mt-3 grid gap-2">
-                  {item.suggestions.map((s, idx) => (
-                    <li
-                      key={idx}
-                      className="rounded-xl border border-black/10 bg-white/60 p-3 dark:border-white/10 dark:bg-black/20"
-                    >
-                      <div className="text-sm font-medium">{s.title}</div>
-                      <div className="mt-1 text-sm text-neutral-700 dark:text-neutral-200">{s.detail}</div>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-
-              {/* Desktop: always expanded */}
-              <div className="hidden md:block space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm font-semibold">Forslag</div>
-                  <div className="text-xs text-neutral-500 dark:text-neutral-400">
-                    {item.suggestions.length} stk.
-                  </div>
-                </div>
-
-                <ul className="grid gap-2 md:grid-cols-2">
-                  {item.suggestions.map((s, idx) => (
-                    <li
-                      key={idx}
-                      className="rounded-xl border border-black/10 bg-white/60 p-3 dark:border-white/10 dark:bg-black/20"
-                    >
-                      <div className="text-sm font-medium">{s.title}</div>
-                      <div className="mt-1 text-sm text-neutral-700 dark:text-neutral-200">{s.detail}</div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </>
+            <ResponsiveSection
+              title="Forslag"
+              badge={<div className="text-xs text-neutral-500 dark:text-neutral-400">{item.suggestions.length} stk.</div>}
+              hint="Tryk for at åbne"
+            >
+              <ul className="grid gap-2 md:grid-cols-2">
+                {item.suggestions.map((s, idx) => (
+                  <li
+                    key={idx}
+                    className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] p-3"
+                  >
+                    <div className="text-sm font-medium">{s.title}</div>
+                    <div className="mt-1 text-sm text-neutral-700 dark:text-neutral-200">{s.detail}</div>
+                  </li>
+                ))}
+              </ul>
+            </ResponsiveSection>
           ) : null}
         </div>
       ) : initialLoading ? (
-        <div className="rounded-2xl border border-black/10 bg-white/40 p-5 dark:border-white/10 dark:bg-black/15 space-y-4">
+        <div className="rounded-2xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] p-5 space-y-4">
           <div className="flex items-center justify-between gap-3">
             <Skeleton className="h-4 w-28" />
             <Skeleton className="h-3 w-24" />
@@ -224,7 +163,7 @@ export function AiBriefCard({ day }: { day: string }) {
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
-                className="rounded-xl border border-black/10 bg-white/60 p-3 dark:border-white/10 dark:bg-black/20"
+                className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] p-3"
               >
                 <Skeleton className="h-3 w-16" />
                 <Skeleton className="mt-2 h-3 w-full" />
@@ -242,24 +181,18 @@ export function AiBriefCard({ day }: { day: string }) {
           }
           actions={
             <div className="flex flex-wrap gap-2">
-              <Link
-                href="#snapshots"
-                className="inline-flex h-9 items-center justify-center rounded-lg bg-black px-3 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:bg-white dark:text-black dark:hover:bg-white/90 dark:focus-visible:ring-white/20"
-              >
+              <LinkButton href="#snapshots" variant="primary" size="sm">
                 Tag snapshot
-              </Link>
-              <Link
-                href="#manual"
-                className="inline-flex h-9 items-center justify-center rounded-lg border border-black/10 bg-white px-3 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:border-white/10 dark:bg-black/30 dark:text-neutral-100 dark:hover:bg-black/45 dark:focus-visible:ring-white/20"
-              >
+              </LinkButton>
+              <LinkButton href="#manual" variant="secondary" size="sm">
                 Udfyld manual
-              </Link>
+              </LinkButton>
             </div>
           }
         />
       )}
 
-      {error && <div className={cn("text-sm text-red-600")}>{error}</div>}
+      {error && <div className={cn("text-sm text-[color:var(--text-error)]")}>{error}</div>}
     </div>
   );
 }

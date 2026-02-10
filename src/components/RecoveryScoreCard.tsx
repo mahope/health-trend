@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { addDaysYmd } from "@/lib/date";
+import { addDaysYmd, formatDateTime } from "@/lib/date";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { EmptyState } from "@/components/EmptyState";
 
 type Snapshot = {
@@ -131,7 +131,7 @@ export function RecoveryScoreCard({ day }: { day: string }) {
       />
       <CardBody>
         {error ? (
-          <div className="text-sm text-red-700 dark:text-red-200">{error}</div>
+          <div className="text-sm text-[color:var(--text-error)]">{error}</div>
         ) : loading && !latest ? (
           <div className="space-y-3">
             <Skeleton className="h-4 w-64" />
@@ -139,7 +139,7 @@ export function RecoveryScoreCard({ day }: { day: string }) {
               {Array.from({ length: 3 }).map((_, i) => (
                 <div
                   key={i}
-                  className="rounded-xl border border-black/10 bg-white p-2 dark:border-white/10 dark:bg-black/30"
+                  className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] p-2"
                 >
                   <Skeleton className="h-3 w-12" />
                   <Skeleton className="mt-2 h-4 w-14" />
@@ -163,18 +163,12 @@ export function RecoveryScoreCard({ day }: { day: string }) {
             }
             actions={
               <div className="grid gap-2">
-                <Link
-                  href="/snapshots"
-                  className="inline-flex h-10 items-center justify-center rounded-[var(--radius-control)] bg-black px-4 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:bg-white dark:text-black dark:hover:bg-white/90 dark:focus-visible:ring-white/20"
-                >
+                <LinkButton href="/snapshots" variant="primary">
                   Tag første snapshot
-                </Link>
-                <Link
-                  href="/garmin"
-                  className="inline-flex h-10 items-center justify-center rounded-[var(--radius-control)] border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] px-4 text-sm font-medium text-neutral-900 transition-colors hover:bg-[color:var(--surface-control-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring-subtle)] dark:text-neutral-100"
-                >
+                </LinkButton>
+                <LinkButton href="/garmin" variant="secondary">
                   Tjek Garmin data
-                </Link>
+                </LinkButton>
                 <div className="text-xs text-neutral-500 dark:text-neutral-400">
                   Tip: tag typisk 2–3 snapshots om dagen (morgen/middag/aften).
                 </div>
@@ -190,17 +184,17 @@ export function RecoveryScoreCard({ day }: { day: string }) {
             </div>
 
             <div className="grid grid-cols-3 gap-2 text-xs">
-              <div className="rounded-xl border border-black/10 bg-white p-2 text-neutral-700 dark:border-white/10 dark:bg-black/30 dark:text-neutral-200">
+              <div className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] p-2 text-neutral-700 dark:text-neutral-200">
                 <div className="text-neutral-500 dark:text-neutral-400">BB low</div>
                 <div className="font-medium">{computed?.bbLow ?? "—"}</div>
               </div>
-              <div className="rounded-xl border border-black/10 bg-white p-2 text-neutral-700 dark:border-white/10 dark:bg-black/30 dark:text-neutral-200">
+              <div className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] p-2 text-neutral-700 dark:text-neutral-200">
                 <div className="text-neutral-500 dark:text-neutral-400">Søvn</div>
                 <div className="font-medium">
                   {computed?.sleep != null ? `${computed.sleep.toFixed(1)} h` : "—"}
                 </div>
               </div>
-              <div className="rounded-xl border border-black/10 bg-white p-2 text-neutral-700 dark:border-white/10 dark:bg-black/30 dark:text-neutral-200">
+              <div className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] p-2 text-neutral-700 dark:text-neutral-200">
                 <div className="text-neutral-500 dark:text-neutral-400">Stress</div>
                 <div className="font-medium">{computed?.stress ?? "—"}</div>
               </div>
@@ -208,9 +202,7 @@ export function RecoveryScoreCard({ day }: { day: string }) {
 
             {latest ? (
               <div className="text-xs text-neutral-500 dark:text-neutral-400">
-                Baseret på seneste snapshot ({new Date(latest.takenAt).toLocaleString("da-DK", {
-                  hour12: false,
-                })}).
+                Baseret på seneste snapshot ({formatDateTime(latest.takenAt)}).
               </div>
             ) : null}
           </div>

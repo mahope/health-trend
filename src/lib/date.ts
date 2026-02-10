@@ -26,3 +26,8 @@ export function addDaysYmd(day: string, deltaDays: number, tz = "Europe/Copenhag
   const next = addDays(base, deltaDays);
   return ymd(next, tz);
 }
+
+export function formatDateTime(date: string | Date): string {
+  const d = typeof date === "string" ? new Date(date) : date;
+  return d.toLocaleString("da-DK", { hour12: false });
+}

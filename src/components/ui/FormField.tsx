@@ -1,0 +1,27 @@
+import { cn } from "@/lib/cn";
+
+export function FormField({
+  label,
+  description,
+  className,
+  children,
+}: {
+  label: string;
+  description?: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={cn("space-y-1", className)}>
+      <div className="text-xs text-[color:var(--text-muted)] dark:text-[color:var(--text-muted-dark)]">
+        {label}
+      </div>
+      {children}
+      {description && (
+        <div className="text-xs text-[color:var(--text-muted)] dark:text-[color:var(--text-muted-dark)]">
+          {description}
+        </div>
+      )}
+    </div>
+  );
+}

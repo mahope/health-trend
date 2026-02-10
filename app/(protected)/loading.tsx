@@ -17,7 +17,7 @@ export default function Loading() {
   return (
     <div className="space-y-4">
       {/* Page header */}
-      <div className="rounded-2xl border border-black/10 bg-white/60 p-5 shadow-sm backdrop-blur dark:border-white/10 dark:bg-black/20">
+      <div className="rounded-2xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] p-5 shadow-sm backdrop-blur">
         <Skeleton className="h-5 w-40" />
         <Skeleton className="mt-2 h-4 w-64" />
       </div>
@@ -35,7 +35,7 @@ export default function Loading() {
                 {Array.from({ length: 3 }).map((_, i) => (
                   <div
                     key={i}
-                    className="rounded-xl border border-black/10 bg-white/60 p-3 dark:border-white/10 dark:bg-black/20"
+                    className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] p-3"
                   >
                     <Skeleton className="h-3 w-16" />
                     <Skeleton className="mt-2 h-4 w-20" />
@@ -55,7 +55,7 @@ export default function Loading() {
                 {Array.from({ length: 3 }).map((_, i) => (
                   <div
                     key={i}
-                    className="rounded-xl border border-black/10 bg-white/60 p-3 dark:border-white/10 dark:bg-black/20"
+                    className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] p-3"
                   >
                     <Skeleton className="h-3 w-10" />
                     <Skeleton className="mt-2 h-4 w-12" />
@@ -75,7 +75,7 @@ export default function Loading() {
               {Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
-                  className="rounded-xl border border-black/10 bg-white/60 p-3 dark:border-white/10 dark:bg-black/20"
+                  className="rounded-xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] p-3"
                 >
                   <Skeleton className="h-3 w-16" />
                   <div className="mt-2 flex items-baseline justify-between gap-3">

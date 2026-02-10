@@ -118,8 +118,8 @@ function ToastViewport({
             key={t.id}
             className={cn(
               "pointer-events-auto rounded-xl border px-3 py-2 text-sm shadow-lg backdrop-blur",
-              "bg-white/95 text-neutral-900 border-black/10",
-              "dark:bg-black/70 dark:text-neutral-100 dark:border-white/10",
+              "bg-[color:var(--surface-card)] text-neutral-900 border-[color:var(--border-subtle)]",
+              "dark:text-neutral-100",
               t.kind === "success" && "border-emerald-500/30",
               t.kind === "error" && "border-red-500/30",
             )}

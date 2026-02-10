@@ -1,27 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/Button";
-
-const nav = [
-  { href: "/", label: "Dashboard" },
-  { href: "/snapshots", label: "Snapshots" },
-  { href: "/alerts", label: "Alerts" },
-  { href: "/activities", label: "Aktiviteter" },
-  { href: "/insights", label: "Indsigter" },
-  { href: "/reports/weekly", label: "Ugereview" },
-  { href: "/garmin", label: "Garmin" },
-  { href: "/settings", label: "Settings" },
-] as const;
-
-function isActive(pathname: string, href: string) {
-  if (href === "/") return pathname === "/";
-  return pathname.startsWith(href);
-}
+import { nav, isActive } from "@/lib/nav";
 
 export function MobileNav({
   open,
@@ -33,28 +18,81 @@ export function MobileNav({
   userEmail: string;
 }) {
   const pathname = usePathname() || "/";
+  const panelRef = useRef<HTMLDivElement | null>(null);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onClose();
+        return;
+      }
+
+      // Focus trap: Tab / Shift+Tab
+      if (e.key === "Tab") {
+        const panel = panelRef.current;
+        if (!panel) return;
+
+        const focusable = Array.from(
+          panel.querySelectorAll<HTMLElement>(
+            'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+          ),
+        );
+        if (!focusable.length) return;
+
+        const first = focusable[0]!;
+        const last = focusable[focusable.length - 1]!;
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+    },
+    [onClose],
+  );
 
   useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
-    }
-    if (open) window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+    if (!open) return;
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, handleKeyDown]);
+
+  // Focus first focusable element when panel opens
+  useEffect(() => {
+    if (!open) return;
+    const panel = panelRef.current;
+    if (!panel) return;
+    const first = panel.querySelector<HTMLElement>(
+      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    );
+    first?.focus();
+  }, [open]);
 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 md:hidden">
+    <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true" aria-label="Navigation">
       {/* backdrop */}
       <button
-        aria-label="Close menu"
+        aria-label="Luk menu"
         className="absolute inset-0 bg-black/30"
         onClick={onClose}
+        tabIndex={-1}
       />
 
       {/* panel */}
-      <div className="absolute inset-y-0 left-0 w-[85vw] max-w-sm bg-white/95 backdrop-blur border-r border-black/10 shadow-xl dark:bg-black/80 dark:border-white/10">
+      <div
+        ref={panelRef}
+        className="absolute inset-y-0 left-0 w-[85vw] max-w-sm bg-[color:var(--surface-card)] backdrop-blur border-r border-[color:var(--border-subtle)] shadow-xl"
+      >
         <div className="p-4">
           <div className="text-sm font-semibold tracking-tight">Health Trend</div>
           <div className="mt-1 text-xs text-neutral-600 dark:text-neutral-300">

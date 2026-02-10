@@ -3,22 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
-
-const nav = [
-  { href: "/", label: "Dashboard" },
-  { href: "/snapshots", label: "Snapshots" },
-  { href: "/alerts", label: "Alerts" },
-  { href: "/activities", label: "Aktiviteter" },
-  { href: "/insights", label: "Indsigter" },
-  { href: "/reports/weekly", label: "Ugereview" },
-  { href: "/garmin", label: "Garmin" },
-  { href: "/settings", label: "Settings" },
-] as const;
-
-function isActive(pathname: string, href: string) {
-  if (href === "/") return pathname === "/";
-  return pathname.startsWith(href);
-}
+import { nav, isActive } from "@/lib/nav";
 
 export function SidebarNav() {
   const pathname = usePathname() || "/";

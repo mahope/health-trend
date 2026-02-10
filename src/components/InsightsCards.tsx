@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { Sparkline } from "@/components/Sparkline";
 import { EmptyState } from "@/components/EmptyState";
 
@@ -103,7 +103,7 @@ export function InsightsCards() {
               <div className="text-sm text-neutral-600 dark:text-neutral-300">
                 Trend (14 dage)
               </div>
-              <div className="inline-flex overflow-hidden rounded-lg border border-black/10 dark:border-white/10">
+              <div className="inline-flex overflow-hidden rounded-lg border border-[color:var(--border-subtle)]">
                 <button
                   type="button"
                   onClick={() => setWindowDays(7)}
@@ -125,7 +125,7 @@ export function InsightsCards() {
               <Sparkline values={trendValues} label="Søvngæld trend" />
             </div>
 
-            {error && <div className="text-sm text-red-600">{error}</div>}
+            {error && <div className="text-sm text-[color:var(--text-error)]">{error}</div>}
             {!data ? (
               <div className="text-sm text-neutral-600 dark:text-neutral-300">Henter…</div>
             ) : (
@@ -158,12 +158,12 @@ export function InsightsCards() {
         <Card>
           <CardHeader title="Streaks" description="Dage i træk hvor du rammer dine mål." />
           <CardBody>
-            {error && <div className="text-sm text-red-600">{error}</div>}
+            {error && <div className="text-sm text-[color:var(--text-error)]">{error}</div>}
             {!data ? (
               <div className="text-sm text-neutral-600 dark:text-neutral-300">Henter…</div>
             ) : (
               <div className="grid gap-3 sm:grid-cols-2">
-                <div className="rounded-xl border border-black/10 p-3 dark:border-white/10">
+                <div className="rounded-xl border border-[color:var(--border-subtle)] p-3">
                   <div className="text-xs text-neutral-500 dark:text-neutral-400">
                     Steps (mål {data.streaks.stepsGoal})
                   </div>
@@ -171,7 +171,7 @@ export function InsightsCards() {
                     {data.streaks.stepsStreak}
                   </div>
                 </div>
-                <div className="rounded-xl border border-black/10 p-3 dark:border-white/10">
+                <div className="rounded-xl border border-[color:var(--border-subtle)] p-3">
                   <div className="text-xs text-neutral-500 dark:text-neutral-400">
                     Søvn (mål {data.streaks.sleepGoalHours.toFixed(1)}t)
                   </div>
@@ -192,7 +192,7 @@ export function InsightsCards() {
             description="En hurtig sammenligning af dine LOW-risk dage vs. resten (seneste ~30 dage)."
           />
           <CardBody>
-            {error && <div className="text-sm text-red-600">{error}</div>}
+            {error && <div className="text-sm text-[color:var(--text-error)]">{error}</div>}
 
             {!best ? (
               <div className="text-sm text-neutral-600 dark:text-neutral-300">Henter…</div>
@@ -209,18 +209,12 @@ export function InsightsCards() {
                 }
                 actions={
                   <div className="grid gap-2 sm:flex sm:flex-wrap">
-                    <Link
-                      href="/"
-                      className="inline-flex h-10 items-center justify-center rounded-lg bg-black px-4 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:bg-white dark:text-black dark:hover:bg-white/90 dark:focus-visible:ring-white/20"
-                    >
+                    <LinkButton href="/" variant="primary">
                       Åbn Dashboard
-                    </Link>
-                    <Link
-                      href="/snapshots"
-                      className="inline-flex h-10 items-center justify-center rounded-lg border border-black/10 bg-white px-4 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:border-white/10 dark:bg-black/30 dark:text-neutral-100 dark:hover:bg-black/45 dark:focus-visible:ring-white/20"
-                    >
+                    </LinkButton>
+                    <LinkButton href="/snapshots" variant="secondary">
                       Tag snapshot
-                    </Link>
+                    </LinkButton>
                   </div>
                 }
               />
@@ -237,18 +231,12 @@ export function InsightsCards() {
                 }
                 actions={
                   <div className="grid gap-2 sm:flex sm:flex-wrap">
-                    <Link
-                      href="/"
-                      className="inline-flex h-10 items-center justify-center rounded-lg bg-black px-4 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:bg-white dark:text-black dark:hover:bg-white/90 dark:focus-visible:ring-white/20"
-                    >
+                    <LinkButton href="/" variant="primary">
                       Åbn Dashboard
-                    </Link>
-                    <Link
-                      href="/trends"
-                      className="inline-flex h-10 items-center justify-center rounded-lg border border-black/10 bg-white px-4 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:border-white/10 dark:bg-black/30 dark:text-neutral-100 dark:hover:bg-black/45 dark:focus-visible:ring-white/20"
-                    >
+                    </LinkButton>
+                    <LinkButton href="/trends" variant="secondary">
                       Se trends
-                    </Link>
+                    </LinkButton>
                   </div>
                 }
               />
@@ -303,7 +291,7 @@ function Metric({
   const isGood = diff === null ? null : positiveIsGood ? diff >= 0 : diff <= 0;
 
   return (
-    <div className="rounded-xl border border-black/10 p-3 dark:border-white/10">
+    <div className="rounded-xl border border-[color:var(--border-subtle)] p-3">
       <div className="text-xs text-neutral-500 dark:text-neutral-400">{label}</div>
       <div
         className={`mt-1 text-lg font-semibold tracking-tight ${

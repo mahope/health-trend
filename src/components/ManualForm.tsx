@@ -2,9 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
 import { TogglePill } from "@/components/ui/TogglePill";
-import { cn } from "@/lib/cn";
+import { FormField } from "@/components/ui/FormField";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ToastProvider";
 
 type Manual = {
@@ -96,7 +99,21 @@ export function ManualForm({ day }: { day: string }) {
   }, []);
 
   if (!item) {
-    return <div className="text-sm text-neutral-500">Henter…</div>;
+    return (
+      <div className="space-y-3">
+        <div className="flex gap-2">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="h-9 w-24" />
+          ))}
+        </div>
+        <div className="grid gap-3 md:grid-cols-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-10 w-full" />
+          ))}
+        </div>
+        <Skeleton className="h-28 w-full" />
+      </div>
+    );
   }
 
   const currentItem = item;
@@ -115,7 +132,7 @@ export function ManualForm({ day }: { day: string }) {
 
   return (
     <div className="space-y-3">
-      {error && <div className="text-sm text-red-600">{error}</div>}
+      {error && <div className="text-sm text-[color:var(--text-error)]">{error}</div>}
 
       <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
         <Button
@@ -154,12 +171,8 @@ export function ManualForm({ day }: { day: string }) {
       </div>
 
       <div className="grid gap-3 md:grid-cols-2">
-        <div>
-          <label className="block text-xs text-neutral-500">Sygdomstegn (0-3)</label>
-          <select
-            className={cn(
-              "h-10 w-full rounded-lg border border-black/10 bg-white px-3 text-sm text-neutral-900 shadow-sm outline-none focus:border-black/20 focus:ring-2 focus:ring-black/10 dark:border-white/10 dark:bg-black/30 dark:text-neutral-100 dark:focus:border-white/20 dark:focus:ring-white/10",
-            )}
+        <FormField label="Sygdomstegn (0-3)">
+          <Select
             value={item.symptomScore ?? ""}
             onChange={(e) =>
               save({ symptomScore: e.target.value === "" ? null : Number(e.target.value) })
@@ -170,26 +183,24 @@ export function ManualForm({ day }: { day: string }) {
             <option value={1}>1 - let</option>
             <option value={2}>2 - tydelig</option>
             <option value={3}>3 - kraftig</option>
-          </select>
-        </div>
+          </Select>
+        </FormField>
 
-        <div>
-          <label className="block text-xs text-neutral-500">Koffein (kopper)</label>
+        <FormField label="Koffein (kopper)">
           <Input
             inputMode="numeric"
             value={item.caffeineCups ?? ""}
             onChange={(e) => save({ caffeineCups: e.target.value ? Number(e.target.value) : null })}
           />
-        </div>
+        </FormField>
 
-        <div>
-          <label className="block text-xs text-neutral-500">Alkohol (units)</label>
+        <FormField label="Alkohol (units)">
           <Input
             inputMode="numeric"
             value={item.alcoholUnits ?? ""}
             onChange={(e) => save({ alcoholUnits: e.target.value ? Number(e.target.value) : null })}
           />
-        </div>
+        </FormField>
 
         <div className="flex items-center gap-2 pt-6">
           <TogglePill
@@ -205,17 +216,13 @@ export function ManualForm({ day }: { day: string }) {
         </div>
       </div>
 
-      <div>
-        <label className="block text-xs text-neutral-500">Noter</label>
-        <textarea
-          className={cn(
-            "w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm outline-none placeholder:text-neutral-400 focus:border-black/20 focus:ring-2 focus:ring-black/10 dark:border-white/10 dark:bg-black/30 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-white/20 dark:focus:ring-white/10",
-            "min-h-28",
-          )}
+      <FormField label="Noter">
+        <Textarea
+          className="min-h-28"
           value={item.notes ?? ""}
           onChange={(e) => save({ notes: e.target.value })}
         />
-      </div>
+      </FormField>
 
       <div className="text-xs text-neutral-500 dark:text-neutral-400">
         {saving ? "Gemmer…" : justSaved ? "Gemt ✓" : ""}

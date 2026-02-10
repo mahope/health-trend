@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { EmptyState, InlineEmptyLink } from "@/components/EmptyState";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { LinkButton } from "@/components/ui/LinkButton";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { formatDateTime } from "@/lib/date";
 
 type Status =
   | { connected: false }
@@ -56,7 +59,7 @@ export default function GarminPage() {
         {status ? (
           status.connected ? (
             <div className="text-sm text-neutral-700 dark:text-neutral-200">
-              Connected. Sidst opdateret: {new Date(status.tokensUpdatedAt).toLocaleString("da-DK", { hour12: false })} ({status.status})
+              Connected. Sidst opdateret: {formatDateTime(status.tokensUpdatedAt)} ({status.status})
               {status.lastError ? (
                 <div className="mt-1 text-xs text-rose-700 dark:text-rose-300">Sidste fejl: {status.lastError}</div>
               ) : null}
@@ -77,27 +80,24 @@ export default function GarminPage() {
               }
               actions={
                 <div className="flex flex-wrap items-center gap-2">
-                  <Link
-                    href="#connect"
-                    className="inline-flex h-10 items-center justify-center rounded-lg bg-black px-4 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:bg-white dark:text-black dark:hover:bg-white/90 dark:focus-visible:ring-white/20"
-                  >
+                  <LinkButton href="#connect" variant="primary">
                     Importér tokens
-                  </Link>
-                  <Link
-                    href="/snapshots"
-                    className="inline-flex h-10 items-center justify-center rounded-lg border border-black/10 bg-white px-4 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:border-white/10 dark:bg-black/30 dark:text-neutral-100 dark:hover:bg-black/45 dark:focus-visible:ring-white/20"
-                  >
+                  </LinkButton>
+                  <LinkButton href="/snapshots" variant="secondary">
                     Åbn Snapshots
-                  </Link>
+                  </LinkButton>
                 </div>
               }
             />
           )
         ) : (
-          <div className="text-sm text-neutral-500 dark:text-neutral-400">Henter…</div>
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-48" />
+            <Skeleton className="h-3 w-64" />
+          </div>
         )}
 
-        {error && <div className="text-sm text-red-600">{error}</div>}
+        {error && <div className="text-sm text-[color:var(--text-error)]">{error}</div>}
 
         <div className="flex gap-2">
           <Button variant="ghost" onClick={refresh} disabled={loading}>
@@ -118,8 +118,7 @@ export default function GarminPage() {
 
           <div className="grid gap-2 max-w-md">
             <div>
-              <input
-                className="w-full rounded-md border px-3 py-2"
+              <Input
                 placeholder="Garmin email"
                 value={email}
                 onChange={(e) => {
@@ -132,8 +131,7 @@ export default function GarminPage() {
             </div>
 
             <div>
-              <input
-                className="w-full rounded-md border px-3 py-2"
+              <Input
                 placeholder="Garmin password"
                 type="password"
                 value={password}

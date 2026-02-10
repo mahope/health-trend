@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { LinkButton } from "@/components/ui/LinkButton";
 import { EmptyState, InlineEmptyLink } from "@/components/EmptyState";
+import { formatDateTime } from "@/lib/date";
 
 type Alert = {
   id: string;
@@ -64,7 +65,7 @@ export default function AlertsPage() {
           }
         />
         <CardBody>
-          {error && <div className="text-sm text-red-600">{error}</div>}
+          {error && <div className="text-sm text-[color:var(--text-error)]">{error}</div>}
 
           {items.length === 0 ? (
             <EmptyState
@@ -79,18 +80,12 @@ export default function AlertsPage() {
               }
               actions={
                 <div className="grid gap-2">
-                  <Link
-                    href="/snapshots"
-                    className="inline-flex h-10 w-full items-center justify-center rounded-[var(--radius-control)] bg-black px-4 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring-subtle)] dark:bg-white dark:text-black dark:hover:bg-white/90"
-                  >
+                  <LinkButton href="/snapshots" variant="primary" className="w-full">
                     Gå til Snapshots
-                  </Link>
-                  <Link
-                    href="/"
-                    className="inline-flex h-10 w-full items-center justify-center rounded-[var(--radius-control)] border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] px-4 text-sm font-medium text-neutral-900 transition-colors hover:bg-[color:var(--surface-control-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring-subtle)] dark:text-neutral-100"
-                  >
+                  </LinkButton>
+                  <LinkButton href="/" variant="secondary" className="w-full">
                     Åbn Dashboard
-                  </Link>
+                  </LinkButton>
                   <Button variant="ghost" className="w-full" disabled={loading} onClick={refresh}>
                     {loading ? "Henter…" : "Refresh"}
                   </Button>
@@ -102,13 +97,13 @@ export default function AlertsPage() {
               {items.map((a) => (
                 <div
                   key={a.id}
-                  className="rounded-2xl border border-black/10 bg-white/60 p-4 dark:border-white/10 dark:bg-black/20"
+                  className="rounded-2xl border border-[color:var(--border-subtle)] bg-[color:var(--surface-inset)] p-4"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <div className="text-sm font-semibold tracking-tight">{a.title}</div>
                       <div className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
-                        {a.day} · {new Date(a.createdAt).toLocaleString("da-DK", { hour12: false })}
+                        {a.day} · {formatDateTime(a.createdAt)}
                       </div>
                     </div>
                     <Badge tone={tone(a.severity)}>{a.severity}</Badge>
