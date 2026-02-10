@@ -223,3 +223,8 @@ pm run build ?
 - Changed: Added an offline banner (mobile-friendly) when the PWA loses connection, plus a small “Online igen ✓” success toast when connectivity returns.
 - Commit: a726917
 - Tests: `npm run lint` ✅, `npm run build` ✅
+ 
+## 2026-02-10 05:10 (Europe/Copenhagen) 
+- Changed: Improved empty trends CTA: the Trends empty state now links to /snapshots and /garmin (instead of #snapshots anchor), clearer mobile buttons. 
+- Commit: bda3539 
+- Tests: npm run lint OK, npm run build OK
