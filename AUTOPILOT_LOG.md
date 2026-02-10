@@ -203,3 +203,8 @@ pm run build ?
 - Changed: Improved the “first snapshot” empty state on /snapshots with step-by-step guidance, expected filename/path for the selected day, and full-width mobile CTAs.
 - Commit: d932085
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 04:30 (Europe/Copenhagen)
+- Changed: Deferred the heavy “below fold” dashboard section (trends/day plan/activities) using a small `DeferredMount` intersection observer wrapper, so it only mounts when you scroll near it.
+- Commit: b09a3f4
+- Tests: `npm run lint` ✅, `npm run build` ✅

@@ -24,7 +24,7 @@
 - [x] Pull-to-refresh on mobile
 4. [x] “Quick chips” for manual (koffein +1, alkohol +1, symptom +1)
 5. [x] Better empty states + CTA (first snapshot)
-6. [ ] Performance: defer heavy sections below fold
+6. [x] Performance: defer heavy sections below fold
 
 ### Garmin value
 7. [x] Sleep debt trend chart (7/14d)
