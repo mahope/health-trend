@@ -258,6 +258,6 @@ pm run build ?
 - Tests: `npm run lint` ✅, `npm run build` ✅
 
 ## 2026-02-10 06:35 (Europe/Copenhagen)
-- Changed: Improved Recovery card empty state (no snapshots) with clearer 2-step setup instructions + primary “Tag første snapshot” CTA + secondary “Tjek Garmin data”.
-- Commit: 952e6b3
+- Changed: Improved Recovery card empty state (no snapshots) with clearer 2-step setup instructions + primary “Tag første snapshot” CTA + secondary “Tjek Garmin data”. Added a new backlog idea: toast `aria-live` for a11y.
+- Commits: 952e6b3 (UI), 77454d5 (log), 434f5d2 (backlog)
 - Tests: `npm run lint` ✅, `npm run build` ✅
