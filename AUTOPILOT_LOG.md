@@ -155,3 +155,8 @@ pm run build ?
 - Changed: Made snapshot writes idempotent (DB upsert + file store replace). Cron endpoint now uses a stable takenAt per day (retry-safe) and emits structured start/finish logs (runId/idempotencyKey/duration). Marked backlog item as done.
 - Commit: 5fe3e92
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 03:00 (Europe/Copenhagen)
+- Changed: Improved first-time empty state on Dashboard (clear CTAs to Snapshots/Garmin). Added Recovery score widget card (BB low + sleep + stress) based on latest snapshot. Marked backlog item #8 as done.
+- Commit: 71270f2
+- Tests: npm run lint OK, npm run build OK
