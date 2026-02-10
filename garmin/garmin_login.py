@@ -31,10 +31,12 @@ def main():
     # prompt_mfa=False for now (no MFA flow). If user enables MFA later, we extend.
     client = Garmin(email, password, prompt_mfa=False)
 
-    # Important: garminconnect will try to auto-load from tokenstore (incl. env GARMINTOKENS)
-    # before doing a credential login. On first login, the token files don't exist yet.
-    # Force credential login by passing tokenstore=None.
-    client.login(tokenstore=None)
+    # Important: garminconnect will try to auto-load from tokenstore.
+    # It uses: tokenstore = tokenstore or os.getenv("GARMINTOKENS")
+    # In our app we set GARMINTOKENS to the *output* dir, which on first run is empty.
+    # So we MUST remove it from env for the actual credential login.
+    os.environ.pop("GARMINTOKENS", None)
+    client.login(tokenstore="")
 
     # Persist tokens
     client.garth.dump(token_dir)
