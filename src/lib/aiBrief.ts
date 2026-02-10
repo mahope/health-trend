@@ -8,6 +8,55 @@ function avg(nums: Array<number | null | undefined>): number | null {
   return xs.reduce((a, b) => a + b, 0) / xs.length;
 }
 
+function detectOverstimulation(params: {
+  manual: { caffeineCups?: number | null; alcoholUnits?: number | null; symptomScore?: number | null } | null;
+  snapshots: Array<{ takenAt: Date; stressAvg: number | null; bodyBatteryLow: number | null }>;
+}) {
+  const { manual, snapshots } = params;
+  if (!snapshots.length) return null;
+
+  // Heuristic: overstimulation often looks like sustained/high stress + sharper depletion through the day.
+  const sorted = [...snapshots].sort((a, b) => a.takenAt.getTime() - b.takenAt.getTime());
+  const first = sorted[0];
+  const last = sorted[sorted.length - 1];
+
+  const stressHigh = typeof last.stressAvg === "number" && last.stressAvg >= 35;
+  const stressRising =
+    typeof first.stressAvg === "number" &&
+    typeof last.stressAvg === "number" &&
+    Number.isFinite(first.stressAvg) &&
+    Number.isFinite(last.stressAvg) &&
+    last.stressAvg - first.stressAvg >= 8;
+
+  const bbLowLow = typeof last.bodyBatteryLow === "number" && last.bodyBatteryLow <= 30;
+
+  const caffeineHigh = typeof manual?.caffeineCups === "number" && manual.caffeineCups >= 3;
+  const symptomHigh = typeof manual?.symptomScore === "number" && manual.symptomScore >= 7;
+
+  const score =
+    (stressHigh ? 1 : 0) +
+    (stressRising ? 1 : 0) +
+    (bbLowLow ? 1 : 0) +
+    (caffeineHigh ? 1 : 0) +
+    (symptomHigh ? 1 : 0);
+
+  if (score < 2) return null;
+
+  const reasons: string[] = [];
+  if (stressHigh) reasons.push("stress høj");
+  if (stressRising) reasons.push("stress stiger i løbet af dagen");
+  if (bbLowLow) reasons.push("Body Battery low er lav");
+  if (caffeineHigh) reasons.push("meget koffein");
+  if (symptomHigh) reasons.push("højt symptomScore");
+
+  return {
+    score,
+    reasons,
+    note:
+      "Heuristik: brug som et hint (ikke diagnose). Overstimulation kan være en kombination af mentalt/lyd/socialt pres + for lidt pause.",
+  };
+}
+
 export function cyclePhaseFromDay(cycleDay: number | null | undefined): string | null {
   if (!cycleDay || !Number.isFinite(cycleDay)) return null;
   // Very rough heuristic (assume ~28d cycle)
@@ -56,6 +105,15 @@ export async function generateAiBriefForUser(userId: string, day: string) {
 
   const todaysLatest = snapshotsToday.length ? snapshotsToday[snapshotsToday.length - 1] : null;
 
+  const overstimulationHint = detectOverstimulation({
+    manual,
+    snapshots: snapshotsToday.map((s) => ({
+      takenAt: s.takenAt,
+      stressAvg: s.stressAvg,
+      bodyBatteryLow: s.bodyBatteryLow,
+    })),
+  });
+
   const prompt = {
     day,
     profile: profile
@@ -89,12 +147,14 @@ export async function generateAiBriefForUser(userId: string, day: string) {
           bodyBatteryLow: todaysLatest.bodyBatteryLow,
         }
       : null,
+    overstimulationHint,
   };
 
   const ai = await openaiJson(
     `Opgave: Lav et sygdom/overbelastnings-brief for i dag (${day}).\n` +
       `Tag højde for profil-kontekst (sex, evt graviditet, cycleDay/cyclePhase) når du vurderer signaler og forslag.\n` +
-      `Hvis profile.sex=female og cyclePhase findes: nævn kort om variation i fx RHR/stress/søvn kan hænge sammen med cyklus (uden at overforklare).\n\n` +
+      `Hvis profile.sex=female og cyclePhase findes: nævn kort om variation i fx RHR/stress/søvn kan hænge sammen med cyklus (uden at overforklare).\n` +
+      `Hvis overstimulationHint er sat: vurder om dagens mønster ligner overstimulation (fx støj/social/mentalt pres + for få pauser). Hvis ja: nævn det som et signal og giv 1-2 konkrete forslag til regulering (pauser, lyd-diet, gåtur, “ingen skærm 20 min”, osv.).\n\n` +
       `Returnér JSON med præcis denne struktur:\n` +
       `{\n  "risk": "OK"|"LOW"|"MED"|"HIGH",\n  "short": string,\n  "signals": [{"name": string, "value": string, "why": string}],\n  "suggestions": [{"title": string, "detail": string}],\n  "trackNext": [{"field": "symptomScore"|"caffeineCups"|"alcoholUnits"|"trained"|"notes", "label": string, "why": string}]\n}\n\n` +
       `trackNext: vælg 0-3 felter som er mest værd at tracke i morgen for at afklare signalerne.\n\n` +

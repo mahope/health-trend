@@ -37,7 +37,7 @@
 12. [x] AI: 1-line coach in header
 13. [x] AI: weekly review save/share
 14. [x] AI: suggest what to track manually next (based on signals)
-15. AI: detect ‘overstimulation’ pattern (manual+time)
+15. [x] AI: detect ‘overstimulation’ pattern (manual+time)
 
 ### Security/ops
 16. Rate limiting on manual upsert + auth endpoints
