@@ -31,7 +31,7 @@
 8. Recovery score widget (BB low + stress + sleep)
 9. Activity streaks by type (walk/run/strength)
 10. [x] Best-days patterns: what correlates with LOW risk
-11. “Tomorrow plan” (based on today)
+11. [x] “Tomorrow plan” (based on today)
 
 ### AI
 12. [x] AI: 1-line coach in header

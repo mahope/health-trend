@@ -109,3 +109,8 @@ pm run build ?
 - Changed: Added a 1-line "Coach" hint in the global header on Dashboard by showing the latest AI brief short text (if present).
 - Commit: 8b9b3e3
 - Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 01:30 (Europe/Copenhagen)
+- Changed: Added “Plan i morgen” alongside “Plan i dag” (toggle) in DayPlanCard. Implemented `/api/plan/tomorrow` endpoint + a simple deterministic tomorrow heuristic (based on today) + optional AI prompt.
+- Commit: dd246fd
+- Tests: `npm run lint` ✅, `npm run build` ✅
