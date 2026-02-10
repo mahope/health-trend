@@ -42,12 +42,18 @@ function EmptyTrends({ days }: { days: number }) {
       <div className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
         Når du har taget mindst ét snapshot, dukker der en graf op for de seneste {days} dage.
       </div>
-      <div className="mt-4">
+      <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap">
         <Link
-          href="#snapshots"
-          className="inline-flex h-9 items-center justify-center rounded-lg bg-black px-3 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:bg-white dark:text-black dark:hover:bg-white/90 dark:focus-visible:ring-white/20"
+          href="/snapshots"
+          className="inline-flex h-10 items-center justify-center rounded-lg bg-black px-4 text-sm font-medium text-white transition-colors hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:bg-white dark:text-black dark:hover:bg-white/90 dark:focus-visible:ring-white/20"
         >
           Tag dit første snapshot
+        </Link>
+        <Link
+          href="/garmin"
+          className="inline-flex h-10 items-center justify-center rounded-lg border border-black/10 bg-white px-4 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:border-white/10 dark:bg-black/30 dark:text-neutral-100 dark:hover:bg-black/45 dark:focus-visible:ring-white/20"
+        >
+          Tjek Garmin data
         </Link>
       </div>
     </div>
