@@ -34,7 +34,7 @@
 11. “Tomorrow plan” (based on today)
 
 ### AI
-12. AI: 1-line coach in header
+12. [x] AI: 1-line coach in header
 13. AI: weekly review save/share
 14. AI: suggest what to track manually next (based on signals)
 15. AI: detect ‘overstimulation’ pattern (manual+time)

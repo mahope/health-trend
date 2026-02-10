@@ -7,6 +7,7 @@ import { MobileNav } from "@/components/MobileNav";
 import { MobileUiProvider } from "@/components/MobileUiContext";
 import { UserMenu } from "@/components/UserMenu";
 import { PullToRefresh } from "@/components/PullToRefresh";
+import { AiCoachLine } from "@/components/AiCoachLine";
 
 function titleForPath(path: string): { title: string; subtitle: string } {
   if (path === "/") return { title: "Dashboard", subtitle: "Din sundheds-stream, destilleret." };
@@ -82,6 +83,7 @@ export function AppShell({
                 {subtitle ? (
                   <div className="text-sm text-neutral-600 dark:text-neutral-300">{subtitle}</div>
                 ) : null}
+                {pathname === "/" ? <AiCoachLine /> : null}
               </div>
             </div>
 
