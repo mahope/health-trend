@@ -144,6 +144,14 @@ pm run build ?
 - Changed: Improved “no data yet” UX for AI brief: server now returns a clear error when you try to generate a brief without any snapshots; UI shows a friendly message (“Tag mindst ét snapshot først.”).
 - Commit: e2e19f4
 - Tests: `npm run lint` ✅, `npm run build` ✅
-\n## 2026-02-10 02:44 (Europe/Copenhagen)\n- Changed: Standardized first-run empty states for snapshots on Dashboard + LatestSnapshotCard using the shared EmptyState component, with clearer next steps + links to Garmin/Snapshots.\n- Commit: 251c08d\n- Tests: 
-pm run lint ?, 
-pm run build ?\n
+
+
+## 2026-02-10 02:44 (Europe/Copenhagen)
+- Changed: Standardized first-run empty states for snapshots on Dashboard + LatestSnapshotCard using the shared EmptyState component, with clearer next steps + links to Garmin/Snapshots.
+- Commit: 251c08d
+- Tests: `npm run lint` ✅, `npm run build` ✅
+
+## 2026-02-10 02:56 (Europe/Copenhagen)
+- Changed: Made snapshot writes idempotent (DB upsert + file store replace). Cron endpoint now uses a stable takenAt per day (retry-safe) and emits structured start/finish logs (runId/idempotencyKey/duration). Marked backlog item as done.
+- Commit: 5fe3e92
+- Tests: `npm run lint` ✅, `npm run build` ✅
