@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getStore } from "@/lib/store";
@@ -23,6 +24,9 @@ function isAuthorized(req: Request): { ok: true } | { ok: false; reason: string 
 }
 
 export async function POST(req: Request) {
+  const runId = crypto.randomUUID();
+  const startedAt = Date.now();
+
   // Basic abuse guard. Note: in-memory per runtime, but good enough as a first line of defense.
   const ip = getClientIp(req);
   const rl = rateLimit({ key: `cron:${ip}`, windowMs: 60_000, max: 10 });
@@ -43,13 +47,32 @@ export async function POST(req: Request) {
   const body = (await req.json().catch(() => ({}))) as {
     day?: string;
     mode?: "snapshot_only" | "snapshot_and_brief";
+    idempotencyKey?: string;
   };
+
+  const idempotencyKey =
+    req.headers.get("x-idempotency-key") || body.idempotencyKey || url.searchParams.get("idempotencyKey") || undefined;
 
   const day = body.day || url.searchParams.get("day") || todayCph();
   const mode =
     body.mode ||
     (url.searchParams.get("mode") as "snapshot_only" | "snapshot_and_brief" | null) ||
     "snapshot_and_brief";
+
+  // Make cron snapshot writes idempotent (by takenAt). Retry-safe, and prevents duplicate daily entries.
+  const cronTakenAtIso = `${day}T00:00:00.000Z`;
+
+  console.info(
+    JSON.stringify({
+      at: new Date().toISOString(),
+      msg: "cron_run_started",
+      runId,
+      ip,
+      day,
+      mode,
+      idempotencyKey,
+    }),
+  );
 
   const store = await getStore();
 
@@ -72,7 +95,7 @@ export async function POST(req: Request) {
       const metrics = pickMetrics(payload);
       await store.createSnapshot(u.id, {
         day,
-        takenAt: new Date().toISOString(),
+        takenAt: cronTakenAtIso,
         ...metrics,
         rawJson: payload,
       });
@@ -155,5 +178,27 @@ export async function POST(req: Request) {
     results.push(out);
   }
 
-  return NextResponse.json({ ok: true, day, mode, results });
+  const durationMs = Date.now() - startedAt;
+
+  console.info(
+    JSON.stringify({
+      at: new Date().toISOString(),
+      msg: "cron_run_finished",
+      runId,
+      day,
+      mode,
+      idempotencyKey,
+      durationMs,
+      ok: true,
+      users: results.map((r) => ({
+        userId: r.userId,
+        email: r.email,
+        snapshotOk: r.snapshot?.ok ?? false,
+        briefOk: r.brief?.ok ?? false,
+        risk: r.brief?.risk,
+      })),
+    }),
+  );
+
+  return NextResponse.json({ ok: true, runId, idempotencyKey, day, mode, cronTakenAt: cronTakenAtIso, results, durationMs });
 }

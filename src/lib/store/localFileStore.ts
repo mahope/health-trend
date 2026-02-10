@@ -89,13 +89,27 @@ export const fileStore: Store = {
     const p = snapshotPath(userId, input.day);
     const existing = await readJson<StoredSnapshot[]>(p, []);
 
-    const created: StoredSnapshot = {
-      ...input,
-      id: newId(),
-      createdAt: new Date().toISOString(),
-    };
+    // Idempotent on takenAt: if the same snapshot is written again (cron retry), replace.
+    const idx = existing.findIndex((x) => x.takenAt === input.takenAt);
 
-    existing.push(created);
+    const created: StoredSnapshot =
+      idx >= 0
+        ? {
+            ...existing[idx],
+            ...input,
+            // keep stable id/createdAt for “same” snapshot
+            id: existing[idx].id,
+            createdAt: existing[idx].createdAt,
+          }
+        : {
+            ...input,
+            id: newId(),
+            createdAt: new Date().toISOString(),
+          };
+
+    if (idx >= 0) existing[idx] = created;
+    else existing.push(created);
+
     existing.sort((a, b) => a.takenAt.localeCompare(b.takenAt));
 
     await writeJson(p, existing);

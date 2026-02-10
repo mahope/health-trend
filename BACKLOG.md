@@ -42,7 +42,7 @@
 ### Security/ops
 - [x] Rate limiting on manual upsert + auth endpoints
 17. [x] Health endpoint + basic uptime page
-18. Better cron logging + idempotency key
+18. [x] Better cron logging + idempotency key
 19. Security headers (CSP-lite, etc.)
 
 ### Design/system

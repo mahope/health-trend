@@ -64,11 +64,42 @@ export async function getStore(): Promise<Store> {
       },
 
       async createSnapshot(userId, input) {
-        const created = await prisma.garminSnapshot.create({
-          data: {
+        // Idempotent on (userId, takenAt). Useful for cron runs and retries.
+        const takenAt = new Date(input.takenAt);
+
+        const upserted = await prisma.garminSnapshot.upsert({
+          where: {
+            userId_takenAt: {
+              userId,
+              takenAt,
+            },
+          },
+          update: {
+            day: input.day,
+
+            steps: input.steps ?? undefined,
+            restingHr: input.restingHr ?? undefined,
+            stressAvg: input.stressAvg ?? undefined,
+            sleepMinutes: input.sleepMinutes ?? undefined,
+            sleepHours: input.sleepHours ?? undefined,
+            bodyBatteryHigh: input.bodyBatteryHigh ?? undefined,
+            bodyBatteryLow: input.bodyBatteryLow ?? undefined,
+            spo2Avg: input.spo2Avg ?? undefined,
+            spo2Low: input.spo2Low ?? undefined,
+            respAvgWaking: input.respAvgWaking ?? undefined,
+            respAvgSleep: input.respAvgSleep ?? undefined,
+
+            activityCount: input.activityCount ?? undefined,
+            activityMinutes: input.activityMinutes ?? undefined,
+            activityDistanceKm: input.activityDistanceKm ?? undefined,
+            activityCalories: input.activityCalories ?? undefined,
+
+            rawJson: input.rawJson as unknown as object | undefined,
+          },
+          create: {
             userId,
             day: input.day,
-            takenAt: new Date(input.takenAt),
+            takenAt,
 
             steps: input.steps ?? undefined,
             restingHr: input.restingHr ?? undefined,
@@ -92,26 +123,26 @@ export async function getStore(): Promise<Store> {
         });
 
         return {
-          id: created.id,
-          createdAt: created.createdAt.toISOString(),
-          day: created.day,
-          takenAt: created.takenAt.toISOString(),
-          steps: created.steps,
-          restingHr: created.restingHr,
-          stressAvg: created.stressAvg,
-          sleepMinutes: created.sleepMinutes,
-          sleepHours: created.sleepHours,
-          bodyBatteryHigh: created.bodyBatteryHigh,
-          bodyBatteryLow: created.bodyBatteryLow,
-          spo2Avg: created.spo2Avg,
-          spo2Low: created.spo2Low,
-          respAvgWaking: created.respAvgWaking,
-          respAvgSleep: created.respAvgSleep,
-          activityCount: created.activityCount,
-          activityMinutes: created.activityMinutes,
-          activityDistanceKm: created.activityDistanceKm,
-          activityCalories: created.activityCalories,
-          rawJson: created.rawJson,
+          id: upserted.id,
+          createdAt: upserted.createdAt.toISOString(),
+          day: upserted.day,
+          takenAt: upserted.takenAt.toISOString(),
+          steps: upserted.steps,
+          restingHr: upserted.restingHr,
+          stressAvg: upserted.stressAvg,
+          sleepMinutes: upserted.sleepMinutes,
+          sleepHours: upserted.sleepHours,
+          bodyBatteryHigh: upserted.bodyBatteryHigh,
+          bodyBatteryLow: upserted.bodyBatteryLow,
+          spo2Avg: upserted.spo2Avg,
+          spo2Low: upserted.spo2Low,
+          respAvgWaking: upserted.respAvgWaking,
+          respAvgSleep: upserted.respAvgSleep,
+          activityCount: upserted.activityCount,
+          activityMinutes: upserted.activityMinutes,
+          activityDistanceKm: upserted.activityDistanceKm,
+          activityCalories: upserted.activityCalories,
+          rawJson: upserted.rawJson,
         };
       },
 
