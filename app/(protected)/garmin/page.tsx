@@ -17,10 +17,13 @@ export default function GarminPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loggingIn, setLoggingIn] = useState(false);
+  const [fieldError, setFieldError] = useState<{ email?: string; password?: string } | null>(null);
+  const [cooldownUntil, setCooldownUntil] = useState<number | null>(null);
 
   async function refresh() {
     setLoading(true);
     setError(null);
+    setFieldError(null);
     try {
       const res = await fetch("/api/garmin/status");
       const json = await res.json();
@@ -114,28 +117,44 @@ export default function GarminPage() {
           </p>
 
           <div className="grid gap-2 max-w-md">
-            <input
-              className="w-full rounded-md border px-3 py-2"
-              placeholder="Garmin email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="username"
-            />
-            <input
-              className="w-full rounded-md border px-3 py-2"
-              placeholder="Garmin password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-            />
+            <div>
+              <input
+                className="w-full rounded-md border px-3 py-2"
+                placeholder="Garmin email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setFieldError(null);
+                }}
+                autoComplete="username"
+              />
+              {fieldError?.email ? <div className="mt-1 text-xs text-rose-700 dark:text-rose-300">{fieldError.email}</div> : null}
+            </div>
+
+            <div>
+              <input
+                className="w-full rounded-md border px-3 py-2"
+                placeholder="Garmin password"
+                type="password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setFieldError(null);
+                }}
+                autoComplete="current-password"
+              />
+              {fieldError?.password ? (
+                <div className="mt-1 text-xs text-rose-700 dark:text-rose-300">{fieldError.password}</div>
+              ) : null}
+            </div>
 
             <Button
               variant="primary"
-              disabled={loggingIn}
+              disabled={loggingIn || (cooldownUntil ? Date.now() < cooldownUntil : false)}
               onClick={async () => {
                 setLoggingIn(true);
                 setError(null);
+                setFieldError(null);
                 try {
                   const res = await fetch("/api/garmin/login", {
                     method: "POST",
@@ -143,23 +162,37 @@ export default function GarminPage() {
                     body: JSON.stringify({ email, password }),
                   });
                   const json = await res.json().catch(() => ({}));
+
                   if (!res.ok) {
+                    if (res.status === 401) {
+                      setFieldError({ password: "Forkert email eller password." });
+                      return;
+                    }
+                    if (res.status === 429) {
+                      const until = Date.now() + 30_000;
+                      setCooldownUntil(until);
+                      setError("For mange forsøg. Vent 30 sek og prøv igen.");
+                      return;
+                    }
+
                     const msg =
                       (json?.message as string | undefined) ||
                       (json?.error as string | undefined) ||
                       "Login fejlede";
                     throw new Error(msg);
                   }
+
                   setPassword("");
                   await refresh();
                 } catch (e: unknown) {
-                  setError(e instanceof Error ? e.message : "Fejl");
+                  const msg = e instanceof Error ? e.message : "Fejl";
+                  setError(msg);
                 } finally {
                   setLoggingIn(false);
                 }
               }}
             >
-              {loggingIn ? "Logger ind…" : "Login og connect"}
+              {loggingIn ? "Logger ind…" : cooldownUntil && Date.now() < cooldownUntil ? "Vent lidt…" : "Login og connect"}
             </Button>
 
             <div className="text-xs text-neutral-500 dark:text-neutral-400">

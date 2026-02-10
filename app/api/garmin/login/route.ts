@@ -95,8 +95,8 @@ export async function POST(req: Request) {
           error: "garmin_login_failed",
           kind: res.kind,
           message: res.message,
-          // raw is useful during local dev; keep it, but truncated.
-          raw: res.raw,
+          // raw is useful during local dev; avoid leaking internals in prod.
+          raw: process.env.NODE_ENV === "production" ? undefined : res.raw,
         },
         { status },
       );
