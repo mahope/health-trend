@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -194,8 +195,18 @@ export default function SnapshotsPage() {
                   title="Ingen snapshots endnu"
                   description={
                     <>
-                      For at komme i gang skal der ligge en Garmin eksport for dagen. Når du har taget det første snapshot,
-                      begynder dashboardet at kunne lave trends + AI brief.
+                      <div>Kom i gang i 2 steps:</div>
+                      <ol className="mt-2 list-decimal space-y-1 pl-4">
+                        <li>
+                          Sørg for at der ligger en Garmin eksport for dagen (fx{" "}
+                          <code className="break-all">garmin-{day}.json</code>).
+                        </li>
+                        <li>Tryk “Tag første snapshot”.</li>
+                      </ol>
+                      <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+                        Snapshot læses lokalt fra{" "}
+                        <code className="break-all">C:/Users/mads_/Garmin/data/garmin-{day}.json</code>.
+                      </div>
                       <div className="mt-2">
                         Tip: tag typisk 2–3 snapshots om dagen (morgen/middag/aften).
                       </div>
@@ -203,9 +214,15 @@ export default function SnapshotsPage() {
                   }
                   actions={
                     <div className="grid gap-2">
-                      <Button variant="primary" disabled={loading} onClick={takeSnapshot}>
+                      <Button className="w-full" variant="primary" disabled={loading} onClick={takeSnapshot}>
                         {loading ? "Arbejder…" : "Tag første snapshot"}
                       </Button>
+                      <Link
+                        href="/garmin"
+                        className="inline-flex h-10 w-full items-center justify-center rounded-[var(--radius-control)] border border-[color:var(--border-subtle)] bg-[color:var(--surface-control)] px-4 text-sm font-medium text-neutral-900 transition-colors hover:bg-[color:var(--surface-control-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ring-subtle)] dark:text-neutral-100"
+                      >
+                        Tjek Garmin data
+                      </Link>
                       <div className="text-xs text-neutral-500 dark:text-neutral-400">
                         Hvis den fejler, får du en sti/hint herover.
                       </div>
