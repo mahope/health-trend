@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { addDaysYmd } from "@/lib/date";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/EmptyState";
 
 type Snapshot = {
@@ -131,6 +132,22 @@ export function RecoveryScoreCard({ day }: { day: string }) {
       <CardBody>
         {error ? (
           <div className="text-sm text-red-700 dark:text-red-200">{error}</div>
+        ) : loading && !latest ? (
+          <div className="space-y-3">
+            <Skeleton className="h-4 w-64" />
+            <div className="grid grid-cols-3 gap-2 text-xs">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="rounded-xl border border-black/10 bg-white p-2 dark:border-white/10 dark:bg-black/30"
+                >
+                  <Skeleton className="h-3 w-12" />
+                  <Skeleton className="mt-2 h-4 w-14" />
+                </div>
+              ))}
+            </div>
+            <Skeleton className="h-3 w-72" />
+          </div>
         ) : !latest && !loading ? (
           <EmptyState
             title="Ingen snapshots endnu"

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { useToast } from "@/components/ToastProvider";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/cn";
 
 type Brief = {
@@ -26,12 +27,14 @@ function toneForRisk(risk: Brief["risk"]): "ok" | "low" | "med" | "high" {
 export function AiBriefCard({ day }: { day: string }) {
   const { toast } = useToast();
   const [item, setItem] = useState<Brief | null>(null);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      setInitialLoading(true);
       try {
         const res = await fetch(`/api/ai/brief?day=${encodeURIComponent(day)}`, {
           cache: "no-store",
@@ -41,6 +44,8 @@ export function AiBriefCard({ day }: { day: string }) {
         if (!cancelled) setItem(json.item ?? null);
       } catch {
         // ignore on load
+      } finally {
+        if (!cancelled) setInitialLoading(false);
       }
     })();
     return () => {
@@ -202,6 +207,29 @@ export function AiBriefCard({ day }: { day: string }) {
               </div>
             </>
           ) : null}
+        </div>
+      ) : initialLoading ? (
+        <div className="rounded-2xl border border-black/10 bg-white/40 p-5 dark:border-white/10 dark:bg-black/15 space-y-4">
+          <div className="flex items-center justify-between gap-3">
+            <Skeleton className="h-4 w-28" />
+            <Skeleton className="h-3 w-24" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-5/6" />
+            <Skeleton className="h-3 w-2/3" />
+          </div>
+          <div className="grid gap-2 md:grid-cols-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="rounded-xl border border-black/10 bg-white/60 p-3 dark:border-white/10 dark:bg-black/20"
+              >
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="mt-2 h-3 w-full" />
+              </div>
+            ))}
+          </div>
         </div>
       ) : (
         <div className="rounded-2xl border border-dashed border-black/15 bg-white/40 p-5 text-sm text-neutral-700 dark:border-white/15 dark:bg-black/15 dark:text-neutral-200">

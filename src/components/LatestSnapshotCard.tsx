@@ -6,6 +6,7 @@ import { addDaysYmd } from "@/lib/date";
 import { Button } from "@/components/ui/Button";
 import { MetricGrid, MetricTile } from "@/components/MetricGrid";
 import { EmptyState, InlineEmptyLink } from "@/components/EmptyState";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { fmtDelta, fmtDeltaFloat, fmtFloat, fmtNumber } from "@/lib/format";
 
 type Snapshot = {
@@ -180,7 +181,25 @@ export function LatestSnapshotCard({ day }: { day: string }) {
         </div>
       )}
 
-      {!latest && !loading && (
+      {loading && !latest && (snapsToday === null || snapsYesterday === null) ? (
+        <div className="space-y-3">
+          <MetricGrid className="sm:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="rounded-xl border border-black/10 bg-white/60 p-3 dark:border-white/10 dark:bg-black/20"
+              >
+                <Skeleton className="h-3 w-16" />
+                <div className="mt-2 flex items-baseline justify-between gap-3">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-3 w-10" />
+                </div>
+              </div>
+            ))}
+          </MetricGrid>
+          <Skeleton className="h-3 w-64" />
+        </div>
+      ) : !latest && !loading ? (
         <EmptyState
           title="Ingen snapshots endnu"
           description={
@@ -206,7 +225,7 @@ export function LatestSnapshotCard({ day }: { day: string }) {
             </div>
           }
         />
-      )}
+      ) : null}
 
       {latest && (
         <div className="space-y-3">
