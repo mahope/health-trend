@@ -24,33 +24,32 @@ export async function GET(req: Request) {
 
   const deterministic = await computeDeterministicPlan(user.id, day);
 
-  const snap = await prisma.garminSnapshot.findFirst({
-    where: { userId: user.id, day },
-    orderBy: { takenAt: "desc" },
-    select: {
-      takenAt: true,
-      steps: true,
-      restingHr: true,
-      stressAvg: true,
-      sleepHours: true,
-      bodyBatteryLow: true,
-    },
-  });
-
-  const manual = await prisma.manualDaily.findUnique({
-    where: { userId_day: { userId: user.id, day } },
-    select: { symptomScore: true, caffeineCups: true, alcoholUnits: true, trained: true, meds: true, notes: true },
-  });
-
-  const profile = await prisma.userProfile.findUnique({
-    where: { userId: user.id },
-    select: { sex: true, pregnant: true, cycleDay: true },
-  });
-
-  const brief = await prisma.aiBrief.findUnique({
-    where: { userId_day: { userId: user.id, day } },
-    select: { risk: true, short: true },
-  });
+  const [snap, manual, profile, brief] = await Promise.all([
+    prisma.garminSnapshot.findFirst({
+      where: { userId: user.id, day },
+      orderBy: { takenAt: "desc" },
+      select: {
+        takenAt: true,
+        steps: true,
+        restingHr: true,
+        stressAvg: true,
+        sleepHours: true,
+        bodyBatteryLow: true,
+      },
+    }),
+    prisma.manualDaily.findUnique({
+      where: { userId_day: { userId: user.id, day } },
+      select: { symptomScore: true, caffeineCups: true, alcoholUnits: true, trained: true, meds: true, notes: true },
+    }),
+    prisma.userProfile.findUnique({
+      where: { userId: user.id },
+      select: { sex: true, pregnant: true, cycleDay: true },
+    }),
+    prisma.aiBrief.findUnique({
+      where: { userId_day: { userId: user.id, day } },
+      select: { risk: true, short: true },
+    }),
+  ]);
 
   let aiPlan: unknown = null;
   if (ai) {

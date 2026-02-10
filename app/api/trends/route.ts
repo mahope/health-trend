@@ -21,10 +21,12 @@ export async function GET(req: Request) {
     prisma.garminSnapshot.findMany({
       where: { userId: user.id, day: { gte: fromDay, lte: today } },
       orderBy: [{ day: "asc" }, { takenAt: "desc" }],
+      select: { day: true, steps: true, restingHr: true, stressAvg: true, sleepHours: true, bodyBatteryLow: true },
     }),
     prisma.aiBrief.findMany({
       where: { userId: user.id, day: { gte: fromDay, lte: today } },
       orderBy: { day: "asc" },
+      select: { day: true, risk: true },
     }),
   ]);
 

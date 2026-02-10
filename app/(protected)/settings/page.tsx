@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import QRCode from "qrcode";
+
 import { QrImage } from "@/components/QrImage";
 import { authClient } from "@/lib/auth-client";
 import { useRateLimitedToast } from "@/hooks/useRateLimitedToast";
@@ -63,6 +63,7 @@ export default function SettingsPage() {
         return;
       }
       try {
+        const { default: QRCode } = await import("qrcode");
         const url = await QRCode.toDataURL(safeTotpURI, {
           margin: 1,
           scale: 7,

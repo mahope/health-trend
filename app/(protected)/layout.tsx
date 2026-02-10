@@ -2,6 +2,8 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
+import { prisma } from "@/lib/prisma";
+import { ymd } from "@/lib/date";
 
 export default async function ProtectedLayout({
   children,
@@ -11,5 +13,15 @@ export default async function ProtectedLayout({
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect("/login");
 
-  return <AppShell userEmail={session.user.email}>{children}</AppShell>;
+  const day = ymd(new Date());
+  const brief = await prisma.aiBrief.findUnique({
+    where: { userId_day: { userId: session.user.id, day } },
+    select: { short: true },
+  });
+
+  return (
+    <AppShell userEmail={session.user.email} coachText={brief?.short ?? null}>
+      {children}
+    </AppShell>
+  );
 }

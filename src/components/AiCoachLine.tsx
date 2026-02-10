@@ -8,10 +8,11 @@ type Brief = {
   createdAt: string;
 };
 
-export function AiCoachLine() {
-  const [text, setText] = useState<string | null>(null);
+export function AiCoachLine({ text: textProp }: { text?: string | null }) {
+  const [fetched, setFetched] = useState<string | null>(null);
 
   useEffect(() => {
+    if (textProp !== undefined) return;
     let cancelled = false;
     (async () => {
       try {
@@ -23,7 +24,7 @@ export function AiCoachLine() {
         const json = (await res.json()) as { item?: Brief | null };
         const short = (json.item?.short || "").trim();
         if (!short) return;
-        if (!cancelled) setText(short);
+        if (!cancelled) setFetched(short);
       } catch {
         // ignore
       }
@@ -31,8 +32,9 @@ export function AiCoachLine() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [textProp]);
 
+  const text = textProp !== undefined ? textProp : fetched;
   if (!text) return null;
 
   return (

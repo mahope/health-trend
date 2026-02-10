@@ -37,36 +37,32 @@ export function ActivitiesCard({ limit = 10 }: { limit?: number }) {
     let cancelled = false;
     (async () => {
       setError(null);
-      try {
-        const res = await fetch(`/api/activities/recent?limit=${limit}`, { cache: "no-store" });
-        const json = (await res.json()) as { items?: Activity[]; error?: string };
-        if (!res.ok) throw new Error(json.error || "Kunne ikke hente aktiviteter");
-        if (!cancelled) setItems(json.items ?? []);
-      } catch (e: unknown) {
-        if (!cancelled) setError(e instanceof Error ? e.message : "Fejl");
+      const [activitiesResult, streaksResult] = await Promise.allSettled([
+        fetch(`/api/activities/recent?limit=${limit}`, { cache: "no-store" }).then(async (res) => {
+          const json = (await res.json()) as { items?: Activity[]; error?: string };
+          if (!res.ok) throw new Error(json.error || "Kunne ikke hente aktiviteter");
+          return json.items ?? [];
+        }),
+        fetch(`/api/activities/streaks?days=60`, { cache: "no-store" }).then(async (res) => {
+          const json = (await res.json()) as StreaksResp;
+          if (!res.ok) return null;
+          return json.streaks ?? null;
+        }),
+      ]);
+      if (cancelled) return;
+      if (activitiesResult.status === "fulfilled") {
+        setItems(activitiesResult.value);
+      } else {
+        setError(activitiesResult.reason instanceof Error ? activitiesResult.reason.message : "Fejl");
+      }
+      if (streaksResult.status === "fulfilled" && streaksResult.value) {
+        setStreaks(streaksResult.value);
       }
     })();
     return () => {
       cancelled = true;
     };
   }, [limit]);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const res = await fetch(`/api/activities/streaks?days=60`, { cache: "no-store" });
-        const json = (await res.json()) as StreaksResp;
-        if (!res.ok) return;
-        if (!cancelled) setStreaks(json.streaks ?? null);
-      } catch {
-        // optional enhancement; ignore
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   return (
     <Card>

@@ -28,6 +28,7 @@ export function ManualForm({ day }: { day: string }) {
   const { toast } = useToast();
   const lastOkToastAt = useRef(0);
   const justSavedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const notesDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -95,6 +96,7 @@ export function ManualForm({ day }: { day: string }) {
   useEffect(() => {
     return () => {
       if (justSavedTimer.current) clearTimeout(justSavedTimer.current);
+      if (notesDebounce.current) clearTimeout(notesDebounce.current);
     };
   }, []);
 
@@ -220,7 +222,12 @@ export function ManualForm({ day }: { day: string }) {
         <Textarea
           className="min-h-28"
           value={item.notes ?? ""}
-          onChange={(e) => save({ notes: e.target.value })}
+          onChange={(e) => {
+            const val = e.target.value;
+            setItem((prev) => prev ? { ...prev, notes: val } : prev);
+            if (notesDebounce.current) clearTimeout(notesDebounce.current);
+            notesDebounce.current = setTimeout(() => save({ notes: val }), 600);
+          }}
         />
       </FormField>
 

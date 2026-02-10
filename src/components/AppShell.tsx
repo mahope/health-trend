@@ -10,6 +10,8 @@ import { PullToRefresh } from "@/components/PullToRefresh";
 import { AiCoachLine } from "@/components/AiCoachLine";
 import { NetworkStatusBanner } from "@/components/NetworkStatusBanner";
 
+let garminConnectedCache: boolean | null = null;
+
 function titleForPath(path: string): { title: string; subtitle: string } {
   if (path === "/") return { title: "Dashboard", subtitle: "Din sundheds-stream, destilleret." };
   if (path.startsWith("/snapshots"))
@@ -31,9 +33,11 @@ function titleForPath(path: string): { title: string; subtitle: string } {
 
 export function AppShell({
   userEmail,
+  coachText,
   children,
 }: {
   userEmail: string;
+  coachText?: string | null;
   children: React.ReactNode;
 }) {
   const pathname = usePathname() || "/";
@@ -43,6 +47,7 @@ export function AppShell({
 
   // Mandatory onboarding: if not connected to Garmin, push user to /garmin (client-side).
   useEffect(() => {
+    if (garminConnectedCache === true) return;
     let cancelled = false;
     (async () => {
       // allow onboarding + settings
@@ -51,7 +56,11 @@ export function AppShell({
         const res = await fetch("/api/garmin/status", { cache: "no-store" });
         const json = (await res.json()) as { status?: { connected: boolean } };
         const connected = Boolean(json?.status?.connected);
-        if (!connected && !cancelled) router.replace("/garmin");
+        if (connected) {
+          garminConnectedCache = true;
+        } else if (!cancelled) {
+          router.replace("/garmin");
+        }
       } catch {
         // ignore
       }
@@ -105,7 +114,7 @@ export function AppShell({
                 {subtitle ? (
                   <div className="text-sm text-[color:var(--text-tertiary)]">{subtitle}</div>
                 ) : null}
-                {pathname === "/" ? <AiCoachLine /> : null}
+                {pathname === "/" ? <AiCoachLine text={coachText} /> : null}
               </div>
             </div>
 
