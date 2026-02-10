@@ -81,6 +81,10 @@ export async function generateAiBriefForUser(userId: string, day: string) {
     orderBy: { takenAt: "asc" },
   });
 
+  if (snapshotsToday.length === 0) {
+    throw new Error("no_snapshots");
+  }
+
   const fromDay = ymd(addDays(new Date(day + "T12:00:00"), -14));
   const baselineRows = await prisma.garminSnapshot.findMany({
     where: {

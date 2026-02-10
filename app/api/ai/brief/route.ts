@@ -25,6 +25,12 @@ export async function POST(req: Request) {
   const body = (await req.json().catch(() => null)) as null | { day?: string };
   const day = body?.day || ymd(new Date());
 
-  const { saved } = await generateAiBriefForUser(user.id, day);
-  return NextResponse.json({ ok: true, item: saved });
+  try {
+    const { saved } = await generateAiBriefForUser(user.id, day);
+    return NextResponse.json({ ok: true, item: saved });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : "Kunne ikke lave brief";
+    const status = msg === "no_snapshots" ? 400 : 500;
+    return NextResponse.json({ error: msg }, { status });
+  }
 }

@@ -69,7 +69,8 @@ export function AiBriefCard({ day }: { day: string }) {
               setItem(json.item);
               toast({ title: "Brief genereret ✓", kind: "success", vibrateMs: 15 });
             } catch (e: unknown) {
-              const msg = e instanceof Error ? e.message : "Fejl";
+              const raw = e instanceof Error ? e.message : "Fejl";
+              const msg = raw === "no_snapshots" ? "Tag mindst ét snapshot først." : raw;
               setError(msg);
               toast({ title: msg, kind: "error", vibrateMs: 45 });
             } finally {
