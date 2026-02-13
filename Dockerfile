@@ -17,12 +17,13 @@ ENV NODE_ENV=production
 
 # Python runtime for Garmin login (install-only PWA, but Garmin login uses Python).
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends python3 python3-pip \
+  && apt-get install -y --no-install-recommends python3 python3-venv \
   && rm -rf /var/lib/apt/lists/*
 
 # Install Garmin deps for the helper scripts.
 COPY garmin/requirements.txt /app/garmin/requirements.txt
-RUN python3 -m pip install --no-cache-dir -r /app/garmin/requirements.txt
+RUN python3 -m venv /opt/venv \
+  && /opt/venv/bin/pip install --no-cache-dir -r /app/garmin/requirements.txt
 
 # App code
 COPY --from=build /app .
