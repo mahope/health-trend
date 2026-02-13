@@ -1,30 +1,24 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function POST(request: Request) {
-  const userCount = await prisma.user.count();
-
-  if (userCount > 0) {
-    const secret = request.headers.get("x-setup-secret");
-    if (secret !== process.env.SETUP_SECRET) {
-      return NextResponse.json(
-        { error: "Setup already completed. Use /login to sign in." },
-        { status: 403 }
-      );
-    }
-  }
-
-  const body = await request.json();
-  const { email, name, password } = body;
-
-  if (!email || !name || !password) {
-    return NextResponse.json(
-      { error: "Missing email, name, or password" },
-      { status: 400 }
-    );
-  }
-
+export async function GET() {
   try {
+    const count = await prisma.user.count();
+    return NextResponse.json({ userCount: count });
+  } catch (error) {
+    return NextResponse.json({ error: String(error) }, { status: 500 });
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const { email, name } = body;
+
+    if (!email || !name) {
+      return NextResponse.json({ error: "Missing email or name" }, { status: 400 });
+    }
+
     const normalizedEmail = email.toLowerCase();
 
     const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
@@ -34,12 +28,10 @@ export async function POST(request: Request) {
         ok: true,
         created: false,
         email: existing.email,
-        name: existing.name,
-        message: "User already exists",
+        name: existing.name
       });
     }
 
-    // Create user only - skip account creation
     const user = await prisma.user.create({
       data: {
         email: normalizedEmail,
@@ -52,14 +44,9 @@ export async function POST(request: Request) {
       ok: true,
       created: true,
       email: user.email,
-      name: user.name,
-      message: "User created. You need to set up password via bootstrap script or manually.",
+      name: user.name
     });
-  } catch (error: unknown) {
-    console.error("Setup error:", error);
-    return NextResponse.json(
-      { error: String(error) },
-      { status: 500 }
-    );
+  } catch (error) {
+    return NextResponse.json({ error: String(error) }, { status: 500 });
   }
 }
