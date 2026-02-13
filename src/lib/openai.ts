@@ -4,17 +4,19 @@ export async function openaiJson(
   prompt: string,
   opts?: { model?: string; temperature?: number },
 ): Promise<JsonObject> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error("Missing OPENAI_API_KEY");
+  const apiKey = process.env.ORDBOGEN_API_KEY || process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error("Missing ORDBOGEN_API_KEY (or OPENAI_API_KEY)");
+  }
 
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+  const res = await fetch("https://api.ordbogen.ai/v1/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: opts?.model || process.env.OPENAI_MODEL || "gpt-4o-mini",
+      model: opts?.model || process.env.ORDBOGEN_MODEL || "odin-medium",
       temperature: opts?.temperature ?? 0.2,
       response_format: { type: "json_object" },
       messages: [
