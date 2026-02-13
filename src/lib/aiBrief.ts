@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { addDays, ymd } from "@/lib/date";
 import { openaiJson } from "@/lib/openai";
-import type { GarminSnapshot } from "@prisma/client";
 
 function avg(nums: Array<number | null | undefined>): number | null {
   const xs = nums.filter((x): x is number => typeof x === "number" && Number.isFinite(x));
@@ -112,10 +111,10 @@ export async function generateAiBriefForUser(userId: string, day: string) {
 
   const overstimulationHint = detectOverstimulation({
     manual,
-    snapshots: snapshotsToday.map((s: GarminSnapshot) => ({
-      takenAt: s.takenAt,
-      stressAvg: s.stressAvg,
-      bodyBatteryLow: s.bodyBatteryLow,
+    snapshots: snapshotsToday.map((s) => ({
+      takenAt: s.takenAt as Date,
+      stressAvg: s.stressAvg as number | null,
+      bodyBatteryLow: s.bodyBatteryLow as number | null,
     })),
   });
 
