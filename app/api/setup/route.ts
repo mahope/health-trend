@@ -30,15 +30,16 @@ async function ensureUser({
     if (existingAccount) {
       await prisma.account.update({
         where: { id: existingAccount.id },
-        data: { credentials: { password: passwordHash } },
+        data: { password: passwordHash },
       });
     } else {
       await prisma.account.create({
         data: {
+          id: crypto.randomUUID(),
           userId: existing.id,
           providerId: "credential",
-          accountId: normalizedEmail,
-          credentials: { password: passwordHash },
+          accountId: existing.id,
+          password: passwordHash,
         },
       });
     }
@@ -57,10 +58,11 @@ async function ensureUser({
 
   await prisma.account.create({
     data: {
+      id: crypto.randomUUID(),
       userId: user.id,
       providerId: "credential",
-      accountId: normalizedEmail,
-      credentials: { password: passwordHash },
+      accountId: user.id,
+      password: passwordHash,
     },
   });
 
