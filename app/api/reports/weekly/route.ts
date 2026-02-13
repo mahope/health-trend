@@ -108,12 +108,12 @@ export async function GET(req: Request) {
 
     await prisma.aiWeeklyReport.upsert({
       where: { userId_startDay_endDay: { userId: user.id, startDay, endDay } },
-      update: { payload: ai as Prisma.JsonValue, model: process.env.OPENAI_MODEL_WEEKLY || process.env.OPENAI_MODEL || "gpt-4o-mini" },
+      update: { payload: ai as any, model: process.env.OPENAI_MODEL_WEEKLY || process.env.OPENAI_MODEL || "gpt-4o-mini" },
       create: {
         userId: user.id,
         startDay,
         endDay,
-        payload: ai as Prisma.JsonValue,
+        payload: ai as any,
         model: process.env.OPENAI_MODEL_WEEKLY || process.env.OPENAI_MODEL || "gpt-4o-mini",
       },
     });
