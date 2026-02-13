@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/serverAuth";
 import { prisma } from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
 import { addDaysYmd, ymd, isValidDay } from "@/lib/date";
 import { openaiJson } from "@/lib/openai";
 import { rateLimit } from "@/lib/rateLimit";
@@ -12,6 +11,26 @@ function avg(nums: Array<number | null | undefined>) {
   if (!xs.length) return null;
   return xs.reduce((a, b) => a + b, 0) / xs.length;
 }
+
+type SnapshotRow = {
+  day: string;
+  steps: number | null;
+  restingHr: number | null;
+  stressAvg: number | null;
+  sleepHours: number | null;
+  bodyBatteryLow: number | null;
+  activityMinutes: number | null;
+  activityDistanceKm: number | null;
+  activityCount: number | null;
+};
+
+type ManualRow = {
+  day: string;
+  symptomScore: number | null;
+  caffeineCups: number | null;
+  alcoholUnits: number | null;
+  trained: boolean | null;
+};
 
 export async function GET(req: Request) {
   const user = await requireUser();
@@ -26,7 +45,7 @@ export async function GET(req: Request) {
   const endDay = endDayParam || ymd(new Date());
   const startDay = addDaysYmd(endDay, -6);
 
-  const snaps = await prisma.garminSnapshot.findMany({
+  const snaps: SnapshotRow[] = await prisma.garminSnapshot.findMany({
     where: { userId: user.id, day: { gte: startDay, lte: endDay } },
     orderBy: { day: "asc" },
     select: {
@@ -42,7 +61,7 @@ export async function GET(req: Request) {
     },
   });
 
-  const manual = await prisma.manualDaily.findMany({
+  const manual: ManualRow[] = await prisma.manualDaily.findMany({
     where: { userId: user.id, day: { gte: startDay, lte: endDay } },
     orderBy: { day: "asc" },
     select: { day: true, symptomScore: true, caffeineCups: true, alcoholUnits: true, trained: true },
