@@ -1,73 +1,6 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { hashPassword } from "better-auth/crypto";
-import crypto from "node:crypto";
-
-function randomPassword(): string {
-  return crypto.randomBytes(18).toString("base64url");
-}
-
-async function ensureUser({
-  email,
-  name,
-  password,
-}: {
-  email: string;
-  name: string;
-  password: string;
-}) {
-  const normalizedEmail = email.toLowerCase();
-  const passwordHash = await hashPassword(password);
-
-  const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
-
-  if (existing) {
-    // Update password if user exists
-    const existingAccount = await prisma.account.findFirst({
-      where: { userId: existing.id, providerId: "credential" },
-    });
-
-    if (existingAccount) {
-      await prisma.account.update({
-        where: { id: existingAccount.id },
-        data: { password: passwordHash },
-      });
-    } else {
-      await prisma.account.create({
-        data: {
-          id: crypto.randomUUID(),
-          userId: existing.id,
-          providerId: "credential",
-          accountId: existing.id,
-          password: passwordHash,
-        },
-      });
-    }
-
-    return { user: existing, created: false, password };
-  }
-
-  // Create new user
-  const user = await prisma.user.create({
-    data: {
-      email: normalizedEmail,
-      name,
-      emailVerified: false,
-    },
-  });
-
-  await prisma.account.create({
-    data: {
-      id: crypto.randomUUID(),
-      userId: user.id,
-      providerId: "credential",
-      accountId: user.id,
-      password: passwordHash,
-    },
-  });
-
-  return { user, created: true, password };
-}
 
 export async function POST(request: Request) {
   // Only allow first-time setup (check if any users exist)
@@ -95,22 +28,34 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await ensureUser({ email, name, password });
-
-    return NextResponse.json({
-      ok: true,
-      created: result.created,
-      email: result.user.email,
-      name: result.user.name,
-      password: result.password, // Only returned on creation
-      message: result.created
-        ? "User created successfully"
-        : "User already exists, password updated",
+    // Use Better Auth's signUp API
+    const result = await auth.api.signUp({
+      body: {
+        email: email.toLowerCase(),
+        password,
+        name,
+      },
     });
-  } catch (error) {
+
+    if (result) {
+      return NextResponse.json({
+        ok: true,
+        created: true,
+        email,
+        name,
+        message: "User created successfully",
+      });
+    } else {
+      return NextResponse.json(
+        { error: "Sign up failed" },
+        { status: 500 }
+      );
+    }
+  } catch (error: unknown) {
     console.error("Setup error:", error);
+    const err = error as { message?: string; cause?: string };
     return NextResponse.json(
-      { error: "Failed to create user" },
+      { error: err.message || "Failed to create user" },
       { status: 500 }
     );
   }
