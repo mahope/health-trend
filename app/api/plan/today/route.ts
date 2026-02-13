@@ -89,12 +89,12 @@ export async function GET(req: Request) {
 
     await prisma.aiDayPlan.upsert({
       where: { userId_day_kind: { userId: user.id, day, kind: "today" } },
-      update: { payload: aiPlan as Prisma.InputJsonValue },
+      update: { payload: aiPlan as Prisma.JsonValue },
       create: {
         userId: user.id,
         day,
         kind: "today",
-        payload: aiPlan as Prisma.InputJsonValue,
+        payload: aiPlan as Prisma.JsonValue,
         model: process.env.OPENAI_MODEL || "gpt-4o-mini",
       },
     });
